@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — CardPrime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <a class="home-link" href="../">
+    <header class="site-header">
+      <img class="mark" src="../assets/appicon.png" alt="CardPrime">
+      <span class="wordmark">CARDPRIME</span>
+    </header>
+  </a>
+
+  <h1>Privacy Policy</h1>
+  <div class="updated">Last updated: July 24, 2026</div>
+
+  <h2>1. Who we are</h2>
+  <p>CardPrime is operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we", "us"), the data controller responsible for your personal data under the EU General Data Protection Regulation (GDPR).</p>
+  <p>Contact: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+
+  <h2>2. What data we collect</h2>
+  <table>
+    <thead><tr><th>Data</th><th>When</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Email address</td><td>Account registration (Cognito)</td><td>Login, account identification</td></tr>
+      <tr><td>Display name</td><td>Account registration (optional)</td><td>Personalizing your profile</td></tr>
+      <tr><td>Password</td><td>Account registration</td><td>Authentication (stored only as a salted hash by AWS Cognito — CardPrime never sees or stores your plaintext password)</td></tr>
+      <tr><td>Card records you add</td><td>Every time you add a card (photo + manual details)</td><td>Building your collection</td></tr>
+      <tr><td>Approximate location (coarse, rounded to ~1.1 km)</td><td>Only at the moment you save a card you've added</td><td>Fraud detection — flagging implausible location patterns (e.g. the same card added in two distant cities minutes apart)</td></tr>
+      <tr><td>Login timestamps</td><td>Every sign-in</td><td>Security monitoring</td></tr>
+    </tbody>
+  </table>
+  <p>We do <strong>not</strong> collect precise/continuous location, contacts, photos outside the card-entry flow, or any advertising identifiers. We do not use analytics or crash-reporting SDKs (no Firebase, Sentry, Amplitude, Mixpanel, or similar).</p>
+
+  <h2>3. Legal basis for processing</h2>
+  <p><strong>Performance of a contract</strong> — account creation, authentication, and collection management are necessary to provide the service you request.</p>
+  <p><strong>Legitimate interest</strong> — approximate location capture when you add a card, and the resulting fraud/geo-velocity checks, protect the integrity of the card catalog and other users, and are limited to the minimum precision needed for that purpose.</p>
+
+  <h2>4. Who we share data with</h2>
+  <p>Your data is processed only by our infrastructure provider, <strong>Amazon Web Services (AWS)</strong>, in the following services: Cognito (authentication), DynamoDB (database), S3 (card images), Lambda/API Gateway (application logic). We do not sell, rent, or share your data with advertisers, data brokers, or any other third party.</p>
+
+  <h2>5. International data transfers</h2>
+  <p>All data is stored and processed in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region, within the European Union. We do not transfer your personal data outside the EU/EEA.</p>
+
+  <h2>6. How long we keep your data</h2>
+  <p>We retain your data for as long as your account remains active. If you request deletion, your account and all associated data are <strong>erased automatically</strong> — not through a manual, delayed process.</p>
+
+  <h2>7. Your rights</h2>
+  <p>Under GDPR, you have the right to:</p>
+  <ul>
+    <li><strong>Access</strong> the data we hold about you</li>
+    <li><strong>Rectify</strong> inaccurate data (edit your name in Settings)</li>
+    <li><strong>Erase</strong> your account and all associated data</li>
+    <li><strong>Object</strong> to processing based on our legitimate interest (fraud detection)</li>
+    <li><strong>Lodge a complaint</strong> with your national data protection authority</li>
+  </ul>
+  <div class="card">
+    <strong>To delete your account:</strong> open Settings → Delete Account in the app. This immediately and automatically removes your profile, your collection, uploaded card images, card-add history, transfer requests, notifications, and login logs from our systems, and deletes your Cognito login credentials. This action is irreversible.
+  </div>
+  <p>For any other request, or if you cannot access the app, email <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
+
+  <h2>8. Automated processing</h2>
+  <p>When you add a card, we run an automated check comparing the location and timing against the card's history (the "geo-velocity check"). This may generate an in-app notification if the pattern looks physically implausible. This check only produces an alert — it does not automatically suspend, restrict, or take any legal or similarly significant action against your account.</p>
+
+  <h2>9. Children's privacy</h2>
+  <p>CardPrime is not directed at children under 16. We do not knowingly collect data from children under this age.</p>
+
+  <h2>10. Changes to this policy</h2>
+  <p>If we materially change what data we collect or how we use it, we will update this policy and notify you in the app.</p>
+
+  <h2>11. Contact</h2>
+  <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+
+  <div class="nav-links">
+    <a href="../terms/">Terms of Service</a>
+    <a href="../support/">Support</a>
+  </div>
+
+  <footer>
+    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
+  </footer>
+</div>
+</body>
+</html>
