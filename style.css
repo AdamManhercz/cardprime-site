@@ -46,11 +46,8 @@ header.site-header .mark {
 }
 
 header.site-header .wordmark {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 500;
-  font-size: 32px;
-  letter-spacing: 0.5px;
-  color: #fff;
+  height: 32px;
+  width: auto;
 }
 
 header.site-header a.home-link {
