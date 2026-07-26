@@ -31,31 +31,32 @@ a {
 
 header.site-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: 16px;
   margin-bottom: 48px;
   text-align: center;
 }
 
 header.site-header .mark {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   flex-shrink: 0;
 }
 
 header.site-header .wordmark {
-  height: 44px;
+  height: 40px;
   width: auto;
 }
 
 header.site-header a.home-link {
   text-decoration: none;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 h1 {
