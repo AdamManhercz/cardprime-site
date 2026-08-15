@@ -20,7 +20,7 @@
   </a>
 
   <h1>Privacy Policy</h1>
-  <div class="updated">Last updated: July 27, 2026</div>
+  <div class="updated">Last updated: August 15, 2026</div>
 
   <h2>1. Who we are</h2>
   <p>CardPrime is operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we", "us"), the data controller responsible for your personal data under the EU General Data Protection Regulation (GDPR).</p>
@@ -33,7 +33,7 @@
       <tr><td>Email address</td><td>Account registration (Cognito)</td><td>Login, account identification</td></tr>
       <tr><td>Display name</td><td>Account registration (optional)</td><td>Personalizing your profile</td></tr>
       <tr><td>Password</td><td>Account registration</td><td>Authentication (stored only as a salted hash by AWS Cognito — CardPrime never sees or stores your plaintext password)</td></tr>
-      <tr><td>Card records you add</td><td>Every time you add a card (photo + manual details)</td><td>Building your collection</td></tr>
+      <tr><td>Card records you add</td><td>Every time you add a card (photo + manual details)</td><td>Building your collection; listing the card in the in-app catalog visible to other users (see section 4)</td></tr>
       <tr><td>Approximate location (coarse, rounded to ~1.1 km)</td><td>Only at the moment you save a card you've added</td><td>Fraud detection — flagging implausible location patterns (e.g. the same card added in two distant cities minutes apart)</td></tr>
       <tr><td>Login timestamps</td><td>Every sign-in</td><td>Security monitoring</td></tr>
     </tbody>
@@ -46,6 +46,8 @@
 
   <h2>4. Who we share data with</h2>
   <p>Your data is processed only by our infrastructure provider, <strong>Amazon Web Services (AWS)</strong>, in the following services: Cognito (authentication), DynamoDB (database), S3 (card images), Lambda/API Gateway (application logic). We do not sell, rent, or share your data with advertisers, data brokers, or any other third party.</p>
+  <p><strong>Visible to other users.</strong> Cards you add appear in CardPrime's in-app catalog &mdash; the Home and Explore screens &mdash; where other signed-in CardPrime users can see them. A catalog listing shows the card's own details: the photo you took, player, sport, year, brand, series, card number, grade, rarity, serial number, and estimated value.</p>
+  <p>A catalog listing does <strong>not</strong> identify you. It does not include your name, your email address, your account identifier, or the approximate location recorded when you saved the card. Those remain visible only to you, in your own collection. Because the photo itself is shown to other users, avoid capturing anything in the frame that you would not want them to see.</p>
 
   <h2>5. International data transfers</h2>
   <p>All data is stored and processed in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region, within the European Union. We do not transfer your personal data outside the EU/EEA.</p>
