@@ -20,64 +20,116 @@
   </a>
 
   <h1>Privacy Policy</h1>
-  <div class="updated">Last updated: July 27, 2026</div>
+  <div class="updated">Last updated: August 16, 2026</div>
 
   <h2>1. Who we are</h2>
   <p>CardPrime is operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we", "us"), the data controller responsible for your personal data under the EU General Data Protection Regulation (GDPR).</p>
-  <p>Contact: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+  <ul>
+    <li>Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></li>
+  </ul>
+  <p>We have not appointed a Data Protection Officer, as our processing does not meet the Article 37 thresholds (no large-scale or systematic monitoring, no large-scale special-category processing). Privacy questions and rights requests can be sent to the contact above.</p>
 
   <h2>2. What data we collect</h2>
   <table>
     <thead><tr><th>Data</th><th>When</th><th>Purpose</th></tr></thead>
     <tbody>
       <tr><td>Email address</td><td>Account registration (Cognito)</td><td>Login, account identification</td></tr>
-      <tr><td>Display name</td><td>Account registration (optional)</td><td>Personalizing your profile</td></tr>
+      <tr><td>Display name</td><td>Account registration (required; a nickname is fine)</td><td>Personalizing your profile, and identifying you as the owner of any card you publish to the public catalog (see Section 3)</td></tr>
       <tr><td>Password</td><td>Account registration</td><td>Authentication (stored only as a salted hash by AWS Cognito — CardPrime never sees or stores your plaintext password)</td></tr>
       <tr><td>Card records you add</td><td>Every time you add a card (photo + manual details)</td><td>Building your collection</td></tr>
       <tr><td>Approximate location (coarse, rounded to ~1.1 km)</td><td>Only at the moment you save a card you've added</td><td>Fraud detection — flagging implausible location patterns (e.g. the same card added in two distant cities minutes apart)</td></tr>
       <tr><td>Login timestamps</td><td>Every sign-in</td><td>Security monitoring</td></tr>
+      <tr><td>Content reports you submit</td><td>Only when you report a card in the public catalog</td><td>Reviewing reported content, meeting our content-moderation obligations</td></tr>
+      <tr><td>Accounts you block</td><td>Only when you block a collector</td><td>Hiding that collector's cards from you, and yours from them</td></tr>
     </tbody>
   </table>
   <p>We do <strong>not</strong> collect precise/continuous location, contacts, photos outside the card-entry flow, or any advertising identifiers. We do not use analytics or crash-reporting SDKs (no Firebase, Sentry, Amplitude, Mixpanel, or similar).</p>
+  <p><strong>What's required vs. optional:</strong> email, password and a display name are required to create an account — without them we cannot provide the service. The display name does not have to be your real name; a nickname or pseudonym is fine, and you can change it at any time in Settings → Edit Profile (see Section 3, which explains where it is shown). Approximate location is only requested at the moment you save a card; declining the permission prompt does not block adding the card, but the geo-velocity fraud check will have less information to work with for that entry.</p>
 
-  <h2>3. Legal basis for processing</h2>
+  <h2>3. Cards you choose to share publicly</h2>
+  <p><strong>Every card you add is private by default.</strong> It is visible only in your own account unless you deliberately turn on "Show in public catalog" for that specific card — a per-card switch you can turn off again at any time from the card's edit screen.</p>
+  <p>When a card <em>is</em> shared publicly, this is what other signed-in users can see:</p>
+  <ul>
+    <li>the card's photo and the details you entered for it (player, sport, year, brand, series, card number, grade and whether it is graded, rarity, estimated value, serial number, and any description or tags stored on the card)</li>
+    <li><strong>the display name on your profile</strong>, shown as the card's owner. If no display name is stored for your account, an <strong>anonymous collector ID</strong> such as "Collector #A1B2" is shown instead — a one-way code derived from your account identifier that cannot be reversed back into your account.</li>
+  </ul>
+  <p>They do <strong>not</strong> see your email address, your account ID, the location captured when you added the card, or any other card in your collection.</p>
+  <p><strong>Your display name is the only part of your profile that other users see, and only on cards you have chosen to publish.</strong> It is entirely under your control: you can change it at any time in Settings → Edit Profile — a nickname or pseudonym is perfectly acceptable — and the change applies immediately everywhere your published cards appear. If you would rather not be identified at all, turn the "Show in public catalog" switch off; a private card never shows your name to anyone. Accounts that have no display name stored are shown under the anonymous collector ID instead. Nothing else about your profile is ever displayed, and your display name is not shown anywhere while all of your cards are private.</p>
+  <p><strong>Automated screening.</strong> When you turn the switch on, the card's photo is automatically checked for sexual, violent, hateful, or otherwise objectionable imagery before it can appear in the catalog. A photo that fails this check is not published; the card itself stays saved in your private collection.</p>
+  <p><strong>Reporting and blocking.</strong> Other users can report a publicly shared card and can block you as a collector; you can do the same to them. If enough distinct users report the same card, it is automatically removed from the public catalog while we review it. Blocking is symmetric — a blocked collector's cards disappear from your Explore feed, and yours disappear from theirs. Blocks you've made can be undone in Settings → Blocked Accounts &amp; Reports.</p>
+  <p>Turning the switch off removes the card from the public catalog immediately.</p>
+
+  <h2>4. Legal basis for processing</h2>
   <p><strong>Performance of a contract</strong> — account creation, authentication, and collection management are necessary to provide the service you request.</p>
-  <p><strong>Legitimate interest</strong> — approximate location capture when you add a card, and the resulting fraud/geo-velocity checks, protect the integrity of the card catalog and other users, and are limited to the minimum precision needed for that purpose.</p>
+  <p><strong>Consent</strong> — publishing a card to the public catalog happens only when you turn on that card's visibility switch. You can withdraw this at any time by turning the switch off, with no effect on anything else.</p>
+  <p><strong>Legitimate interest</strong> — approximate location capture when you add a card and the resulting fraud/geo-velocity checks; automated screening of photos submitted to the public catalog; and processing of reports and blocks. These protect the integrity of the card catalog and the safety of other users, and are limited to the minimum needed for that purpose. We are also legally required to operate a notice-and-action mechanism for illegal content under the EU Digital Services Act.</p>
 
-  <h2>4. Who we share data with</h2>
-  <p>Your data is processed only by our infrastructure provider, <strong>Amazon Web Services (AWS)</strong>, in the following services: Cognito (authentication), DynamoDB (database), S3 (card images), Lambda/API Gateway (application logic). We do not sell, rent, or share your data with advertisers, data brokers, or any other third party.</p>
+  <h2>5. Who we share data with</h2>
+  <p>Your data is processed only by our infrastructure provider, <strong>Amazon Web Services (AWS)</strong>, in the following services: Cognito (authentication), DynamoDB (database), S3 (card images), Lambda/API Gateway (application logic), Rekognition (automated image screening, only for photos you submit to the public catalog), and SES (system email). AWS acts as our <strong>data processor</strong> and processes this data only on our instructions, under the AWS Data Processing Addendum that forms part of the AWS Service Terms and meets the requirements of Article 28 GDPR.</p>
+  <p>We do not sell, rent, or share your data with advertisers, data brokers, or any other third party.</p>
 
-  <h2>5. International data transfers</h2>
-  <p>All data is stored and processed in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region, within the European Union. We do not transfer your personal data outside the EU/EEA.</p>
+  <h2>6. International data transfers</h2>
+  <p>All data is stored and processed within the European Union, in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region. The single exception is the automated image screening described in Section 3: because AWS does not offer that service in Stockholm, photos you submit to the public catalog are screened in AWS's <strong>eu-central-1 (Frankfurt, Germany)</strong> region. Both regions are inside the EU — we do not transfer your personal data outside the EU/EEA. The screening call is a one-off check with no storage: the image is not retained by that service.</p>
 
-  <h2>6. How long we keep your data</h2>
-  <p>We retain your data for as long as your account remains active. If you request deletion, your account and all associated data are <strong>erased automatically</strong> — not through a manual, delayed process.</p>
+  <h2>7. How long we keep your data</h2>
+  <p>We retain your data for as long as your account remains active. We do not keep it "just in case" beyond that — there is no separate archive of former users.</p>
+  <table>
+    <thead><tr><th>Data</th><th>Retention</th></tr></thead>
+    <tbody>
+      <tr><td>Account, profile, cards, card images</td><td>Until you delete your account</td></tr>
+      <tr><td>Login timestamps</td><td>Until you delete your account</td></tr>
+      <tr><td>Approximate location captured on card add</td><td>Stored with that card record; deleted with it</td></tr>
+      <tr><td>Content reports and block records</td><td>Until you delete your account, or until you unblock the collector</td></tr>
+    </tbody>
+  </table>
+  <p>If you request deletion, your account and all associated data are <strong>erased automatically</strong> — not through a manual, delayed process. This includes uploaded card images (every stored version of them, not only the latest), reports you have submitted, reports submitted about your cards, and block records in both directions.</p>
+  <p><strong>Backups.</strong> Our database has point-in-time recovery enabled, which continuously retains a rolling <strong>35-day</strong> window so we can recover from an outage, a faulty deployment, or accidental data loss. This is a whole-database safety net, not a per-user archive: individual records cannot be removed from it, so for up to 35 days after deletion your data may still exist inside that recovery window. It is not accessible to the application, is never used to serve or restore an individual account, and rolls off automatically. This is the one place where erasure is not instantaneous, and we mention it rather than claim otherwise.</p>
 
-  <h2>7. Your rights</h2>
+  <h2>8. Your rights</h2>
   <p>Under GDPR, you have the right to:</p>
   <ul>
     <li><strong>Access</strong> the data we hold about you</li>
     <li><strong>Rectify</strong> inaccurate data (edit your name in Settings)</li>
     <li><strong>Erase</strong> your account and all associated data</li>
-    <li><strong>Object</strong> to processing based on our legitimate interest (fraud detection)</li>
-    <li><strong>Lodge a complaint</strong> with your national data protection authority</li>
+    <li><strong>Restrict</strong> processing of your data in certain circumstances (e.g. while a disputed correction is being verified)</li>
+    <li><strong>Object</strong> to processing based on our legitimate interest — the geo-velocity fraud check, the automated screening of photos you submit to the public catalog, and the handling of reports and blocks</li>
+    <li><strong>Withdraw consent</strong> at any time, where processing is based on consent. Publishing a card is the only thing we do on that basis: turning the card's visibility switch off withdraws it, immediately and with no effect on anything else. Withdrawal does not affect the lawfulness of processing carried out beforehand</li>
+    <li><strong>Data portability</strong> — receive the personal data you've provided us, in a structured, commonly-used, machine-readable format, and transmit it to another controller</li>
+    <li><strong>Lodge a complaint</strong> with your national data protection authority — as a Hungarian company, we are supervised by the <strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong>, naih.hu; you may also complain to the supervisory authority of your own EU/EEA country of residence</li>
   </ul>
   <div class="card">
     <strong>To delete your account:</strong> open Settings → Delete Account in the app. This immediately and automatically removes your profile, your collection, uploaded card images, scan/add history, and login logs from our systems, and deletes your Cognito login credentials. This action is irreversible.
   </div>
-  <p>For any other request, or if you cannot access the app, email <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
+  <p>For any other request — including access, rectification, restriction, objection, or a data portability export — or if you cannot access the app, email <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
 
-  <h2>8. Automated processing</h2>
-  <p>When you add a card, we run an automated check comparing the location and timing against the card's history (the "geo-velocity check"). This may flag the record if the pattern looks physically implausible. This check only produces an internal flag — it does not automatically suspend, restrict, or take any legal or similarly significant action against your account.</p>
+  <h2>9. Automated processing</h2>
+  <p>We run three automated checks. None of them produces a legal or similarly significant automated decision about you or your account, and none of them results in an automated account suspension — a human reviews anything that could lead to that.</p>
+  <ul>
+    <li><strong>Geo-velocity check.</strong> When you add a card, we compare the location and timing against the card's history. This may flag the record if the pattern looks physically implausible. It only produces an internal flag.</li>
+    <li><strong>Image screening.</strong> When you publish a card to the public catalog, its photo is automatically screened for objectionable imagery (see Section 3). A photo that fails is not published; the card stays in your private collection, and you can edit or replace the photo and try again.</li>
+    <li><strong>Report threshold.</strong> If several distinct users report the same publicly shared card, that card is automatically hidden from the public catalog pending human review. Only that one card is affected — your account and the rest of your collection are not.</li>
+  </ul>
+  <p>You can contest any of these outcomes by emailing <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
 
-  <h2>9. Children's privacy</h2>
-  <p>CardPrime can be used by collectors aged 13 and older. If you are under 18, please make sure you have a parent or guardian's permission to use the app. We do not knowingly collect data from children under 13.</p>
+  <h2>10. Children's privacy</h2>
+  <p>CardPrime is intended for collectors aged <strong>16 and older</strong>. We do not knowingly collect data from anyone under 16, and if we become aware that we have, we delete the account and its data. If you are under 18, please make sure a parent or guardian is aware you are using the app.</p>
 
-  <h2>10. Changes to this policy</h2>
+  <h2>11. How we protect your data</h2>
+  <ul>
+    <li>All communication between the app and our servers uses <strong>HTTPS/TLS</strong>. There is no unencrypted channel.</li>
+    <li>Card images are stored in a <strong>private</strong> storage bucket with all public access blocked, encrypted at rest (AES-256). The app never receives a permanent image link — each image is served through a temporary, signed URL that expires within the hour.</li>
+    <li>Your password is never seen or stored by CardPrime. Authentication is handled by AWS Cognito, which stores only a salted hash.</li>
+    <li>Every server-side component runs with <strong>least-privilege</strong> permissions, scoped to exactly the data it needs. Our card service, for example, has no permission to read the card database in bulk — it can only look up what a specific request is entitled to see.</li>
+  </ul>
+  <p>No system is perfectly secure, and we do not claim otherwise. If a breach occurs that is likely to result in a risk to your rights and freedoms, we will notify the NAIH within 72 hours and inform you as required by Articles 33–34 GDPR.</p>
+
+  <h2>12. Changes to this policy</h2>
   <p>If we materially change what data we collect or how we use it, we will update this policy and notify you in the app.</p>
 
-  <h2>11. Contact</h2>
-  <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+  <h2>13. Contact</h2>
+  <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>
+  Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+  <p>Supervisory authority: Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH), naih.hu</p>
 
   <div class="nav-links">
     <a href="../terms/">Terms of Service</a>
