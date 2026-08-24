@@ -204,3 +204,106 @@ code {
   border-radius: 4px;
   font-size: 13px;
 }
+
+/* --- Site menu: understated dropdown, top right of the content column.
+   <details>/<summary> so it opens on click (and on touch) with no JS;
+   nav.js only adds outside-click / Escape closing. --- */
+.site-nav {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.site-nav details {
+  position: relative;
+}
+
+.site-nav summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.site-nav summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-nav summary:hover,
+.site-nav details[open] summary {
+  color: #A78BFA;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.site-nav summary:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.6);
+  outline-offset: 2px;
+}
+
+/* Chevron, drawn in CSS so the menu carries no image dependency. */
+.site-nav summary::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.site-nav details[open] summary::after {
+  transform: rotate(-135deg);
+  margin-top: 2px;
+}
+
+.site-nav .menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 10;
+  min-width: 210px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  background: #0E0E12;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.site-nav .menu a {
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.65);
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.site-nav .menu a:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #A78BFA;
+}
+
+.site-nav .menu a[aria-current='page'] {
+  color: #A78BFA;
+}
+
+.site-nav .menu .sep {
+  height: 1px;
+  margin: 6px 12px;
+  background: rgba(255, 255, 255, 0.07);
+}
