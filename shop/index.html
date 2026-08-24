@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — CardPrime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
+<link rel="stylesheet" href="../style.css?v=5">
+<style>
+  /* Shop-only additions. Everything else comes from style.css. */
+  .products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 32px 0 8px;
+  }
+  .product {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 20px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .product-shot {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(8, 145, 178, 0.22));
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.32);
+  }
+  .product-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    color: #fff;
+  }
+  .product-desc {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 6px 0 14px;
+    flex: 1;
+  }
+  .product-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .product-unit {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .badge {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: 10px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    color: #34D399;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  @media (max-width: 720px) {
+    .products { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home-link" href="../">
+    <header class="site-header">
+      <img class="mark" src="../assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="../assets/wordmark.png?v=2" alt="CardPrime">
+    </header>
+  </a>
+
+  <h1>Sealed card packs</h1>
+  <p class="subtitle">Sealed sports card packs, shipped from Hungary. Every pack's contents are randomized &mdash; that is the point of a sealed pack. Buy a single pack, or a box of three or five at a lower price per pack.</p>
+
+  <p><strong>All prices are gross prices in Hungarian forint (HUF), inclusive of 27% VAT.</strong> The price shown is the price you pay. A flat delivery charge is added at checkout and shown before you confirm.</p>
+
+  <div class="products">
+
+    <div class="product">
+      <div class="product-shot">Product photo</div>
+      <div class="product-name">Single Pack</div>
+      <div class="product-desc">One sealed sports card pack.</div>
+      <div class="product-price">6 399 Ft</div>
+      <div class="product-unit">6 399 Ft per pack</div>
+    </div>
+
+    <div class="product">
+      <div class="product-shot">Product photo</div>
+      <span class="badge">Save 17%</span>
+      <div class="product-name">Box of 3</div>
+      <div class="product-desc">Three sealed sports card packs in a box.</div>
+      <div class="product-price">15 990 Ft</div>
+      <div class="product-unit">5 330 Ft per pack</div>
+    </div>
+
+    <div class="product">
+      <div class="product-shot">Product photo</div>
+      <span class="badge">Save 28%</span>
+      <div class="product-name">Box of 5</div>
+      <div class="product-desc">Five sealed sports card packs in a box.</div>
+      <div class="product-price">22 990 Ft</div>
+      <div class="product-unit">4 598 Ft per pack</div>
+    </div>
+
+  </div>
+
+  <h2>Delivery</h2>
+  <p>Orders are dispatched within <strong>2 business days</strong> of payment, and standard delivery takes a further <strong>2&ndash;5 business days</strong>. We ship to addresses and parcel lockers; the delivery charge and estimate are shown at checkout before you pay.</p>
+
+  <h2>Payment</h2>
+  <p>Payment is handled by <strong>Stripe</strong> on a secure page hosted by Stripe &mdash; we never see or store your card details. You will receive a payment receipt from Stripe and a VAT invoice by email.</p>
+
+  <h2>Returns and refunds</h2>
+  <p>As a consumer in the EU you may withdraw from your purchase within <strong>14 days of delivery</strong>, and damaged, defective, incorrect or undelivered orders are replaced or refunded in full. The full terms, including how a randomized pack is treated on return, are in our <a href="../refund-policy/">Refund &amp; Shipping Policy</a>.</p>
+
+  <h2>Seller</h2>
+  <div class="card">
+    <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>
+    2085 Pilisvörösvár, Semmelweis köz 1., Hungary<br>
+    Company registration number: 13-09-248460<br>
+    Tax number: 33096810-2-13<br>
+    Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+  </div>
+
+  <div class="nav-links">
+    <a href="../refund-policy/">Refund &amp; Shipping</a>
+    <a href="../terms/">Terms of Service</a>
+    <a href="../privacy/">Privacy Policy</a>
+    <a href="../support/">Support</a>
+  </div>
+
+  <footer>
+    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
+  </footer>
+</div>
+</body>
+</html>
