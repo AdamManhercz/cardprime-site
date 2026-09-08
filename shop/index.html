@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — CardPrime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
+<link rel="stylesheet" href="../style.css?v=6">
+<link rel="stylesheet" href="../shop.css?v=1">
+</head>
+<body>
+<div class="wrap">
+  <nav class="site-nav">
+    <details>
+      <summary>Menu</summary>
+      <div class="menu">
+        <a href="../">Home</a>
+        <div class="sep"></div>
+        <a href="../shop/" aria-current="page">Shop</a>
+        <a href="../checkout/">Cart &amp; checkout</a>
+        <a href="../refund-policy/">Refund &amp; Shipping</a>
+        <div class="sep"></div>
+        <a href="../privacy/">Privacy Policy</a>
+        <a href="../terms/">Terms of Service</a>
+        <a href="../support/">Support</a>
+      </div>
+    </details>
+  </nav>
+  <a class="home-link" href="../">
+    <header class="site-header">
+      <img class="mark" src="../assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="../assets/wordmark.png?v=2" alt="CardPrime">
+    </header>
+  </a>
+
+  <h1>Sealed card packs</h1>
+  <p class="subtitle">Sealed sports card packs, shipped from Hungary. Every pack's contents are randomized.</p>
+
+  <div class="cart-bar">
+    <a class="cart-pill" id="cart-pill" href="../checkout/" hidden></a>
+  </div>
+
+  <p><strong>All prices are gross prices in Hungarian forint (HUF), inclusive of 27% VAT.</strong> The price shown is the price you pay.</p>
+
+  <!-- Nothing about a product is written into this file. Names, descriptions, prices,
+       the per-pack unit price, the saving on the box and the sold-out state all come
+       from listPacks, so the page cannot quote a figure the checkout will not honour —
+       which is exactly what the previous static version could do after a price edit. -->
+  <div class="products" id="products" aria-live="polite">
+    <p class="state">Loading products&hellip;</p>
+  </div>
+
+  <h2>Delivery</h2>
+  <p>Orders are dispatched within <strong>2 business days</strong> of payment, and standard delivery takes a further <strong>2&ndash;5 business days</strong>. We ship to addresses and parcel lockers in the countries offered at checkout. Any delivery charge is shown at checkout before you pay.</p>
+
+  <h2>Payment</h2>
+  <p>Payment is handled by <strong>Stripe</strong> on a secure page hosted by Stripe &mdash; we never see or store your card details. You will receive a payment receipt from Stripe and a VAT invoice by email.</p>
+
+  <h2>Returns and refunds</h2>
+  <p>As a consumer in the EU you may withdraw from your purchase within <strong>14 days of delivery</strong>, and damaged, defective, incorrect or undelivered orders are replaced or refunded in full. The full terms, including how a randomized pack is treated on return, are in our <a href="../refund-policy/">Refund &amp; Shipping Policy</a>.</p>
+
+  <h2>Seller</h2>
+  <div class="card">
+    <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>
+    2085 Pilisvörösvár, Semmelweis köz 1., Hungary<br>
+    Company registration number: 13-09-248460<br>
+    Tax number: 33096810-2-13<br>
+    Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+  </div>
+
+  <div class="nav-links">
+    <a href="../checkout/">Cart &amp; checkout</a>
+    <a href="../refund-policy/">Refund &amp; Shipping</a>
+    <a href="../terms/">Terms of Service</a>
+    <a href="../privacy/">Privacy Policy</a>
+    <a href="../support/">Support</a>
+  </div>
+
+  <footer>
+    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
+  </footer>
+</div>
+<script src="../nav.js?v=1"></script>
+<script src="../shop.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var Shop = window.CardPrimeShop;
+  var grid = document.getElementById('products');
+
+  function setState(text) {
+    grid.innerHTML = '';
+    var p = document.createElement('p');
+    p.className = 'state';
+    p.textContent = text;
+    grid.appendChild(p);
+  }
+
+  function unitCents(pack) {
+    var count = parseInt(pack.packCount, 10) || 1;
+    return Math.round((Number(pack.priceCents) || 0) / count);
+  }
+
+  // The saving is derived from the dearest per-pack price on offer, never written down.
+  // The old page hardcoded "Save 22%" beside a hardcoded 19 990 Ft, so a price change in
+  // DynamoDB would have left the badge quietly claiming a discount that no longer held.
+  function savingPercent(pack, packs) {
+    var dearest = 0;
+    for (var i = 0; i < packs.length; i++) {
+      var u = unitCents(packs[i]);
+      if (u > dearest) dearest = u;
+    }
+    if (!dearest) return 0;
+    var pct = Math.round((1 - unitCents(pack) / dearest) * 100);
+    return pct >= 1 ? pct : 0;
+  }
+
+  function productCard(pack, packs) {
+    var el = document.createElement('div');
+    el.className = 'product';
+
+    var shot = document.createElement('div');
+    shot.className = 'product-shot';
+    // No product photography exists yet, and packs_handler presigns the seeded S3 key
+    // whether or not an object sits behind it — imageUrl is always truthy and the fetch
+    // is expected to fail. So the label is the default and the image only replaces it
+    // once it has actually loaded, the same fallback idea as the app's PackVisual.
+    var label = document.createElement('span');
+    label.textContent = 'Product photo';
+    shot.appendChild(label);
+    if (pack.imageUrl) {
+      var img = document.createElement('img');
+      img.alt = pack.name || 'CardPrime pack';
+      img.hidden = true;
+      img.addEventListener('load', function () {
+        img.hidden = false;
+        label.hidden = true;
+      });
+      img.src = pack.imageUrl;
+      shot.appendChild(img);
+    }
+    el.appendChild(shot);
+
+    var pct = savingPercent(pack, packs);
+    if (pct) {
+      var badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = 'Save ' + pct + '%';
+      el.appendChild(badge);
+    }
+
+    var name = document.createElement('div');
+    name.className = 'product-name';
+    name.textContent = pack.name || pack.packId;
+    el.appendChild(name);
+
+    var desc = document.createElement('div');
+    desc.className = 'product-desc';
+    desc.textContent = pack.description || '';
+    el.appendChild(desc);
+
+    var price = document.createElement('div');
+    price.className = 'product-price';
+    price.textContent = Shop.formatPrice(pack.priceCents, pack.currency);
+    el.appendChild(price);
+
+    var count = parseInt(pack.packCount, 10) || 1;
+    var unit = document.createElement('div');
+    unit.className = 'product-unit';
+    unit.textContent = Shop.formatPrice(unitCents(pack), pack.currency) + ' per pack'
+      + (count > 1 ? ' · ' + count + ' packs' : '');
+    el.appendChild(unit);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    // stock is derived server-side as pool // packCount, so 0 means the shared pool
+    // cannot cover even one of this SKU — not that this SKU has its own empty shelf.
+    if (parseInt(pack.stock, 10) === 0) {
+      btn.className = 'buy sold-out';
+      btn.textContent = 'Sold out';
+      btn.disabled = true;
+    } else {
+      btn.className = 'buy';
+      btn.textContent = 'Add to cart';
+      btn.addEventListener('click', function () {
+        // One line added and the page stays put — the same behaviour as the app's
+        // PackStoreScreen, so browsing is not interrupted by a jump to the cart.
+        Shop.addToCart(pack.packId, 1);
+        btn.textContent = 'Added ✓';
+        btn.classList.add('added');
+        window.setTimeout(function () {
+          btn.textContent = 'Add to cart';
+          btn.classList.remove('added');
+        }, 1400);
+      });
+    }
+    el.appendChild(btn);
+
+    return el;
+  }
+
+  Shop.listPacks().then(function (data) {
+    var packs = (data && data.packs) || [];
+    if (!packs.length) {
+      setState('No products are available right now. Please check back soon.');
+      return;
+    }
+    grid.innerHTML = '';
+    for (var i = 0; i < packs.length; i++) {
+      grid.appendChild(productCard(packs[i], packs));
+    }
+  }).catch(function (err) {
+    setState(err && err.message ? err.message : 'We could not load the products. Please try again.');
+  });
+})();
+</script>
+</body>
+</html>

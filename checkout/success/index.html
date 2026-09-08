@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order confirmed — CardPrime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="../../assets/appicon.png?v=3">
+<link rel="stylesheet" href="../../style.css?v=6">
+<link rel="stylesheet" href="../../shop.css?v=1">
+</head>
+<body>
+<div class="wrap">
+  <nav class="site-nav">
+    <details>
+      <summary>Menu</summary>
+      <div class="menu">
+        <a href="../../">Home</a>
+        <div class="sep"></div>
+        <a href="../../shop/">Shop</a>
+        <a href="../../checkout/">Cart &amp; checkout</a>
+        <a href="../../refund-policy/">Refund &amp; Shipping</a>
+        <div class="sep"></div>
+        <a href="../../privacy/">Privacy Policy</a>
+        <a href="../../terms/">Terms of Service</a>
+        <a href="../../support/">Support</a>
+      </div>
+    </details>
+  </nav>
+  <a class="home-link" href="../../">
+    <header class="site-header">
+      <img class="mark" src="../../assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="../../assets/wordmark.png?v=2" alt="CardPrime">
+    </header>
+  </a>
+
+  <h1 id="heading">Thank you for your order</h1>
+  <p class="subtitle" id="subtitle">Confirming your payment&hellip;</p>
+
+  <div class="card" id="order-card" hidden>
+    <p style="margin:0 0 6px;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:0.6px;text-transform:uppercase;">Order number</p>
+    <p class="order-number" id="order-number" style="margin:0;"></p>
+  </div>
+
+  <div class="notice info" id="notice" hidden></div>
+
+  <h2>What happens next</h2>
+  <p>You will receive a payment receipt from <strong>Stripe</strong> and a VAT invoice by email. Orders are dispatched within <strong>2 business days</strong>, and standard delivery takes a further <strong>2&ndash;5 business days</strong>.</p>
+  <p>If anything looks wrong, write to <a href="mailto:info@cardprime.io">info@cardprime.io</a> and quote your order number. Your rights on returns and refunds are in our <a href="../../refund-policy/">Refund &amp; Shipping Policy</a>.</p>
+
+  <div class="nav-links">
+    <a href="../../shop/">Shop</a>
+    <a href="../../refund-policy/">Refund &amp; Shipping</a>
+    <a href="../../terms/">Terms of Service</a>
+    <a href="../../privacy/">Privacy Policy</a>
+    <a href="../../support/">Support</a>
+  </div>
+
+  <footer>
+    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
+  </footer>
+</div>
+<script src="../../nav.js?v=1"></script>
+<script src="../../shop.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var Shop = window.CardPrimeShop;
+
+  var headingEl = document.getElementById('heading');
+  var subtitleEl = document.getElementById('subtitle');
+  var cardEl = document.getElementById('order-card');
+  var numberEl = document.getElementById('order-number');
+  var noticeEl = document.getElementById('notice');
+
+  function notice(kind, text) {
+    noticeEl.className = 'notice ' + kind;
+    noticeEl.textContent = text;
+    noticeEl.hidden = false;
+  }
+
+  function orderIdFromUrl() {
+    var match = /[?&]orderId=([^&#]+)/.exec(window.location.search);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+
+  var orderId = orderIdFromUrl();
+  if (!orderId) {
+    // Reachable by opening this page directly. Stripe always returns with the parameter,
+    // so the honest thing is to say nothing about an order we cannot name.
+    subtitleEl.textContent = 'We could not tell which order this is.';
+    notice('info', 'If you have just paid, your receipt from Stripe carries the details. Write to info@cardprime.io if anything is missing.');
+    return;
+  }
+
+  // Payment is confirmed by Stripe's webhook, which reaches our backend independently of
+  // this browser — so the order can still read pending_payment for a few seconds after the
+  // buyer lands here. Polling a handful of times covers the normal case; past that the page
+  // says plainly that the payment went through and the confirmation is still on its way,
+  // because the money has moved either way and an error message here would be wrong.
+  var ATTEMPTS = 8;
+  var INTERVAL_MS = 2000;
+  var attempt = 0;
+
+  function showNumber(data) {
+    if (data && data.orderNumber) {
+      numberEl.textContent = data.orderNumber;
+      cardEl.hidden = false;
+    }
+  }
+
+  function settle(data) {
+    showNumber(data);
+    var status = data && data.status;
+
+    if (status === 'paid') {
+      subtitleEl.textContent = 'Your payment went through and your order is on its way to being packed.';
+      notice('ok', 'Payment confirmed. A receipt and a VAT invoice are on their way to your email address.');
+      // The cart is cleared here and nowhere else — this is the one point at which the
+      // order is known to be paid for. Cancelling must leave the basket intact so the
+      // retry has something to go back to.
+      Shop.clearCart();
+      Shop.renderCartPill();
+      return true;
+    }
+
+    if (status === 'refunded') {
+      headingEl.textContent = 'This order has been refunded';
+      subtitleEl.textContent = 'The payment for this order was returned to your original payment method.';
+      notice('info', 'Refunds are processed by Stripe and usually appear within a few working days.');
+      return true;
+    }
+
+    if (status === 'expired') {
+      headingEl.textContent = 'This order was not completed';
+      subtitleEl.textContent = 'The payment was never finished, so the order was released and nothing was charged.';
+      notice('info', 'Nothing was taken from your card. You can put the packs back in your cart and try again.');
+      return true;
+    }
+
+    return false;
+  }
+
+  function poll() {
+    Shop.getOrderStatus(orderId).then(function (data) {
+      if (settle(data)) return;
+      attempt += 1;
+      if (attempt < ATTEMPTS) {
+        window.setTimeout(poll, INTERVAL_MS);
+        return;
+      }
+      subtitleEl.textContent = 'Your payment went through. The confirmation is taking a moment to reach us.';
+      notice('info', 'This is normal and needs nothing from you — your receipt from Stripe is the proof of payment, and the VAT invoice follows by email. If it has not arrived within an hour, write to info@cardprime.io.');
+    }).catch(function (err) {
+      if (err && err.status === 404) {
+        subtitleEl.textContent = 'We could not find that order.';
+        notice('info', 'Check the link from your receipt, or write to info@cardprime.io and we will look it up.');
+        return;
+      }
+      attempt += 1;
+      if (attempt < ATTEMPTS) {
+        window.setTimeout(poll, INTERVAL_MS);
+        return;
+      }
+      subtitleEl.textContent = 'We could not reach our order system just now.';
+      notice('info', 'Your payment is unaffected — Stripe has your receipt. Write to info@cardprime.io if you would like us to check the order.');
+    });
+  }
+
+  poll();
+})();
+</script>
+</body>
+</html>

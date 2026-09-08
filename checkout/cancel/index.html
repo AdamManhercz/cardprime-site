@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment cancelled — CardPrime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="../../assets/appicon.png?v=3">
+<link rel="stylesheet" href="../../style.css?v=6">
+<link rel="stylesheet" href="../../shop.css?v=1">
+</head>
+<body>
+<div class="wrap">
+  <nav class="site-nav">
+    <details>
+      <summary>Menu</summary>
+      <div class="menu">
+        <a href="../../">Home</a>
+        <div class="sep"></div>
+        <a href="../../shop/">Shop</a>
+        <a href="../../checkout/">Cart &amp; checkout</a>
+        <a href="../../refund-policy/">Refund &amp; Shipping</a>
+        <div class="sep"></div>
+        <a href="../../privacy/">Privacy Policy</a>
+        <a href="../../terms/">Terms of Service</a>
+        <a href="../../support/">Support</a>
+      </div>
+    </details>
+  </nav>
+  <a class="home-link" href="../../">
+    <header class="site-header">
+      <img class="mark" src="../../assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="../../assets/wordmark.png?v=2" alt="CardPrime">
+    </header>
+  </a>
+
+  <h1>Payment cancelled</h1>
+  <p class="subtitle">Nothing was charged. Your cart is exactly as you left it.</p>
+
+  <!-- The cart is deliberately untouched on this page. Cancelling is a decision to come
+       back, and a buyer who returns to an empty basket has to rebuild an order they had
+       already assembled — the same rule as the app's CheckoutScreen. -->
+  <div class="notice info" id="cart-note" hidden></div>
+
+  <a class="primary" id="back" href="../../checkout/" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">Back to your cart</a>
+
+  <h2>Why a payment can stop here</h2>
+  <p>You may simply have closed Stripe's payment page, or your bank may have declined the card. Neither takes any money, and neither reserves anything &mdash; the packs go back on the shelf shortly afterwards, so if you still want them it is worth finishing soon.</p>
+
+  <h2>If you think this is a mistake</h2>
+  <p>Write to <a href="mailto:info@cardprime.io">info@cardprime.io</a> and we will look into it. Our full terms are in the <a href="../../refund-policy/">Refund &amp; Shipping Policy</a>.</p>
+
+  <div class="nav-links">
+    <a href="../../shop/">Shop</a>
+    <a href="../../refund-policy/">Refund &amp; Shipping</a>
+    <a href="../../terms/">Terms of Service</a>
+    <a href="../../privacy/">Privacy Policy</a>
+    <a href="../../support/">Support</a>
+  </div>
+
+  <footer>
+    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
+  </footer>
+</div>
+<script src="../../nav.js?v=1"></script>
+<script src="../../shop.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var Shop = window.CardPrimeShop;
+  var note = document.getElementById('cart-note');
+  var back = document.getElementById('back');
+
+  var count = Shop.cartCount();
+  if (count) {
+    note.textContent = count === 1
+      ? 'Your cart still holds 1 item.'
+      : 'Your cart still holds ' + count + ' items.';
+    note.hidden = false;
+  } else {
+    // The cart can genuinely be empty here — another tab may have completed a different
+    // order and cleared it. Sending the buyer to an empty checkout page would be a dead end.
+    back.textContent = 'Back to the shop';
+    back.href = '../../shop/';
+  }
+})();
+</script>
+</body>
+</html>

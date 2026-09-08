@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart &amp; checkout — CardPrime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
+<link rel="stylesheet" href="../style.css?v=6">
+<link rel="stylesheet" href="../shop.css?v=1">
+</head>
+<body>
+<div class="wrap">
+  <nav class="site-nav">
+    <details>
+      <summary>Menu</summary>
+      <div class="menu">
+        <a href="../">Home</a>
+        <div class="sep"></div>
+        <a href="../shop/">Shop</a>
+        <a href="../checkout/" aria-current="page">Cart &amp; checkout</a>
+        <a href="../refund-policy/">Refund &amp; Shipping</a>
+        <div class="sep"></div>
+        <a href="../privacy/">Privacy Policy</a>
+        <a href="../terms/">Terms of Service</a>
+        <a href="../support/">Support</a>
+      </div>
+    </details>
+  </nav>
+  <a class="home-link" href="../">
+    <header class="site-header">
+      <img class="mark" src="../assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="../assets/wordmark.png?v=2" alt="CardPrime">
+    </header>
+  </a>
+
+  <h1>Your cart</h1>
+  <p class="subtitle">Check what you are buying, then tell us where it should go. Payment happens on a page hosted by Stripe.</p>
+
+  <div id="cart-state" class="state">Loading your cart&hellip;</div>
+
+  <!-- The cart holds packIds and quantities and no prices at all, so every figure on this
+       page is re-read from listPacks on load. A stored price is a price that can go stale,
+       and the first the buyer would hear of it is a different total at Stripe. -->
+  <div class="lines" id="lines" hidden></div>
+
+  <div class="totals" id="totals" hidden>
+    <span class="label">Total</span>
+    <span class="value" id="total-value"></span>
+  </div>
+  <p class="field" id="vat-note" hidden style="color:rgba(255,255,255,0.4);font-size:13px;">
+    Gross price, inclusive of VAT. Any delivery charge is shown before you pay.
+  </p>
+
+  <div id="checkout-form" hidden>
+    <h2>Contact</h2>
+    <div class="field">
+      <label for="customerName">Full name</label>
+      <input id="customerName" name="name" type="text" autocomplete="name" maxlength="120">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="customerEmail">Email</label>
+        <input id="customerEmail" name="email" type="email" autocomplete="email" maxlength="160">
+        <div class="hint">Your receipt and VAT invoice are sent here.</div>
+      </div>
+      <div class="field">
+        <label for="customerPhone">Phone (optional)</label>
+        <input id="customerPhone" name="tel" type="tel" autocomplete="tel" maxlength="40">
+        <div class="hint">Only used if the courier needs to reach you.</div>
+      </div>
+    </div>
+
+    <h2>Shipping address</h2>
+    <!-- One address only: it is the delivery address and the invoice address at the same
+         time, exactly as in the app. There is deliberately no second address line —
+         invoicing.py writes a single <cim> field. -->
+    <div class="field">
+      <label for="line1">Street address</label>
+      <input id="line1" name="address-line1" type="text" autocomplete="address-line1" maxlength="200">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="postalCode">Postcode</label>
+        <input id="postalCode" name="postal-code" type="text" autocomplete="postal-code" maxlength="20">
+      </div>
+      <div class="field">
+        <label for="city">City</label>
+        <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="100">
+      </div>
+    </div>
+    <div class="field">
+      <label for="country">Country</label>
+      <!-- These are exactly the codes backend/tax.py knows, grouped by the tax zone it
+           resolves them to. The server validates the code independently and refuses an
+           order for anything else, so this list is a convenience and never the authority. -->
+      <select id="country" name="country" autocomplete="country">
+        <option value="HU">Hungary</option>
+        <optgroup label="European Union">
+          <option value="AT">Austria</option>
+          <option value="BE">Belgium</option>
+          <option value="BG">Bulgaria</option>
+          <option value="HR">Croatia</option>
+          <option value="CY">Cyprus</option>
+          <option value="CZ">Czechia</option>
+          <option value="DK">Denmark</option>
+          <option value="EE">Estonia</option>
+          <option value="FI">Finland</option>
+          <option value="FR">France</option>
+          <option value="DE">Germany</option>
+          <option value="GR">Greece</option>
+          <option value="IE">Ireland</option>
+          <option value="IT">Italy</option>
+          <option value="LV">Latvia</option>
+          <option value="LT">Lithuania</option>
+          <option value="LU">Luxembourg</option>
+          <option value="MT">Malta</option>
+          <option value="NL">Netherlands</option>
+          <option value="PL">Poland</option>
+          <option value="PT">Portugal</option>
+          <option value="RO">Romania</option>
+          <option value="SK">Slovakia</option>
+          <option value="SI">Slovenia</option>
+          <option value="ES">Spain</option>
+          <option value="SE">Sweden</option>
+        </optgroup>
+        <optgroup label="Other countries">
+          <option value="AU">Australia</option>
+          <option value="CA">Canada</option>
+          <option value="JP">Japan</option>
+          <option value="NO">Norway</option>
+          <option value="RS">Serbia</option>
+          <option value="CH">Switzerland</option>
+          <option value="UA">Ukraine</option>
+          <option value="GB">United Kingdom</option>
+          <option value="US">United States</option>
+        </optgroup>
+      </select>
+      <div class="hint">Outside the EU, import duty and local tax are settled by you on delivery.</div>
+    </div>
+
+    <div class="notice error" id="error" hidden></div>
+
+    <button type="button" class="primary" id="pay">Continue to payment</button>
+    <p class="field" style="margin-top:14px;color:rgba(255,255,255,0.4);font-size:13px;">
+      By continuing you accept our <a href="../terms/">Terms of Service</a> and
+      <a href="../refund-policy/">Refund &amp; Shipping Policy</a>. Card details are entered on
+      Stripe's own page &mdash; we never see them.
+    </p>
+  </div>
+
+  <div class="nav-links">
+    <a href="../shop/">Shop</a>
+    <a href="../refund-policy/">Refund &amp; Shipping</a>
+    <a href="../terms/">Terms of Service</a>
+    <a href="../privacy/">Privacy Policy</a>
+    <a href="../support/">Support</a>
+  </div>
+
+  <footer>
+    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
+  </footer>
+</div>
+<script src="../nav.js?v=1"></script>
+<script src="../shop.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var Shop = window.CardPrimeShop;
+
+  var stateEl = document.getElementById('cart-state');
+  var linesEl = document.getElementById('lines');
+  var totalsEl = document.getElementById('totals');
+  var totalValueEl = document.getElementById('total-value');
+  var vatNoteEl = document.getElementById('vat-note');
+  var formEl = document.getElementById('checkout-form');
+  var errorEl = document.getElementById('error');
+  var payBtn = document.getElementById('pay');
+
+  var packsById = {};
+  var currency = 'huf';
+  var submitting = false;
+
+  function showError(message) {
+    errorEl.textContent = message;
+    errorEl.hidden = false;
+    errorEl.scrollIntoView({ block: 'nearest' });
+  }
+
+  function clearError() {
+    errorEl.hidden = true;
+    errorEl.textContent = '';
+  }
+
+  function setState(text) {
+    stateEl.textContent = text;
+    stateEl.hidden = false;
+  }
+
+  function stepper(line, pack) {
+    var wrap = document.createElement('div');
+    wrap.className = 'qty';
+
+    var minus = document.createElement('button');
+    minus.type = 'button';
+    minus.textContent = '−';
+    minus.setAttribute('aria-label', 'Remove one ' + (pack.name || line.packId));
+    minus.addEventListener('click', function () {
+      // At 1 this removes the line: the same behaviour as the app's CartRow, where the
+      // decrement control turns into a bin at quantity 1.
+      Shop.setQuantity(line.packId, line.quantity - 1);
+      render();
+    });
+
+    var value = document.createElement('span');
+    value.textContent = String(line.quantity);
+
+    var plus = document.createElement('button');
+    plus.type = 'button';
+    plus.textContent = '+';
+    plus.setAttribute('aria-label', 'Add one ' + (pack.name || line.packId));
+    plus.disabled = line.quantity >= Shop.MAX_LINE_QUANTITY;
+    plus.addEventListener('click', function () {
+      Shop.setQuantity(line.packId, line.quantity + 1);
+      render();
+    });
+
+    wrap.appendChild(minus);
+    wrap.appendChild(value);
+    wrap.appendChild(plus);
+    return wrap;
+  }
+
+  function lineRow(line, pack) {
+    var row = document.createElement('div');
+    row.className = 'line';
+
+    var main = document.createElement('div');
+    main.className = 'line-main';
+
+    var name = document.createElement('div');
+    name.className = 'line-name';
+    name.textContent = pack.name || line.packId;
+    main.appendChild(name);
+
+    var count = parseInt(pack.packCount, 10) || 1;
+    var unit = document.createElement('div');
+    unit.className = 'line-unit';
+    unit.textContent = Shop.formatPrice(pack.priceCents, pack.currency) + ' each'
+      + (count > 1 ? ' · ' + count + ' packs' : '');
+    main.appendChild(unit);
+
+    row.appendChild(main);
+    row.appendChild(stepper(line, pack));
+
+    var total = document.createElement('div');
+    total.className = 'line-total';
+    total.textContent = Shop.formatPrice((Number(pack.priceCents) || 0) * line.quantity, pack.currency);
+    row.appendChild(total);
+
+    return row;
+  }
+
+  function emptyCart() {
+    linesEl.hidden = true;
+    totalsEl.hidden = true;
+    vatNoteEl.hidden = true;
+    formEl.hidden = true;
+    stateEl.innerHTML = '';
+    stateEl.hidden = false;
+    stateEl.appendChild(document.createTextNode('Your cart is empty. '));
+    var link = document.createElement('a');
+    link.href = '../shop/';
+    link.textContent = 'Browse the packs';
+    stateEl.appendChild(link);
+    stateEl.appendChild(document.createTextNode('.'));
+  }
+
+  function render() {
+    clearError();
+    var lines = Shop.readCart();
+
+    // A SKU that has been withdrawn since it went into the cart is dropped here rather
+    // than carried to createOrder, which would 404 on something the buyer can no longer
+    // act on. Same rule as the app's syncPacks().
+    var kept = [];
+    for (var i = 0; i < lines.length; i++) {
+      if (packsById[lines[i].packId]) kept.push(lines[i]);
+      else Shop.removeFromCart(lines[i].packId);
+    }
+
+    if (!kept.length) {
+      emptyCart();
+      return;
+    }
+
+    stateEl.hidden = true;
+    linesEl.hidden = false;
+    totalsEl.hidden = false;
+    vatNoteEl.hidden = false;
+    formEl.hidden = false;
+
+    linesEl.innerHTML = '';
+    var total = 0;
+    for (var j = 0; j < kept.length; j++) {
+      var pack = packsById[kept[j].packId];
+      total += (Number(pack.priceCents) || 0) * kept[j].quantity;
+      currency = pack.currency || currency;
+      linesEl.appendChild(lineRow(kept[j], pack));
+    }
+    totalValueEl.textContent = Shop.formatPrice(total, currency);
+
+    // These three limits mirror packs_handler's constants. The server enforces them; saying
+    // so here means the buyer learns about it before filling in an address rather than
+    // after. MAX_ORDER_PACKS is measured in loose packs, so a box counts as its packCount.
+    var packs = Shop.packsInCart(kept, packsById);
+    if (packs > Shop.MAX_ORDER_PACKS) {
+      showError('An order can hold at most ' + Shop.MAX_ORDER_PACKS + ' packs. This cart holds '
+        + packs + ' — please reduce it, or place a second order.');
+    } else if (kept.length > Shop.MAX_ORDER_LINES) {
+      showError('An order can hold at most ' + Shop.MAX_ORDER_LINES + ' different products.');
+    }
+    payBtn.disabled = packs > Shop.MAX_ORDER_PACKS || kept.length > Shop.MAX_ORDER_LINES;
+  }
+
+  function value(id) {
+    return (document.getElementById(id).value || '').trim();
+  }
+
+  function submit() {
+    if (submitting) return;
+    clearError();
+
+    var lines = Shop.readCart();
+    if (!lines.length) { emptyCart(); return; }
+
+    var name = value('customerName');
+    var email = value('customerEmail');
+    var line1 = value('line1');
+    var city = value('city');
+    var postalCode = value('postalCode');
+
+    // The same six fields the server requires, checked here only so the buyer is told
+    // which one is missing instead of being handed the API's one-line message.
+    if (!name) { showError('Please enter the name the order should be invoiced to.'); return; }
+    if (email.indexOf('@') < 1 || email.lastIndexOf('@') === email.length - 1) {
+      showError('Please enter an email address we can send the invoice to.');
+      return;
+    }
+    if (!line1) { showError('Please enter a street address.'); return; }
+    if (!postalCode) { showError('Please enter a postcode.'); return; }
+    if (!city) { showError('Please enter a city.'); return; }
+
+    submitting = true;
+    payBtn.disabled = true;
+    payBtn.textContent = 'Preparing payment…';
+
+    Shop.createOrder({
+      items: lines,
+      customerName: name,
+      customerEmail: email,
+      customerPhone: value('customerPhone'),
+      shippingAddress: {
+        line1: line1,
+        city: city,
+        postalCode: postalCode,
+        country: document.getElementById('country').value
+      }
+    }).then(function (data) {
+      if (!data || !data.checkoutUrl) {
+        throw new Error('We could not open the payment page. Please try again.');
+      }
+      // The cart is deliberately NOT cleared here. Nothing has been paid yet, and a
+      // buyer who abandons Stripe's page must come back to a cart that still exists —
+      // the success page is the only place that clears it.
+      window.location.href = data.checkoutUrl;
+    }).catch(function (err) {
+      submitting = false;
+      payBtn.disabled = false;
+      payBtn.textContent = 'Continue to payment';
+      showError(err && err.message ? err.message : 'We could not start the payment. Please try again.');
+      // A 409 means the shared pack pool moved under us between loading the page and
+      // ordering, so the quantities on screen are no longer the ones on offer.
+      if (err && err.status === 409) load();
+    });
+  }
+
+  function load() {
+    Shop.listPacks().then(function (data) {
+      packsById = Shop.indexPacks((data && data.packs) || []);
+      render();
+    }).catch(function (err) {
+      setState(err && err.message ? err.message : 'We could not load your cart. Please try again.');
+    });
+  }
+
+  payBtn.addEventListener('click', submit);
+  load();
+})();
+</script>
+</body>
+</html>
