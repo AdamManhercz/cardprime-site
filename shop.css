@@ -314,6 +314,14 @@
   letter-spacing: 1px;
 }
 
+/* The two blocks that confirm a completed purchase are centred, and only these two.
+   Both ids exist on /checkout/success/ and nowhere else, so the rules cannot reach the
+   cart's own .notice, which sits under a form and has to stay left-aligned with it. */
+#order-card,
+#notice {
+  text-align: center;
+}
+
 @media (max-width: 720px) {
   .products { grid-template-columns: 1fr; }
   .row { grid-template-columns: 1fr; }
