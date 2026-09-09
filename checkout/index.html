@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
 <link rel="stylesheet" href="../style.css?v=6">
-<link rel="stylesheet" href="../shop.css?v=2">
+<link rel="stylesheet" href="../shop.css?v=3">
 </head>
 <body>
 <div class="wrap">
@@ -37,8 +37,8 @@
     </header>
   </a>
 
-  <h1>Your cart</h1>
-  <p class="subtitle">Check what you are buying, then tell us where it should go. Payment happens on a page hosted by Stripe.</p>
+  <h1 id="cart-heading">Your cart</h1>
+  <p class="subtitle" id="cart-subtitle">Check what you are buying, then tell us where it should go. Payment happens on a page hosted by Stripe.</p>
 
   <div id="cart-state" class="state">Loading your cart&hellip;</div>
 
@@ -144,11 +144,60 @@
 
     <div class="notice error" id="error" hidden></div>
 
-    <button type="button" class="primary" id="pay">Continue to payment</button>
+    <button type="button" class="primary" id="pay">Review your order</button>
     <p class="field" style="margin-top:14px;color:rgba(255,255,255,0.4);font-size:13px;">
-      By continuing you accept our <a href="../terms/">Terms of Service</a> and
-      <a href="../refund-policy/">Refund &amp; Shipping Policy</a>. Card details are entered on
-      Stripe's own page &mdash; we never see them.
+      You will see everything once more before you pay. Card details are entered on Stripe's
+      own page &mdash; we never see them.
+    </p>
+  </div>
+
+  <!-- The second state of this same page, not a second page: the cart, the form and this
+       block are three views of one thing, and the buyer's typed values never leave the DOM.
+
+       ⚠️ It renders BEFORE createOrder is called, and calls nothing itself. createOrder
+       reserves packs from the shared pool and writes the order row, so a summary placed
+       after it would leak a 30-minute reservation and a junk pending_payment row on every
+       "actually, let me fix the postcode". Form → review → createOrder, in that order. -->
+  <div id="review" hidden>
+    <h1>Check your order</h1>
+    <p class="subtitle">Nothing has been charged yet. Once this looks right, the next page is
+      Stripe's, where you enter your card.</p>
+
+    <div class="lines" id="review-lines"></div>
+
+    <div class="totals">
+      <span class="label">Total</span>
+      <span class="value" id="review-total"></span>
+    </div>
+    <p class="field" style="color:rgba(255,255,255,0.4);font-size:13px;">
+      Gross price, inclusive of VAT. Any delivery charge is shown before you pay.
+    </p>
+
+    <h2>Delivery and invoice</h2>
+    <!-- The address is shown back because we never see it again: no
+         shipping_address_collection is passed to Stripe, so this form is the only place it
+         is ever entered and this block is the only place it is ever read back. -->
+    <div class="card">
+      <dl class="summary">
+        <dt>Name</dt><dd id="review-name"></dd>
+        <dt>Email</dt><dd id="review-email"></dd>
+        <dt id="review-phone-label" hidden>Phone</dt><dd id="review-phone" hidden></dd>
+        <dt>Address</dt><dd id="review-address"></dd>
+      </dl>
+    </div>
+
+    <div class="notice info">
+      Dispatched within 2 business days, delivered in a further 2&ndash;5 business days.
+    </div>
+
+    <div class="notice error" id="review-error" hidden></div>
+
+    <button type="button" class="primary" id="confirm">Order with obligation to pay</button>
+    <button type="button" class="link-btn review-back" id="modify">Change something</button>
+
+    <p class="field" style="margin-top:20px;color:rgba(255,255,255,0.4);font-size:13px;">
+      By placing the order you accept our <a href="../terms/">Terms of Service</a> and
+      <a href="../refund-policy/">Refund &amp; Shipping Policy</a>.
     </p>
   </div>
 
@@ -171,6 +220,8 @@
   'use strict';
   var Shop = window.CardPrimeShop;
 
+  var headingEl = document.getElementById('cart-heading');
+  var subtitleEl = document.getElementById('cart-subtitle');
   var stateEl = document.getElementById('cart-state');
   var linesEl = document.getElementById('lines');
   var totalsEl = document.getElementById('totals');
@@ -180,9 +231,24 @@
   var errorEl = document.getElementById('error');
   var payBtn = document.getElementById('pay');
 
+  var reviewEl = document.getElementById('review');
+  var reviewLinesEl = document.getElementById('review-lines');
+  var reviewTotalEl = document.getElementById('review-total');
+  var reviewErrorEl = document.getElementById('review-error');
+  var confirmBtn = document.getElementById('confirm');
+  var modifyBtn = document.getElementById('modify');
+
   var packsById = {};
   var currency = 'huf';
   var submitting = false;
+  // What the buyer confirmed on the review screen, captured when they left the form. The
+  // confirm button sends exactly this and re-reads nothing: the summary they agreed to and
+  // the order we create must be the same object, not two reads of the same fields.
+  var draft = null;
+  // A message that belongs on the cart, raised while the review state was on screen. It is
+  // shown by the next render() rather than immediately, since render() clears the error
+  // element as its first act and would otherwise wipe it.
+  var pendingCartError = null;
 
   function showError(message) {
     errorEl.textContent = message;
@@ -195,9 +261,36 @@
     errorEl.textContent = '';
   }
 
+  function showReviewError(message) {
+    reviewErrorEl.textContent = message;
+    reviewErrorEl.hidden = false;
+    reviewErrorEl.scrollIntoView({ block: 'nearest' });
+  }
+
   function setState(text) {
     stateEl.textContent = text;
     stateEl.hidden = false;
+  }
+
+  // The two states are mutually exclusive: the cart and the form on one side, the summary
+  // on the other. Nothing is unmounted, so going back costs nothing and loses no typing.
+  function showCart() {
+    reviewEl.hidden = true;
+    reviewErrorEl.hidden = true;
+    headingEl.hidden = false;
+    subtitleEl.hidden = false;
+  }
+
+  function showReview() {
+    headingEl.hidden = true;
+    subtitleEl.hidden = true;
+    stateEl.hidden = true;
+    linesEl.hidden = true;
+    totalsEl.hidden = true;
+    vatNoteEl.hidden = true;
+    formEl.hidden = true;
+    reviewEl.hidden = false;
+    window.scrollTo(0, 0);
   }
 
   function stepper(line, pack) {
@@ -265,6 +358,7 @@
   }
 
   function emptyCart() {
+    showCart();
     linesEl.hidden = true;
     totalsEl.hidden = true;
     vatNoteEl.hidden = true;
@@ -297,6 +391,7 @@
       return;
     }
 
+    showCart();
     stateEl.hidden = true;
     linesEl.hidden = false;
     totalsEl.hidden = false;
@@ -317,20 +412,87 @@
     // so here means the buyer learns about it before filling in an address rather than
     // after. MAX_ORDER_PACKS is measured in loose packs, so a box counts as its packCount.
     var packs = Shop.packsInCart(kept, packsById);
+    var blocked = packs > Shop.MAX_ORDER_PACKS || kept.length > Shop.MAX_ORDER_LINES;
     if (packs > Shop.MAX_ORDER_PACKS) {
       showError('An order can hold at most ' + Shop.MAX_ORDER_PACKS + ' packs. This cart holds '
         + packs + ' — please reduce it, or place a second order.');
     } else if (kept.length > Shop.MAX_ORDER_LINES) {
       showError('An order can hold at most ' + Shop.MAX_ORDER_LINES + ' different products.');
+    } else if (pendingCartError) {
+      // Only when nothing else is wrong: a cap message names the reason the button is
+      // disabled, and that has to stay on screen.
+      showError(pendingCartError);
     }
-    payBtn.disabled = packs > Shop.MAX_ORDER_PACKS || kept.length > Shop.MAX_ORDER_LINES;
+    pendingCartError = null;
+    payBtn.disabled = blocked;
   }
 
   function value(id) {
     return (document.getElementById(id).value || '').trim();
   }
 
-  function submit() {
+  function reviewRow(line, pack) {
+    var row = document.createElement('div');
+    row.className = 'line';
+
+    var main = document.createElement('div');
+    main.className = 'line-main';
+
+    var name = document.createElement('div');
+    name.className = 'line-name';
+    name.textContent = pack.name || line.packId;
+    main.appendChild(name);
+
+    var count = parseInt(pack.packCount, 10) || 1;
+    var unit = document.createElement('div');
+    unit.className = 'line-unit';
+    // The quantity is text here, not a stepper. This state is read-only on purpose: a
+    // control that changes the order is the one thing a confirmation screen must not carry.
+    unit.textContent = line.quantity + ' × ' + Shop.formatPrice(pack.priceCents, pack.currency)
+      + (count > 1 ? ' · ' + count + ' packs each' : '');
+    main.appendChild(unit);
+
+    row.appendChild(main);
+
+    var total = document.createElement('div');
+    total.className = 'line-total';
+    total.textContent = Shop.formatPrice((Number(pack.priceCents) || 0) * line.quantity, pack.currency);
+    row.appendChild(total);
+
+    return row;
+  }
+
+  function renderReview() {
+    reviewLinesEl.innerHTML = '';
+    var total = 0;
+    for (var i = 0; i < draft.items.length; i++) {
+      var pack = packsById[draft.items[i].packId];
+      if (!pack) continue;
+      total += (Number(pack.priceCents) || 0) * draft.items[i].quantity;
+      reviewLinesEl.appendChild(reviewRow(draft.items[i], pack));
+    }
+    reviewTotalEl.textContent = Shop.formatPrice(total, currency);
+
+    document.getElementById('review-name').textContent = draft.customerName;
+    document.getElementById('review-email').textContent = draft.customerEmail;
+
+    var phoneLabel = document.getElementById('review-phone-label');
+    var phoneValue = document.getElementById('review-phone');
+    phoneValue.textContent = draft.customerPhone;
+    phoneLabel.hidden = !draft.customerPhone;
+    phoneValue.hidden = !draft.customerPhone;
+
+    // The country reads as its name, not its ISO code: "SK" is not something a buyer can
+    // check at a glance, and checking is the entire job of this screen.
+    document.getElementById('review-address').textContent =
+      draft.shippingAddress.line1 + ', ' + draft.shippingAddress.postalCode + ' '
+      + draft.shippingAddress.city + ', ' + draft.countryName;
+
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = 'Order with obligation to pay';
+  }
+
+  function review() {
     if (submitting) return;
     clearError();
 
@@ -344,7 +506,9 @@
     var postalCode = value('postalCode');
 
     // The same six fields the server requires, checked here only so the buyer is told
-    // which one is missing instead of being handed the API's one-line message.
+    // which one is missing instead of being handed the API's one-line message. They are
+    // still checked on the form, before the summary: a summary of an incomplete address
+    // is worse than useless.
     if (!name) { showError('Please enter the name the order should be invoiced to.'); return; }
     if (email.indexOf('@') < 1 || email.lastIndexOf('@') === email.length - 1) {
       showError('Please enter an email address we can send the invoice to.');
@@ -354,11 +518,8 @@
     if (!postalCode) { showError('Please enter a postcode.'); return; }
     if (!city) { showError('Please enter a city.'); return; }
 
-    submitting = true;
-    payBtn.disabled = true;
-    payBtn.textContent = 'Preparing payment…';
-
-    Shop.createOrder({
+    var countryEl = document.getElementById('country');
+    draft = {
       items: lines,
       customerName: name,
       customerEmail: email,
@@ -367,8 +528,32 @@
         line1: line1,
         city: city,
         postalCode: postalCode,
-        country: document.getElementById('country').value
-      }
+        country: countryEl.value
+      },
+      countryName: countryEl.options[countryEl.selectedIndex].textContent
+    };
+
+    renderReview();
+    showReview();
+  }
+
+  function confirm() {
+    if (submitting || !draft) return;
+    reviewErrorEl.hidden = true;
+
+    submitting = true;
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Preparing payment…';
+
+    // The first and only backend call of this page. Everything above it happened in the
+    // browser, which is why the buyer could go back and forth freely: from here on a pack
+    // is reserved out of the shared pool for 30 minutes.
+    Shop.createOrder({
+      items: draft.items,
+      customerName: draft.customerName,
+      customerEmail: draft.customerEmail,
+      customerPhone: draft.customerPhone,
+      shippingAddress: draft.shippingAddress
     }).then(function (data) {
       if (!data || !data.checkoutUrl) {
         throw new Error('We could not open the payment page. Please try again.');
@@ -379,12 +564,20 @@
       window.location.href = data.checkoutUrl;
     }).catch(function (err) {
       submitting = false;
-      payBtn.disabled = false;
-      payBtn.textContent = 'Continue to payment';
-      showError(err && err.message ? err.message : 'We could not start the payment. Please try again.');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Order with obligation to pay';
+      var message = err && err.message ? err.message
+        : 'We could not start the payment. Please try again.';
       // A 409 means the shared pack pool moved under us between loading the page and
-      // ordering, so the quantities on screen are no longer the ones on offer.
-      if (err && err.status === 409) load();
+      // ordering, so the quantities on screen are no longer the ones on offer. That is a
+      // fact about the cart, so the buyer goes back to it and is told there.
+      if (err && err.status === 409) {
+        pendingCartError = message;
+        showCart();
+        load();
+        return;
+      }
+      showReviewError(message);
     });
   }
 
@@ -397,7 +590,19 @@
     });
   }
 
-  payBtn.addEventListener('click', submit);
+  // Going back is a pure view switch plus a re-render: the form was never unmounted, so
+  // every field still holds what the buyer typed. render() is what restores the four
+  // containers showReview() hid, and it re-reads the cart, so a line removed in another
+  // tab cannot survive the round trip.
+  function modify() {
+    if (submitting) return;
+    showCart();
+    render();
+  }
+
+  payBtn.addEventListener('click', review);
+  confirmBtn.addEventListener('click', confirm);
+  modifyBtn.addEventListener('click', modify);
   load();
 })();
 </script>

@@ -314,6 +314,37 @@
   letter-spacing: 1px;
 }
 
+/* --- Review state (the checkout page's second state) ---------------------- */
+/* A label/value list rather than a paragraph, because the whole point of this block is
+   that the buyer can scan it for the one wrong character in a postcode. */
+.summary {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 10px 20px;
+  margin: 0;
+}
+.summary dt {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  padding-top: 2px;
+}
+.summary dd {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+/* The modify control sits under the confirm button, deliberately quieter than it: going
+   back is always available, but it is not the action the page is asking for. */
+.review-back {
+  display: block;
+  margin: 14px auto 0;
+}
+
 /* The two blocks that confirm a completed purchase are centred, and only these two.
    Both ids exist on /checkout/success/ and nowhere else, so the rules cannot reach the
    cart's own .notice, which sits under a form and has to stay left-aligned with it. */
@@ -327,4 +358,7 @@
   .row { grid-template-columns: 1fr; }
   .line { flex-wrap: wrap; }
   .line-total { min-width: 0; }
+  .summary { grid-template-columns: 1fr; gap: 0; }
+  .summary dt { padding-top: 12px; }
+  .summary dt:first-child { padding-top: 0; }
 }
