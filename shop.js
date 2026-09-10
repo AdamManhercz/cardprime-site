@@ -47,6 +47,72 @@ window.CardPrimeShop = (function () {
     return group(whole) + '.' + frac + ' ' + cur.toUpperCase();
   }
 
+  // --- Countries --------------------------------------------------------------
+  // A mirror of the app's src/data/countries.ts, field for field: the shipping country
+  // picker AND the phone dial-code picker are built from this one array, on both surfaces.
+  //
+  // It is written out here rather than fetched, because the country list is not a fact the
+  // server owns — it is a UI convenience. backend/tax.py carries its own copy and validates
+  // the ISO code on every order, so a country offered here that it does not know is a 400,
+  // never a wrongly taxed sale.
+  //
+  // ⚠️ Two lists is how the app got this wrong once already: the dial codes and the
+  // shipping destinations were unrelated arrays, and picking a prefix silently implied a
+  // country we might not ship to. Add a country in ONE place — countries.ts and here —
+  // and never split the dial code back out into a second table.
+  var COUNTRIES = [
+    { code: 'HU', name: 'Hungary', dialCode: '+36', zone: 'domestic' },
+
+    // EU member states — alphabetical.
+    { code: 'AT', name: 'Austria', dialCode: '+43', zone: 'eu' },
+    { code: 'BE', name: 'Belgium', dialCode: '+32', zone: 'eu' },
+    { code: 'BG', name: 'Bulgaria', dialCode: '+359', zone: 'eu' },
+    { code: 'HR', name: 'Croatia', dialCode: '+385', zone: 'eu' },
+    { code: 'CY', name: 'Cyprus', dialCode: '+357', zone: 'eu' },
+    { code: 'CZ', name: 'Czechia', dialCode: '+420', zone: 'eu' },
+    { code: 'DK', name: 'Denmark', dialCode: '+45', zone: 'eu' },
+    { code: 'EE', name: 'Estonia', dialCode: '+372', zone: 'eu' },
+    { code: 'FI', name: 'Finland', dialCode: '+358', zone: 'eu' },
+    { code: 'FR', name: 'France', dialCode: '+33', zone: 'eu' },
+    { code: 'DE', name: 'Germany', dialCode: '+49', zone: 'eu' },
+    { code: 'GR', name: 'Greece', dialCode: '+30', zone: 'eu' },
+    { code: 'IE', name: 'Ireland', dialCode: '+353', zone: 'eu' },
+    { code: 'IT', name: 'Italy', dialCode: '+39', zone: 'eu' },
+    { code: 'LV', name: 'Latvia', dialCode: '+371', zone: 'eu' },
+    { code: 'LT', name: 'Lithuania', dialCode: '+370', zone: 'eu' },
+    { code: 'LU', name: 'Luxembourg', dialCode: '+352', zone: 'eu' },
+    { code: 'MT', name: 'Malta', dialCode: '+356', zone: 'eu' },
+    { code: 'NL', name: 'Netherlands', dialCode: '+31', zone: 'eu' },
+    { code: 'PL', name: 'Poland', dialCode: '+48', zone: 'eu' },
+    { code: 'PT', name: 'Portugal', dialCode: '+351', zone: 'eu' },
+    { code: 'RO', name: 'Romania', dialCode: '+40', zone: 'eu' },
+    { code: 'SK', name: 'Slovakia', dialCode: '+421', zone: 'eu' },
+    { code: 'SI', name: 'Slovenia', dialCode: '+386', zone: 'eu' },
+    { code: 'ES', name: 'Spain', dialCode: '+34', zone: 'eu' },
+    { code: 'SE', name: 'Sweden', dialCode: '+46', zone: 'eu' },
+
+    // Outside the EU. Every one of these is an export: no EU VAT, and a customs declaration
+    // travels with the parcel. See the shipping policy before adding to this group.
+    { code: 'AU', name: 'Australia', dialCode: '+61', zone: 'export' },
+    { code: 'CA', name: 'Canada', dialCode: '+1', zone: 'export' },
+    { code: 'JP', name: 'Japan', dialCode: '+81', zone: 'export' },
+    { code: 'NO', name: 'Norway', dialCode: '+47', zone: 'export' },
+    { code: 'RS', name: 'Serbia', dialCode: '+381', zone: 'export' },
+    { code: 'CH', name: 'Switzerland', dialCode: '+41', zone: 'export' },
+    { code: 'UA', name: 'Ukraine', dialCode: '+380', zone: 'export' },
+    { code: 'GB', name: 'United Kingdom', dialCode: '+44', zone: 'export' },
+    { code: 'US', name: 'United States', dialCode: '+1', zone: 'export' }
+  ];
+
+  var DEFAULT_COUNTRY_CODE = 'HU';
+
+  function findCountry(code) {
+    for (var i = 0; i < COUNTRIES.length; i++) {
+      if (COUNTRIES[i].code === code) return COUNTRIES[i];
+    }
+    return null;
+  }
+
   // --- API --------------------------------------------------------------------
   // Errors carry the server's own message: packs_handler answers a rejected cart with a
   // sentence a shopper can act on ("Not enough packs in stock"), and swallowing it for a
@@ -207,6 +273,9 @@ window.CardPrimeShop = (function () {
 
   return {
     API: API,
+    COUNTRIES: COUNTRIES,
+    DEFAULT_COUNTRY_CODE: DEFAULT_COUNTRY_CODE,
+    findCountry: findCountry,
     MAX_ORDER_LINES: MAX_ORDER_LINES,
     MAX_LINE_QUANTITY: MAX_LINE_QUANTITY,
     MAX_ORDER_PACKS: MAX_ORDER_PACKS,

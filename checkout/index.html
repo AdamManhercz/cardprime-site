@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
 <link rel="stylesheet" href="../style.css?v=6">
-<link rel="stylesheet" href="../shop.css?v=3">
+<link rel="stylesheet" href="../shop.css?v=4">
 </head>
 <body>
 <div class="wrap">
@@ -57,21 +57,36 @@
 
   <div id="checkout-form" hidden>
     <h2>Contact</h2>
-    <div class="field">
-      <label for="customerName">Full name</label>
-      <input id="customerName" name="name" type="text" autocomplete="name" maxlength="120">
-    </div>
+    <!-- First and last name are two fields here, as they are in the app, and they are joined
+         back into one customerName at submit time — invoicing.py writes a single <vevo><nev>.
+         The split is for the buyer, not for the invoice: one "Full name" box leaves a foreign
+         buyer guessing which order we want them in. -->
     <div class="row">
       <div class="field">
-        <label for="customerEmail">Email</label>
-        <input id="customerEmail" name="email" type="email" autocomplete="email" maxlength="160">
-        <div class="hint">Your receipt and VAT invoice are sent here.</div>
+        <label for="firstName">First name</label>
+        <input id="firstName" name="given-name" type="text" autocomplete="given-name" maxlength="60">
       </div>
       <div class="field">
-        <label for="customerPhone">Phone (optional)</label>
-        <input id="customerPhone" name="tel" type="tel" autocomplete="tel" maxlength="40">
-        <div class="hint">Only used if the courier needs to reach you.</div>
+        <label for="lastName">Last name</label>
+        <input id="lastName" name="family-name" type="text" autocomplete="family-name" maxlength="60">
       </div>
+    </div>
+    <div class="field">
+      <label for="customerEmail">Email</label>
+      <input id="customerEmail" name="email" type="email" autocomplete="email" maxlength="160">
+      <div class="hint">Your receipt and VAT invoice are sent here.</div>
+    </div>
+    <!-- The dial code and the number are separate values on purpose, exactly as in the app:
+         a buyer living in Austria may well give a Hungarian number. They are composed only at
+         submit time. The prefix list is the shipping list — one table, so choosing a prefix
+         can never imply a country we do not ship to. -->
+    <div class="field">
+      <label for="customerPhone">Phone (optional)</label>
+      <div class="phone-pair">
+        <select id="phoneCountry" name="phone-country" aria-label="Phone country code"></select>
+        <input id="customerPhone" name="tel" type="tel" autocomplete="tel" maxlength="40">
+      </div>
+      <div class="hint">Only used if the courier needs to reach you.</div>
     </div>
 
     <h2>Shipping address</h2>
@@ -94,52 +109,14 @@
     </div>
     <div class="field">
       <label for="country">Country</label>
-      <!-- These are exactly the codes backend/tax.py knows, grouped by the tax zone it
-           resolves them to. The server validates the code independently and refuses an
-           order for anything else, so this list is a convenience and never the authority. -->
-      <select id="country" name="country" autocomplete="country">
-        <option value="HU">Hungary</option>
-        <optgroup label="European Union">
-          <option value="AT">Austria</option>
-          <option value="BE">Belgium</option>
-          <option value="BG">Bulgaria</option>
-          <option value="HR">Croatia</option>
-          <option value="CY">Cyprus</option>
-          <option value="CZ">Czechia</option>
-          <option value="DK">Denmark</option>
-          <option value="EE">Estonia</option>
-          <option value="FI">Finland</option>
-          <option value="FR">France</option>
-          <option value="DE">Germany</option>
-          <option value="GR">Greece</option>
-          <option value="IE">Ireland</option>
-          <option value="IT">Italy</option>
-          <option value="LV">Latvia</option>
-          <option value="LT">Lithuania</option>
-          <option value="LU">Luxembourg</option>
-          <option value="MT">Malta</option>
-          <option value="NL">Netherlands</option>
-          <option value="PL">Poland</option>
-          <option value="PT">Portugal</option>
-          <option value="RO">Romania</option>
-          <option value="SK">Slovakia</option>
-          <option value="SI">Slovenia</option>
-          <option value="ES">Spain</option>
-          <option value="SE">Sweden</option>
-        </optgroup>
-        <optgroup label="Other countries">
-          <option value="AU">Australia</option>
-          <option value="CA">Canada</option>
-          <option value="JP">Japan</option>
-          <option value="NO">Norway</option>
-          <option value="RS">Serbia</option>
-          <option value="CH">Switzerland</option>
-          <option value="UA">Ukraine</option>
-          <option value="GB">United Kingdom</option>
-          <option value="US">United States</option>
-        </optgroup>
-      </select>
-      <div class="hint">Outside the EU, import duty and local tax are settled by you on delivery.</div>
+      <!-- Filled from Shop.COUNTRIES, which mirrors the app's src/data/countries.ts — the same
+           table the phone prefix above is built from. It was written out here by hand until
+           the phone prefix arrived; two hand-written lists is precisely how the app's own
+           dial codes once drifted away from the countries it ships to.
+           The server validates the code independently (backend/tax.py) and refuses an order
+           for anything else, so this list is a convenience and never the authority. -->
+      <select id="country" name="country" autocomplete="country"></select>
+      <div class="hint" id="country-hint">Outside the EU, import duty and local tax are settled by you on delivery.</div>
     </div>
 
     <div class="notice error" id="error" hidden></div>
@@ -214,7 +191,7 @@
   </footer>
 </div>
 <script src="../nav.js?v=1"></script>
-<script src="../shop.js?v=1"></script>
+<script src="../shop.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -230,6 +207,9 @@
   var formEl = document.getElementById('checkout-form');
   var errorEl = document.getElementById('error');
   var payBtn = document.getElementById('pay');
+  var countryEl = document.getElementById('country');
+  var countryHintEl = document.getElementById('country-hint');
+  var phoneCountryEl = document.getElementById('phoneCountry');
 
   var reviewEl = document.getElementById('review');
   var reviewLinesEl = document.getElementById('review-lines');
@@ -431,6 +411,64 @@
     return (document.getElementById(id).value || '').trim();
   }
 
+  // Both selects are built from Shop.COUNTRIES — the mirror of the app's
+  // src/data/countries.ts — rather than written into the HTML. One table is the whole
+  // point: with two, a dial code can end up offering a country we do not ship to, which
+  // is exactly how the app's own lists drifted apart once.
+  function countryOption(code, label) {
+    var opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = label;
+    return opt;
+  }
+
+  function fillCountrySelects() {
+    var eu = document.createElement('optgroup');
+    eu.label = 'European Union';
+    var other = document.createElement('optgroup');
+    other.label = 'Other countries';
+
+    for (var i = 0; i < Shop.COUNTRIES.length; i++) {
+      var c = Shop.COUNTRIES[i];
+      // Hungary sits above both groups rather than inside one: it is a zone of its own and
+      // it is what most buyers want, so it should not need scrolling past twenty-six others.
+      if (c.zone === 'domestic') countryEl.appendChild(countryOption(c.code, c.name));
+      else if (c.zone === 'eu') eu.appendChild(countryOption(c.code, c.name));
+      else other.appendChild(countryOption(c.code, c.name));
+
+      // The prefix list is flat and labelled "HU +36", not by country name: the control is
+      // 108px wide and a native select shows the selected option's own text, so a full name
+      // would simply be clipped. The app solves the same problem with renderValue.
+      phoneCountryEl.appendChild(countryOption(c.code, c.code + ' ' + c.dialCode));
+    }
+
+    countryEl.appendChild(eu);
+    countryEl.appendChild(other);
+    countryEl.value = Shop.DEFAULT_COUNTRY_CODE;
+    phoneCountryEl.value = Shop.DEFAULT_COUNTRY_CODE;
+    updateCountryHint();
+  }
+
+  // The app shows a notice under its country picker when the zone is not domestic; this is
+  // the same three cases, written into the hint the field already has — no second element
+  // and no new CSS. A Hungarian buyer is told nothing by being told the price is in forint,
+  // so domestic shows nothing at all, exactly as in the app.
+  function updateCountryHint() {
+    var country = Shop.findCountry(countryEl.value);
+    var zone = country ? country.zone : 'domestic';
+    if (zone === 'export') {
+      countryHintEl.textContent = 'Orders outside the EU are charged in Hungarian forint (HUF)'
+        + ' — your bank converts at its own rate. Import duty or tax in your country is not'
+        + ' included and is paid on delivery.';
+    } else if (zone === 'eu') {
+      countryHintEl.textContent = 'Your order is charged in Hungarian forint (HUF) — your bank'
+        + ' converts at its own rate. Hungarian VAT is already included in the price shown.';
+    } else {
+      countryHintEl.textContent = '';
+    }
+    countryHintEl.hidden = zone === 'domestic';
+  }
+
   function reviewRow(line, pack) {
     var row = document.createElement('div');
     row.className = 'line';
@@ -499,7 +537,14 @@
     var lines = Shop.readCart();
     if (!lines.length) { emptyCart(); return; }
 
-    var name = value('customerName');
+    // First and last name are collected separately, the way the app does it, and composed
+    // into the single customerName the invoice needs. Számlázz.hu takes one <nev> string,
+    // so the split is a data-collection decision, not a schema one — and it is the buyer
+    // who benefits: "Kovács János" and "János Kovács" are the same person, and asking for
+    // one box invites both.
+    var firstName = value('firstName');
+    var lastName = value('lastName');
+    var name = firstName && lastName ? firstName + ' ' + lastName : '';
     var email = value('customerEmail');
     var line1 = value('line1');
     var city = value('city');
@@ -509,7 +554,8 @@
     // which one is missing instead of being handed the API's one-line message. They are
     // still checked on the form, before the summary: a summary of an incomplete address
     // is worse than useless.
-    if (!name) { showError('Please enter the name the order should be invoiced to.'); return; }
+    if (!firstName) { showError('Please enter your first name.'); return; }
+    if (!lastName) { showError('Please enter your last name.'); return; }
     if (email.indexOf('@') < 1 || email.lastIndexOf('@') === email.length - 1) {
       showError('Please enter an email address we can send the invoice to.');
       return;
@@ -518,19 +564,32 @@
     if (!postalCode) { showError('Please enter a postcode.'); return; }
     if (!city) { showError('Please enter a city.'); return; }
 
-    var countryEl = document.getElementById('country');
+    // The dial code and the digits are two separate controls and stay separate until this
+    // moment, exactly as in the app: the shipping country and the phone's country are not
+    // the same question — an Austrian buyer may well give a Hungarian number. An empty
+    // number must not become a bare "+36", so the prefix is only attached when there are
+    // digits to attach it to; the field is optional.
+    var digits = value('customerPhone');
+    var phoneCountry = Shop.findCountry(phoneCountryEl.value);
+    var phone = digits ? (phoneCountry ? phoneCountry.dialCode + ' ' : '') + digits : '';
+
+    // The country's display name comes from the shared table rather than from the selected
+    // <option>'s text, which is now scoped inside an <optgroup> and would be the wrong thing
+    // to read back. The ISO code is what the server rates the order from either way.
+    var country = Shop.findCountry(countryEl.value);
+
     draft = {
       items: lines,
       customerName: name,
       customerEmail: email,
-      customerPhone: value('customerPhone'),
+      customerPhone: phone,
       shippingAddress: {
         line1: line1,
         city: city,
         postalCode: postalCode,
         country: countryEl.value
       },
-      countryName: countryEl.options[countryEl.selectedIndex].textContent
+      countryName: country ? country.name : countryEl.value
     };
 
     renderReview();
@@ -603,6 +662,12 @@
   payBtn.addEventListener('click', review);
   confirmBtn.addEventListener('click', confirm);
   modifyBtn.addEventListener('click', modify);
+  countryEl.addEventListener('change', updateCountryHint);
+
+  // Both selects are empty in the HTML, so this has to run before the page is usable —
+  // ahead of load(), which only fetches the cart's product data and has nothing to do
+  // with the form.
+  fillCountrySelects();
   load();
 })();
 </script>

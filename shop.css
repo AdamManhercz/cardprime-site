@@ -276,6 +276,15 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+/* The dial code sits beside the number, not above it: +36 and the digits are one value
+   the buyer reads left to right, and stacking them makes the prefix look like a second
+   question. It cannot reuse .row — that is a strict 1fr 1fr for two equal fields, and
+   this is a narrow control paired with a wide one. */
+.phone-pair {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 8px;
+}
 
 /* --- States --------------------------------------------------------------- */
 .state {
@@ -356,6 +365,9 @@
 @media (max-width: 720px) {
   .products { grid-template-columns: 1fr; }
   .row { grid-template-columns: 1fr; }
+  /* .phone-pair deliberately does NOT collapse — the prefix belongs next to the number
+     on a phone too. It only narrows, so the digits keep most of the width. */
+  .phone-pair { grid-template-columns: 92px 1fr; }
   .line { flex-wrap: wrap; }
   .line-total { min-width: 0; }
   .summary { grid-template-columns: 1fr; gap: 0; }
