@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "7JLJPN9N3Q.com.cardprime.app",
+        "paths": ["/app/*"]
+      }
+    ]
+  }
+}
