@@ -211,6 +211,8 @@ code {
 .site-nav {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
   margin-bottom: 12px;
 }
 
@@ -306,4 +308,54 @@ code {
   height: 1px;
   margin: 6px 12px;
   background: rgba(255, 255, 255, 0.07);
+}
+
+/* --- Cart icon: beside the menu on every page, like the cart in the app's shop
+   header, so the cart needs no entry of its own in the menu. nav.js fills in the
+   count, which stays hidden while the cart is empty. --- */
+.site-nav .cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.site-nav .cart-link:hover,
+.site-nav .cart-link[aria-current='page'] {
+  color: #A78BFA;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.site-nav .cart-link:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.6);
+  outline-offset: 2px;
+}
+
+.site-nav .cart-count {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7C3AED, #0891B2);
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.site-nav .cart-count[hidden] {
+  display: none;
 }

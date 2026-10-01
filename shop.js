@@ -182,28 +182,9 @@ window.CardPrimeShop = (function () {
     return byId;
   }
 
-  // --- Cart pill --------------------------------------------------------------
-  // Rendered into #cart-pill wherever a page includes one. Hidden while the cart is
-  // empty: a permanently visible "0 items" link is noise on a two-product shop.
-  function renderCartPill() {
-    var pill = document.getElementById('cart-pill');
-    if (!pill) return;
-    var count = cartCount();
-    if (!count) {
-      pill.hidden = true;
-      return;
-    }
-    pill.hidden = false;
-    pill.textContent = count === 1 ? 'Cart · 1 item' : 'Cart · ' + count + ' items';
-  }
-
-  document.addEventListener('cardprime:cart-changed', renderCartPill);
-  // Another tab is the same cart: localStorage fires `storage` in every other document
-  // on this origin, so a cart emptied on the success page updates a shop tab left open.
-  window.addEventListener('storage', function (e) {
-    if (e.key === CART_KEY) renderCartPill();
-  });
-  document.addEventListener('DOMContentLoaded', renderCartPill);
+  // The cart count shown to the buyer is the icon beside the site menu, rendered by
+  // nav.js on every page. writeCart's `cardprime:cart-changed` event is what keeps it
+  // current, so nothing here has to know the icon exists.
 
   return {
     API: API,
@@ -222,7 +203,6 @@ window.CardPrimeShop = (function () {
     clearCart: clearCart,
     cartCount: cartCount,
     packsInCart: packsInCart,
-    indexPacks: indexPacks,
-    renderCartPill: renderCartPill
+    indexPacks: indexPacks
   };
 })();

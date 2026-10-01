@@ -138,27 +138,6 @@
   text-decoration: underline;
 }
 
-/* --- Cart pill ------------------------------------------------------------ */
-.cart-bar {
-  display: flex;
-  justify-content: flex-end;
-  min-height: 34px;
-  margin: 8px 0 0;
-}
-.cart-pill {
-  display: inline-block;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(124, 58, 237, 0.14);
-  border: 1px solid rgba(167, 139, 250, 0.35);
-  color: #C4B5FD;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.4px;
-  text-decoration: none;
-}
-.cart-pill:hover { background: rgba(124, 58, 237, 0.22); }
-
 /* --- Cart lines (checkout) ------------------------------------------------ */
 .lines { margin: 24px 0 8px; }
 .line {
