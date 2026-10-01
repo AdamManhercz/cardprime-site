@@ -1,69 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Minden útvonal abszolút: ezt az oldalt bármely kért URL-en kiszolgálják, a relatív href elromlana. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Page not found — CardPrime</title>
-<!-- Every path below is absolute on purpose. This page is served at whatever URL was
-     requested (/shop/, /refund-policy/, anything), so a relative href would resolve
-     against that path and break the stylesheet, the icons and the links. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<meta name="description" content="This address does not exist on cardprime.io.">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
-<link rel="stylesheet" href="/style.css?v=7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/scrollcraft.css?v=1">
+<link rel="stylesheet" href="/site.css?v=1">
 </head>
-<body>
-<div class="wrap">
-  <nav class="site-nav">
-    <details>
-      <summary>Menu</summary>
-      <div class="menu">
-        <a href="/">Home</a>
-        <div class="sep"></div>
-        <a href="/shop/">Shop</a>
-        <a href="/refund-policy/">Refund &amp; Shipping</a>
-        <div class="sep"></div>
-        <a href="/privacy/">Privacy Policy</a>
-        <a href="/terms/">Terms of Service</a>
-        <a href="/support/">Support</a>
-      </div>
-    </details>
-    <a class="cart-link" href="/checkout/" aria-label="Cart">
+<body class="doc-page soon-page">
+<div class="sc-grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="/" aria-label="CardPrime home">
+    <img src="/assets/CardPrime-AppIcon-rounded-512.png" alt="">
+    <img src="/assets/CardPrime-wordmark-transparent.png" alt="CardPrime">
+  </a>
+  <div class="bar__right">
+    <a class="btn" href="/app/">Get the app</a>
+    <a class="icon-btn" href="/checkout/" aria-label="Cart">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      <span class="cart-count" hidden></span>
     </a>
-  </nav>
-  <header class="site-header">
-    <a class="home-link" href="/">
-      <img class="mark" src="/assets/appicon.png?v=3" alt="CardPrime">
-      <img class="wordmark" src="/assets/wordmark.png?v=2" alt="CardPrime">
-    </a>
-  </header>
-
-  <h1>Page not found</h1>
-  <p class="subtitle">This address does not exist on cardprime.io. It may have been moved, or the link that brought you here may be out of date.</p>
-
-  <div class="tiles">
-    <a class="tile" href="/privacy/">
-      <div class="tile-title">Privacy Policy</div>
-      <div class="tile-desc">What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</div>
-    </a>
-    <a class="tile" href="/terms/">
-      <div class="tile-title">Terms of Service</div>
-      <div class="tile-desc">Account rules, prohibited activities, and liability terms that apply when you use CardPrime</div>
-    </a>
-    <a class="tile" href="/support/">
-      <div class="tile-title">Support</div>
-      <div class="tile-desc">Answers to common questions, plus how to reach us for anything else</div>
-    </a>
+    <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="burger" aria-hidden="true"></span></button>
   </div>
+</header>
 
-  <footer>
-    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a>
-  </footer>
-</div>
-<script src="/nav.js?v=2"></script>
+<nav class="menu" id="site-menu" aria-label="Site">
+  <div class="menu__grid">
+    <div class="menu__group">
+      <span class="menu__head">CardPrime</span>
+      <div class="menu__big">
+        <a href="/">Home</a>
+        <a href="/shop/">Shop</a>
+        <a href="/app/">Get the app</a>
+        <a href="/refund-policy/">Refund &amp; Shipping</a>
+      </div>
+    </div>
+    <div class="menu__group">
+      <span class="menu__head">Legal &amp; help</span>
+      <ul class="menu__list">
+        <li><a href="/privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a></li>
+        <li><a href="/terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a></li>
+        <li><a href="/support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="menu__foot">&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+</nav>
+
+<main>
+  <section class="soon soon--404">
+    <div class="soon__in">
+      <div class="soon__text">
+        <span class="stripe" aria-hidden="true"></span>
+        <span class="big-no" aria-hidden="true">4<span>0</span>4</span>
+        <h1 class="sc-display sc-display--lg">Page not found</h1>
+        <p class="sc-lede">This address does not exist on cardprime.io. It may have been moved, or the link that brought you here may be out of date.</p>
+        <div class="soon__actions"><a class="btn" href="/">Back to home</a></div>
+        <nav class="related" aria-label="Pages">
+          <a href="/privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a>
+          <a href="/terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a>
+          <a href="/support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
+  <nav aria-label="Footer">
+    <a href="/shop/">Shop</a><a href="/refund-policy/">Refund &amp; Shipping</a><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a><a href="/support/">Support</a>
+  </nav>
+</footer>
+
+<script src="/menu.js?v=1"></script>
 </body>
 </html>

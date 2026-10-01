@@ -1,65 +1,600 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CardPrime</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CardPrime · Collector-grade cards</title>
+<meta name="description" content="Collector-grade sports cards in every parallel, and an app to catalogue the collection you already have.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="assets/appicon.png?v=3">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="scrollcraft.css?v=1">
+<link rel="stylesheet" href="site.css?v=1">
+<style>
+  /* tokenek, sáv, menü, lábléc: site.css. Itt csak a főoldal saját anyaga. */
+  :root {
+    --tex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='500'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.03' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.2 -1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+  .dock button:focus-visible, .sc-lede a:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 3px; }
+  .sc-lede a { color: var(--sc-ink); text-decoration-color: var(--sc-accent); text-underline-offset: 3px; }
+  .hero__eyebrow { display: block; margin-bottom: var(--sc-5); color: var(--sc-ink-soft); }
+
+  /* ---------- slab (CSS-drawn graded case, placeholder card art) ---------- */
+  .slab { --w: 280px; position: relative; width: var(--w); aspect-ratio: 0.6; border-radius: calc(var(--w) * .05);
+          padding: calc(var(--w) * .06) calc(var(--w) * .065) calc(var(--w) * .07); display: flex; flex-direction: column; gap: calc(var(--w) * .045); container-type: inline-size;
+          background: linear-gradient(158deg, rgba(255,255,255,.20), rgba(255,255,255,.05) 38%, rgba(255,255,255,.03) 62%, rgba(255,255,255,.12));
+          border: 1px solid rgba(255,255,255,.26);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), inset 0 1px 0 rgba(255,255,255,.35), 0 50px 90px -30px rgba(0,0,0,.9); }
+  .slab--land { aspect-ratio: 1.55; padding: calc(var(--w) * .045) calc(var(--w) * .05); gap: calc(var(--w) * .03); }
+  .slab__label { flex: 0 0 13%; border-radius: 3px; background: #EEEEF1; color: #0B0B0E; display: flex;
+                 align-items: center; justify-content: space-between; padding: 0 6%;
+                 font: 700 4.4cqi/1 var(--sc-font-display); letter-spacing: .12em; text-transform: uppercase; }
+  .slab--land .slab__label { flex-basis: 15%; font-size: 2.8cqi; }
+  .slab__label span { font-weight: 500; letter-spacing: .08em; opacity: .7; }
+  .slab__card { position: relative; flex: 1; border-radius: 4px; overflow: hidden; background: var(--frame); }
+  .face { position: absolute; inset: 5.5%; border-radius: 2px; overflow: hidden;
+          background: var(--tex) center/cover, var(--face); }
+  .face__mark { position: absolute; left: 50%; top: 40%; width: 36%; transform: translate(-50%,-50%);
+                opacity: .22; filter: grayscale(1) brightness(2); border-radius: 18%; }
+  .face__plate { position: absolute; inset: auto 0 0 0; padding: 7% 8%; background: var(--plate, rgba(4,6,8,.62));
+                 color: var(--plate-ink, #F5F5F7); font: 700 7.5cqi/1 var(--sc-font-display); letter-spacing: .02em; text-transform: uppercase; }
+  .slab--land .face__plate { font-size: 4.4cqi; padding: 4% 5%; }
+  .face__plate small { display: block; margin-top: 5px; font: 500 4.4cqi/1 var(--sc-font-text); letter-spacing: .14em; opacity: .7; }
+  .slab--land .face__plate small { font-size: 2.6cqi; }
+
+  /* finish: base (green chrome) */
+  .f-base   { --frame: linear-gradient(145deg,#0a2a22 0%,#1d6b52 28%,#9BEFD0 47%,#1d6b52 60%,#082019 100%);
+              --face: radial-gradient(120% 80% at 70% 18%, #12657d, #072a36 58%, #03141b); }
+  /* finish: refractor (prismatic) */
+  .f-refr   { --frame: linear-gradient(145deg,#2c2f37,#d7dbe4 44%,#6b707c 56%,#24262c);
+              --face: radial-gradient(120% 80% at 70% 18%, #12657d, #072a36 58%, #03141b); }
+  .f-refr .face::after, .f-refr .slab__card::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+              background:
+                repeating-linear-gradient(115deg, rgba(255,255,255,.0) 0 7px, rgba(255,255,255,.10) 7px 8px),
+                conic-gradient(from 200deg at 40% 60%, #ff6ba8, #ffd36b, #7dffb2, #6bd5ff, #b88bff, #ff6ba8);
+              mix-blend-mode: overlay; opacity: .85; }
+  /* finish: numbered gold */
+  .f-gold   { --frame: linear-gradient(145deg,#4a320a 0%,#c9952e 28%,#FFF0B3 47%,#c9952e 60%,#3d2908 100%);
+              --face: radial-gradient(120% 80% at 70% 18%, #5b4413, #231806 60%, #0e0903); }
+  .face__num { position: absolute; right: 7%; top: 6%; padding: 4% 6%; border-radius: 3px;
+               background: linear-gradient(145deg,#c9952e,#FFF0B3 50%,#a87b1e); color: #2a1c04;
+               font: 700 6.5cqi/1 var(--sc-font-display); letter-spacing: .04em; }
+  /* finish: autograph (white) */
+  .f-auto   { --frame: linear-gradient(145deg,#b9bdc6,#ffffff 45%,#c9ccd3);
+              --face: radial-gradient(120% 80% at 70% 18%, #ffffff, #e3e5ea 60%, #c8ccd4);
+              --plate: rgba(11,11,14,.86); }
+  .f-auto .face__mark { opacity: .12; filter: grayscale(1) brightness(.4); }
+  .face__sig { position: absolute; left: 8%; right: 8%; top: 46%; width: 84%; height: auto; overflow: visible; }
+  .face__sig { fill: none; stroke: #1E3A9E; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round;
+                    stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--sig, 1)); }
+  /* illustrated series */
+  .f-illu   { --frame: linear-gradient(145deg,#1a1033,#3b2a7a 40%,#7C3AED 52%,#1a1033);
+              --face: radial-gradient(60% 45% at 30% 30%, #f2a65a 0 30%, transparent 31%),
+                      radial-gradient(70% 55% at 65% 70%, #d9485f 0 35%, transparent 36%),
+                      radial-gradient(90% 70% at 50% 50%, #2b1d5c, #120b26); }
+  .f-illu .face::before { content: ""; position: absolute; inset: 0;
+              background: radial-gradient(circle, rgba(255,255,255,.22) 1.2px, transparent 1.6px) 0 0/9px 9px; mix-blend-mode: overlay; }
+  /* inserts */
+  .f-mind   { --frame: linear-gradient(145deg,#06262d,#0891B2 42%,#7FE7F5 50%,#0b3b45);
+              --face: linear-gradient(100deg, transparent 0 52%, rgba(6,182,212,.25) 52% 53%, transparent 53%),
+                      radial-gradient(90% 120% at 80% 50%, #0e4c5a, #04171c 70%); }
+  .f-game   { --frame: linear-gradient(145deg,#2a0f12,#b8323d 40%,#ff9aa2 50%,#3a1216);
+              --face: repeating-linear-gradient(-30deg, rgba(255,255,255,.05) 0 14px, transparent 14px 28px),
+                      radial-gradient(120% 80% at 50% 20%, #5c1a22, #1b080b 70%); }
+
+  /* wet floor reflection (deck) */
+  .reflect { -webkit-box-reflect: below 10px linear-gradient(transparent 62%, rgba(255,255,255,.22)); }
+
+  /* ---------- act 1: hero ---------- */
+  .hero { overflow: hidden;
+          background:
+            radial-gradient(55% 45% at 82% 100%, rgba(6,182,212,.34), transparent 70%),
+            radial-gradient(40% 30% at 70% 40%, rgba(124,58,237,.10), transparent 70%),
+            var(--sc-canvas); }
+  .hero__floor { position: absolute; inset: 64% -10% -10% -10%;
+                 background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(6,182,212,.07) 60%, rgba(6,182,212,.12));
+                 border-top: 1px solid rgba(255,255,255,.07); }
+  .hero__planes > div { position: absolute; will-change: transform; }
+  .p-back  { right: 34%; top: 24%; }
+  .p-back .slab { --w: clamp(150px, 13vw, 210px); transform: rotate(-9deg); filter: blur(1.6px) brightness(.62); }
+  .p-main  { right: 11%; top: 15%; }
+  .p-main .slab { --w: clamp(240px, 21vw, 330px); transform: rotate(6deg); }
+  .p-side  { right: -2%; top: 30%; }
+  .p-side .slab { --w: clamp(170px, 14vw, 230px); transform: rotate(14deg); filter: blur(.8px) brightness(.75); }
+  .p-fore  { right: 4%; top: 72%; }
+  .p-fore .slab { --w: clamp(340px, 34vw, 520px); transform: rotate(-12deg); filter: blur(9px) brightness(.8); }
+  .p-mist  { inset: 54% -10% auto -10%; height: 40%;
+             background: radial-gradient(50% 50% at 70% 50%, rgba(6,182,212,.16), transparent 70%); filter: blur(20px); }
+  .hero .sc-copy { z-index: 3; }
+  .hero h1 { white-space: nowrap; font-size: clamp(40px, 7.2vw, 128px); }
+  .hero .sc-lede { max-width: 30ch; margin-top: var(--sc-5); }
+  .hero__beat { position: absolute; left: clamp(16px, 6vw, 96px); bottom: 14%; z-index: 3; max-width: 22ch; }
+
+  /* ---------- act 2: quiet statement ---------- */
+  .quiet { min-height: 90vh; display: grid; align-content: center; }
+  .quiet .sc-wrap { display: grid; gap: var(--sc-6); }
+  .quiet p { max-width: 36ch; }
+
+  /* ---------- act 3: PEAK ---------- */
+  .peak { overflow: hidden; display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center;
+          padding: 0 clamp(16px, 6vw, 96px); }
+  .peak__glow { position: absolute; inset: 0; pointer-events: none; transition: opacity .6s; }
+  .peak__glow--teal { background: radial-gradient(38% 50% at 66% 56%, rgba(6,182,212,.22), transparent 70%); }
+  .peak__glow--gold { background: radial-gradient(36% 48% at 66% 54%, rgba(233,196,106,.30), transparent 70%); opacity: 0; }
+  .peak__glow--white{ background: radial-gradient(34% 46% at 66% 54%, rgba(245,245,247,.16), transparent 70%); opacity: 0; }
+  .peak__floor { position: absolute; inset: 78% 0 0 0; background: linear-gradient(180deg, rgba(255,255,255,.03), transparent); border-top: 1px solid rgba(255,255,255,.06); }
+  .peak__copy { position: relative; z-index: 2; height: 46vh; }
+  .peak__copy .sc-label { margin-bottom: var(--sc-5); display: block; color: var(--sc-ink-soft); }
+  .entry { position: absolute; top: 2.4em; left: 0; right: 0; }
+  .entry__no { font: 600 var(--sc-t-sm)/1 var(--sc-font-text); letter-spacing: .14em; color: var(--sc-accent); text-transform: uppercase; }
+  .entry h2 { margin: var(--sc-3) 0 var(--sc-4); }
+  .entry p { max-width: 30ch; }
+  .peak__card { position: relative; justify-self: center; z-index: 1; }
+  .peak__card { --w: clamp(260px, 25vw, 380px); }
+  .peak__card .slab { --w: inherit; }
+  .layers { position: relative; }
+  .layers > .slab + .slab { position: absolute; inset: 0; }
+  .layers > .slab[data-k] { clip-path: polygon(0 0, calc(var(--s, 0) * 150%) 0, calc(var(--s, 0) * 150% - 50%) 100%, 0 100%); }
+  .band-clip { position: absolute; inset: 0; overflow: hidden; border-radius: calc(var(--w, 300px) * .05); pointer-events: none; z-index: 5; }
+  .band { position: absolute; inset: -12% -60%; pointer-events: none; z-index: 5; mix-blend-mode: screen;
+          background: linear-gradient(105deg, transparent 42%, rgba(255,255,255,.0) 44%, rgba(255,255,255,.55) 49.5%, rgba(255,250,235,.9) 50%, rgba(255,255,255,.55) 50.5%, transparent 56%);
+          transform: translateX(calc((var(--b, -1) * 62%))); opacity: var(--bo, 0); }
+  .peak__static { display: none; }
+
+  /* ---------- act 4: pan rail ---------- */
+  .range { display: flex; align-items: center; overflow: hidden;
+           background: radial-gradient(60% 50% at 50% 100%, rgba(6,182,212,.10), transparent 70%); }
+  .rail { display: flex; align-items: center; gap: clamp(48px, 7vw, 120px); padding: 0 clamp(16px, 6vw, 96px); width: max-content; }
+  .rail__lead { width: min(420px, 78vw); flex: none; }
+  .item { flex: none; display: grid; gap: var(--sc-5); justify-items: start; }
+  .item .slab { --w: clamp(220px, 20vw, 300px); }
+  .item .slab--land { --w: clamp(320px, 34vw, 520px); }
+  .item__meta { max-width: 32ch; }
+  .item__meta .entry__no { display: block; margin-bottom: var(--sc-2); }
+  .item__meta h3 { font: 600 var(--sc-t-xl)/1.1 var(--sc-font-display); margin: 0 0 var(--sc-2); }
+  .pair { display: flex; align-items: flex-end; gap: clamp(20px, 3vw, 40px); }
+  .rail__end { width: min(360px, 74vw); flex: none; }
+
+  /* ---------- act 5: front / back ---------- */
+  .fb .sc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .fb__copy { display: grid; gap: var(--sc-5); max-width: 40ch; }
+  .fb__fig { position: relative; justify-self: center; margin: 0; }
+  .fb__fig .slab { --w: clamp(250px, 24vw, 340px); }
+  .fb__back { position: absolute; inset: 0; }
+  .back { position: absolute; inset: 5.5%; border-radius: 2px; background: #0c1b22; color: #F5F5F7; padding: 9% 9%;
+          display: flex; flex-direction: column; gap: 6%; font-family: var(--sc-font-text); }
+  .back__head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,.18); padding-bottom: 5%; }
+  .back__head b { font: 700 7cqi/1 var(--sc-font-display); text-transform: uppercase; }
+  .back__head span { font-size: 4cqi; opacity: .7; }
+  .back table { width: 100%; border-collapse: collapse; font-size: 4.4cqi; }
+  .back td { padding: 2.6% 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .back td:last-child { text-align: right; opacity: .6; }
+  .back__bio { display: grid; gap: 5px; }
+  .back__bio i { display: block; height: 5px; border-radius: 3px; background: rgba(255,255,255,.14); }
+  .back__club { margin-top: auto; display: flex; align-items: center; gap: 6%; font-size: 4cqi; letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+  .back__club i { width: 16cqi; height: 16cqi; border-radius: 50%; border: 1px dashed rgba(255,255,255,.4); flex: none; }
+
+  /* ---------- act 6: the app ---------- */
+  .app .sc-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .app__steps { list-style: none; margin: 0; padding: 0; display: grid; }
+  .app__steps li { display: grid; grid-template-columns: 9rem 1fr; gap: var(--sc-5); padding: var(--sc-6) 0; border-top: 1px solid var(--line); }
+  .app__steps li:last-child { border-bottom: 1px solid var(--line); }
+  .app__steps b { font: 600 var(--sc-t-md)/1.3 var(--sc-font-display); }
+
+  /* ---------- act 7: close ---------- */
+  .close { display: grid; grid-template-rows: 1fr auto; overflow: hidden;
+           background: radial-gradient(50% 40% at 50% 100%, rgba(6,182,212,.18), transparent 70%),
+                       radial-gradient(30% 30% at 50% 45%, rgba(233,196,106,.10), transparent 70%); }
+  .close__inner { align-self: center; justify-self: center; text-align: center; display: grid; justify-items: center; gap: var(--sc-6); padding: 0 16px; }
+  .close__ticks { display: flex; gap: 8px; }
+  .close__ticks i { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(167,139,250,.6); background: var(--sc-accent);
+                    display: grid; place-items: center; }
+  .close__ticks i::after { content: ""; width: 9px; height: 5px; border: 2px solid var(--sc-accent-ink); border-top: 0; border-right: 0; transform: translateY(-1px) rotate(-45deg); }
+
+  /* ---------- the checklist dock (grammar nav) ---------- */
+  .dock { position: fixed; right: clamp(16px, 3vw, 32px); bottom: clamp(16px, 3vw, 28px); z-index: 45;
+          display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px;
+          background: rgba(14,14,18,.82); border: 1px solid var(--line); backdrop-filter: blur(10px); }
+  .dock__title { font: 600 12px/1.2 var(--sc-font-text); letter-spacing: .12em; text-transform: uppercase; color: var(--sc-ink-soft); white-space: nowrap; }
+  .dock__title output { color: var(--sc-ink); }
+  .dock ol { list-style: none; display: flex; gap: 6px; margin: 0; padding: 0; }
+  .dock button { position: relative; width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(245,245,247,.28);
+                 background: transparent; cursor: pointer; padding: 0; display: grid; place-items: center;
+                 transition: background .3s var(--sc-ease-out), border-color .3s; }
+  .dock button::after { content: ""; width: 9px; height: 5px; border: 2px solid var(--sc-accent-ink); border-top: 0; border-right: 0;
+                        transform: translateY(-1px) rotate(-45deg) scale(0); transition: transform .3s var(--sc-ease-out); }
+  .dock button[aria-pressed="true"] { background: var(--sc-accent); border-color: var(--sc-accent); }
+  .dock button[aria-pressed="true"]::after { transform: translateY(-1px) rotate(-45deg) scale(1); }
+  .dock button span { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); white-space: nowrap;
+                      padding: 6px 9px; border-radius: 6px; background: var(--sc-surface); border: 1px solid var(--line);
+                      font: 500 12px/1 var(--sc-font-text); color: var(--sc-ink); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .dock button:hover span, .dock button:focus-visible span { opacity: 1; }
+  .dock.is-done { border-color: rgba(167,139,250,.5); }
+  .dock { transition: opacity .4s, transform .4s var(--sc-ease-out); }
+  .dock.is-away { opacity: 0; transform: translateY(12px); pointer-events: none; }
+
+  /* ---------- phone: art-directed separately ---------- */
+  @media (max-width: 760px) {
+    .hero__eyebrow { margin-bottom: var(--sc-3); }
+    .hero .sc-copy { top: 96px; bottom: auto; transform: none; }
+    .hero .sc-display--xl { font-size: var(--sc-t-2xl); }
+    .p-back { right: auto; left: -6%; top: 52%; }
+    .p-back .slab { --w: 130px; }
+    .p-main { right: 14%; top: 46%; }
+    .p-main .slab { --w: 200px; }
+    .p-side { right: -16%; top: 56%; }
+    .p-side .slab { --w: 130px; }
+    .p-fore { right: -24%; top: 78%; }
+    .p-fore .slab { --w: 300px; }
+    .hero__floor { inset: 80% -10% -10% -10%; }
+    .hero__beat { bottom: 92px; }
+    .peak { grid-template-columns: 1fr; grid-template-rows: auto 1fr; padding-top: 84px; align-items: start; }
+    .peak__copy { height: 190px; }
+    .entry { top: 1.8em; }
+    .entry h2 { font-size: var(--sc-t-xl); margin: var(--sc-2) 0; }
+    .peak__card { align-self: center; }
+    .peak__card { --w: 220px; }
+    .peak__glow--teal, .peak__glow--gold, .peak__glow--white { background-position: 50% 70%; }
+    .item .slab { --w: 210px; }
+    .item .slab--land { --w: 300px; }
+    .pair { flex-direction: column; align-items: flex-start; }
+    .fb .sc-wrap, .app .sc-wrap { grid-template-columns: 1fr; }
+    .fb__fig .slab { --w: 240px; }
+    .app__steps li { grid-template-columns: 1fr; gap: var(--sc-2); }
+    .dock { left: 16px; right: 16px; justify-content: space-between; padding: 10px 12px; }
+    .dock__word { display: none; }
+    .dock ol { gap: 6px; }
+    .dock button { width: 26px; height: 26px; }
+    .foot { padding-bottom: 88px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .peak__anim { display: none; }
+    .peak__static { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+    .peak__static .slab { --w: 160px; }
+    .peak { grid-template-columns: 1fr; padding-block: 120px; gap: 48px; }
+    .peak__copy { height: auto; }
+    .entry { position: static; opacity: 1 !important; transform: none !important; margin-bottom: 24px; }
+    .band { display: none; }
+  }
+</style>
 </head>
 <body>
-<div class="wrap">
-  <nav class="site-nav">
-    <details>
-      <summary>Menu</summary>
-      <div class="menu">
-        <a href="./" aria-current="page">Home</a>
-        <div class="sep"></div>
-        <a href="shop/">Shop</a>
-        <a href="refund-policy/">Refund &amp; Shipping</a>
-        <div class="sep"></div>
-        <a href="privacy/">Privacy Policy</a>
-        <a href="terms/">Terms of Service</a>
-        <a href="support/">Support</a>
-      </div>
-    </details>
-    <a class="cart-link" href="checkout/" aria-label="Cart">
+
+<span data-sc-progress></span>
+<div class="sc-grain" aria-hidden="true"></div>
+
+
+<header class="bar">
+  <a class="brand" href="#top" aria-label="CardPrime home">
+    <img src="assets/CardPrime-AppIcon-rounded-512.png" alt="">
+    <img src="assets/CardPrime-wordmark-transparent.png" alt="CardPrime">
+  </a>
+  <div class="bar__right">
+    <a class="btn" href="app/">Get the app</a>
+    <a class="icon-btn" href="checkout/" aria-label="Cart">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      <span class="cart-count" hidden></span>
     </a>
-  </nav>
-  <header class="site-header">
-    <img class="mark" src="assets/appicon.png?v=3" alt="CardPrime">
-    <img class="wordmark" src="assets/wordmark.png?v=2" alt="CardPrime">
-  </header>
-
-  <h1>Sports card printing &amp; collection management</h1>
-  <p class="subtitle">CardPrime prints its own range of sports cards, sold in sealed packs in our <a href="shop/">shop</a>.</p>
-  <p class="subtitle">The CardPrime app helps collectors identify and manage their collections by photographing and cataloging each card.</p>
-
-  <div class="tiles">
-    <a class="tile" href="privacy/">
-      <div class="tile-title">Privacy Policy</div>
-      <div class="tile-desc">What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</div>
-    </a>
-    <a class="tile" href="terms/">
-      <div class="tile-title">Terms of Service</div>
-      <div class="tile-desc">Account rules, prohibited activities, and liability terms that apply when you use CardPrime</div>
-    </a>
-    <a class="tile" href="support/">
-      <div class="tile-title">Support</div>
-      <div class="tile-desc">Answers to common questions, plus how to reach us for anything else</div>
-    </a>
+    <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="burger" aria-hidden="true"></span></button>
   </div>
+</header>
 
-  <footer>
-    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a>
-  </footer>
-</div>
-<script src="nav.js?v=2"></script>
+<!-- menü: a régi oldal minden menüpontja, a csempék leírásaival -->
+<nav class="menu" id="site-menu" aria-label="Site">
+  <div class="menu__grid">
+    <div class="menu__group">
+      <span class="menu__head">CardPrime</span>
+      <div class="menu__big">
+        <a href="./" aria-current="page">Home</a>
+        <a href="shop/">Shop</a>
+        <a href="app/">Get the app</a>
+        <a href="refund-policy/">Refund &amp; Shipping</a>
+      </div>
+    </div>
+    <div class="menu__group">
+      <span class="menu__head">Legal &amp; help</span>
+      <ul class="menu__list">
+        <li><a href="privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a></li>
+        <li><a href="terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a></li>
+        <li><a href="support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="menu__foot">&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+</nav>
+
+<!-- a gyűjtőlista: a grammatika navigációja. Pipál, ahogy a látogató "begyűjti" a bejegyzéseket. -->
+<nav class="dock" aria-label="Set checklist">
+  <span class="dock__title"><span class="dock__word">Set checklist </span><output id="count">0</output>/8</span>
+  <ol>
+    <li><button type="button" data-go="1" aria-pressed="false"><span>1 · Base</span></button></li>
+    <li><button type="button" data-go="2" aria-pressed="false"><span>2 · Refractor</span></button></li>
+    <li><button type="button" data-go="3" aria-pressed="false"><span>3 · Numbered</span></button></li>
+    <li><button type="button" data-go="4" aria-pressed="false"><span>4 · Autograph</span></button></li>
+    <li><button type="button" data-go="5" aria-pressed="false"><span>5 · Illustrated series</span></button></li>
+    <li><button type="button" data-go="6" aria-pressed="false"><span>6 · Special inserts</span></button></li>
+    <li><button type="button" data-go="7" aria-pressed="false"><span>7 · Front &amp; back</span></button></li>
+    <li><button type="button" data-go="8" aria-pressed="false"><span>8 · Your collection</span></button></li>
+  </ol>
+</nav>
+
+<main id="top">
+
+  <!-- 1 · DESIRE: pin + parallax planes -->
+  <section data-sc-act="pin" data-sc-span="1.8" data-sc-drift="#070708">
+    <div data-sc-stage class="hero">
+      <div class="hero__planes" aria-hidden="true">
+        <div class="p-mist" data-sc-parallax="-0.6"></div>
+        <div class="hero__floor"></div>
+        <div class="p-back" data-sc-parallax="0.5">
+          <div class="slab f-gold reflect"><div class="slab__label"><b>Golden Champions</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><span class="face__num">01/50</span><div class="face__plate">Player<small>Club</small></div></div></div></div>
+        </div>
+        <div class="p-side" data-sc-parallax="-1.2">
+          <div class="slab f-refr reflect"><div class="slab__label"><b>Future Wave</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player<small>Club</small></div></div></div></div>
+        </div>
+        <div class="p-main" data-sc-parallax="-0.5">
+          <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+        </div>
+        <div class="p-fore" data-sc-parallax="-6">
+          <div class="slab f-gold"><div class="slab__label"><b>CardPrime</b></div><div class="slab__card"><div class="face"><div class="face__plate">Player<small>Club</small></div></div></div></div>
+        </div>
+      </div>
+      <div class="sc-scrim sc-scrim--lead" aria-hidden="true"></div>
+      <div class="sc-copy sc-copy--lead" data-sc-cue="0 0.62 0">
+        <span class="sc-label hero__eyebrow">Sports card printing &amp; collection management</span>
+        <h1 class="sc-display sc-display--xl">Collector-grade.<br><span class="accent">In hand.</span></h1>
+        <p class="sc-lede">CardPrime prints its own range of sports cards, sold in sealed packs in our <a href="shop/">shop</a>.</p>
+      </div>
+      <p class="hero__beat sc-display sc-display--md" data-sc-cue="0.58 1">Every card. <span class="accent">Every finish.</span></p>
+    </div>
+  </section>
+
+  <!-- 2 · ANTICIPATION: authored quiet before the peak -->
+  <section class="sc-section quiet" data-sc-act="flow" data-sc-drift="#070708">
+    <div class="sc-wrap" data-sc-in data-sc-stagger="120">
+      <span class="stripe" aria-hidden="true"></span>
+      <h2 class="sc-display sc-display--lg">One player.<br><span class="accent">Many parallels.</span></h2>
+      <p class="sc-body">Same card, four finishes. Watch the light.</p>
+    </div>
+  </section>
+
+  <!-- 3 · AWE: PEAK. Largest span. Bespoke light-sweep re-foil (page JS below). -->
+  <section id="parallels" data-sc-act="pin" data-sc-span="4.4" data-sc-drift="#060607">
+    <div data-sc-stage class="peak" id="peak">
+      <div class="peak__glow peak__glow--teal" aria-hidden="true"></div>
+      <div class="peak__glow peak__glow--gold" aria-hidden="true"></div>
+      <div class="peak__glow peak__glow--white" aria-hidden="true"></div>
+      <div class="peak__floor" aria-hidden="true"></div>
+
+      <div class="peak__copy">
+        <span class="sc-label">The parallels</span>
+        <div class="entry" data-sc-cue="0 0.3 0.15 0.3"><span class="entry__no">No. 1 · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">The card as issued. Chrome frame, full colour.</p></div>
+        <div class="entry" data-sc-cue="0.27 0.54 0.2 0.25"><span class="entry__no">No. 2 · Refractor</span><h2 class="sc-display sc-display--lg">Refractor.</h2><p class="sc-body">Same card, with rainbow light running through the surface.</p></div>
+        <div class="entry" data-sc-cue="0.51 0.78 0.2 0.25"><span class="entry__no">No. 3 · Numbered</span><h2 class="sc-display sc-display--lg">Numbered.</h2><p class="sc-body">Gold foil, serial-numbered to a fixed print run. 01/50.</p></div>
+        <div class="entry" data-sc-cue="0.75 1 0.2 0.15"><span class="entry__no">No. 4 · Autograph</span><h2 class="sc-display sc-display--lg">Autograph.</h2><p class="sc-body">Signed. The one everybody looks for first.</p></div>
+      </div>
+
+      <div class="peak__card">
+        <div class="peak__anim">
+          <div class="layers">
+            <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-refr" data-k="1"><div class="slab__label"><b>CardPrime</b><span>Refractor</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-gold" data-k="2"><div class="slab__label"><b>CardPrime</b><span>Numbered</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><span class="face__num">01/50</span><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-auto" data-k="3"><div class="slab__label"><b>CardPrime</b><span>Autograph</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><svg class="face__sig" viewBox="0 0 196 64" aria-hidden="true"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="band-clip" aria-hidden="true"><div class="band"></div></div>
+          </div>
+        </div>
+        <!-- mozgás nélkül: a négy parallel egymás mellett, statikusan -->
+        <div class="peak__static" aria-hidden="true">
+          <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><div class="face__plate">Player</div></div></div></div>
+          <div class="slab f-refr"><div class="slab__label"><b>CardPrime</b><span>Refractor</span></div><div class="slab__card"><div class="face"><div class="face__plate">Player</div></div></div></div>
+          <div class="slab f-gold"><div class="slab__label"><b>CardPrime</b><span>Numbered</span></div><div class="slab__card"><div class="face"><span class="face__num">01/50</span><div class="face__plate">Player</div></div></div></div>
+          <div class="slab f-auto"><div class="slab__label"><b>CardPrime</b><span>Autograph</span></div><div class="slab__card"><div class="face"><svg class="face__sig" viewBox="0 0 196 64"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Player</div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · CURIOSITY: pan -->
+  <section id="series" data-sc-act="pan" data-sc-span="2.8" data-sc-drift="#08090b">
+    <div data-sc-stage class="range">
+      <div class="rail" data-sc-pan="0.06">
+        <div class="rail__lead sc-stack">
+          <span class="stripe" aria-hidden="true"></span>
+          <h2 class="sc-display sc-display--md">Beyond<br><span class="accent">the base set.</span></h2>
+          <p class="sc-body">Two more ways a season gets told.</p>
+        </div>
+        <article class="item" data-check="5">
+          <div class="slab f-illu"><div class="slab__label"><b>CardPrime</b><span>Illustrated</span></div><div class="slab__card"><div class="face"><div class="face__plate">Legend<small>Illustrated series</small></div></div></div></div>
+          <div class="item__meta"><span class="entry__no">No. 5 · Illustrated series</span><h3>Illustrated.</h3><p class="sc-body">Hero artwork for legends.</p></div>
+        </article>
+        <article class="item" data-check="6">
+          <div class="pair">
+            <div class="slab slab--land f-mind"><div class="slab__label"><b>Masterminds</b><span>Insert</span></div><div class="slab__card"><div class="face"><div class="face__plate">Coach name<small>Masterminds</small></div></div></div></div>
+            <div class="slab f-game" style="--w: clamp(170px, 14vw, 220px)"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><div class="face"><div class="face__plate">Player<small>Game Changers</small></div></div></div></div>
+          </div>
+          <div class="item__meta"><span class="entry__no">No. 6 · Special inserts</span><h3>Inserts.</h3><p class="sc-body">Themed inserts for storytelling.</p></div>
+        </article>
+        <div class="rail__end sc-stack">
+          <p class="sc-display sc-display--md">Printed for clubs<br>and teams.</p>
+          <p class="sc-body">Each set is made for one club and one season.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · INTIMACY: flow + reveal wipe -->
+  <section class="sc-section fb" data-sc-act="flow" data-sc-drift="#070809" data-check="7">
+    <div class="sc-wrap">
+      <div class="fb__copy" data-sc-in data-sc-stagger="90">
+        <span class="entry__no">No. 7 · Front &amp; back</span>
+        <h2 class="sc-display sc-display--lg">Front.<br><span class="accent">Back.</span></h2>
+        <p class="sc-body">Turn it over: stats, bio and club identity, laid out as carefully as the front.</p>
+      </div>
+      <figure class="fb__fig">
+        <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Front</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+        <div class="fb__back" data-sc-reveal="left" data-sc-reveal-at="0.28 0.62">
+          <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Back</span></div><div class="slab__card">
+            <div class="back">
+              <div class="back__head"><b>Player name</b><span>No. —</span></div>
+              <table><tbody>
+                <tr><td>Position</td><td>—</td></tr>
+                <tr><td>Season</td><td>—</td></tr>
+                <tr><td>Appearances</td><td>—</td></tr>
+                <tr><td>Goals</td><td>—</td></tr>
+              </tbody></table>
+              <div class="back__bio" aria-hidden="true"><i></i><i></i><i style="width:70%"></i></div>
+              <div class="back__club"><i></i>Club identity</div>
+            </div>
+          </div></div>
+        </div>
+        <figcaption class="sr-only">Card back layout with placeholder stats.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 6 · CALM / OWNERSHIP: flow + in -->
+  <section class="sc-section app" id="app" data-sc-act="flow" data-sc-drift="#0B0B0F" data-check="8">
+    <div class="sc-wrap">
+      <div class="sc-stack" data-sc-in data-sc-stagger="90">
+        <span class="entry__no">No. 8 · Your collection</span>
+        <h2 class="sc-display sc-display--lg">Your collection,<br><span class="accent">catalogued.</span></h2>
+        <p class="sc-lede">The CardPrime app helps collectors identify and manage their collections by photographing and cataloging each card.</p>
+      </div>
+      <ol class="app__steps" data-sc-in data-sc-stagger="110">
+        <li><b>Photograph</b><p class="sc-body">Shoot the card with your phone and add its details by hand.</p></li>
+        <li><b>Catalogue</b><p class="sc-body">Player, set, parallel. Everything you own in one place.</p></li>
+        <li><b>Private first</b><p class="sc-body">Every card stays private until you switch on the public catalog for it.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 7 · RESOLVE: pin, hold cues, footer inside the stage -->
+  <section id="get-the-app" data-sc-act="pin" data-sc-span="1.2" data-sc-drift="#070708">
+    <div data-sc-stage class="close">
+      <div class="close__inner">
+        <div class="close__ticks" aria-hidden="true" data-sc-cue="0.02"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <h2 class="sc-display sc-display--xl" data-sc-cue="0.04">Set complete.</h2>
+        <p class="sc-lede" data-sc-cue="0.08">Start yours in the app.</p>
+        <a class="btn" href="app/" data-sc-cue="0.06">Get the app</a>
+      </div>
+      <footer class="foot">
+        <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
+        <nav aria-label="Footer">
+          <a href="shop/">Shop</a><a href="refund-policy/">Refund &amp; Shipping</a><a href="privacy/">Privacy Policy</a><a href="terms/">Terms of Service</a><a href="support/">Support</a>
+        </nav>
+      </footer>
+    </div>
+  </section>
+
+</main>
+
+<script src="scrollcraft.js?v=1"></script>
+<script>ScrollCraft.mount(document.body);</script>
+<script src="menu.js?v=1"></script>
+<script>
+/* Szignatúra-mozdulat + gyűjtőlista. Oldal-JS, az engine-hez nem nyúl. */
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var act = document.getElementById('parallels');
+  var stage = document.getElementById('peak');
+  var layers = stage.querySelectorAll('.layers > .slab[data-k]');
+  var band = stage.querySelector('.band');
+  var sig = stage.querySelector('.f-auto .face__sig');
+  var gGold = stage.querySelector('.peak__glow--gold');
+  var gWhite = stage.querySelector('.peak__glow--white');
+  var gTeal = stage.querySelector('.peak__glow--teal');
+  var buttons = document.querySelectorAll('.dock button');
+  var countEl = document.getElementById('count');
+  var dock = document.querySelector('.dock');
+  var got = {};
+
+  // A három fénysöprés ablaka az aktus p-jében (0..1), és mikor pipál a lista.
+  var SWEEPS = [[0.16, 0.30], [0.40, 0.54], [0.64, 0.78]];
+  var SIG = [0.78, 0.93];
+  var TICK_AT = [0.04, 0.30, 0.54, 0.80];
+
+  function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ease(t) { return t * t * (3 - 2 * t); }
+
+  function tick(n) {
+    if (got[n]) return;
+    got[n] = true;
+    buttons[n - 1].setAttribute('aria-pressed', 'true');
+    var c = Object.keys(got).length;
+    countEl.textContent = c;
+    if (c === 8) dock.classList.add('is-done');
+  }
+
+  var last = -1;
+  function frame() {
+    var p = parseFloat(act.style.getPropertyValue('--sc-p')) || 0;
+    if (p !== last) {
+      last = p;
+      var bandPos = -1.2, bandOp = 0;
+      for (var i = 0; i < 3; i++) {
+        var s = clamp((p - SWEEPS[i][0]) / (SWEEPS[i][1] - SWEEPS[i][0]));
+        layers[i].style.setProperty('--s', ease(s).toFixed(4));
+        if (s > 0 && s < 1) { bandPos = -1.2 + ease(s) * 2.4; bandOp = Math.sin(s * Math.PI); }
+      }
+      band.style.setProperty('--b', bandPos.toFixed(4));
+      band.style.setProperty('--bo', bandOp.toFixed(3));
+      sig.style.setProperty('--sig', ease(clamp((p - SIG[0]) / (SIG[1] - SIG[0]))).toFixed(4));
+      var gold = clamp((p - 0.45) / 0.12) * (1 - clamp((p - 0.70) / 0.1));
+      var white = clamp((p - 0.70) / 0.1);
+      gGold.style.opacity = gold.toFixed(3);
+      gWhite.style.opacity = white.toFixed(3);
+      gTeal.style.opacity = (1 - Math.max(gold, white)).toFixed(3);
+      var r = act.getBoundingClientRect();
+      if (r.top < innerHeight * 0.5 && r.bottom > 0) {
+        for (var k = 0; k < 4; k++) if (p >= TICK_AT[k]) tick(k + 1);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  if (!reduce) requestAnimationFrame(frame);
+
+  // 5-8: a bejegyzés begyűjtve, amikor a fele látszik.
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { tick(+e.target.getAttribute('data-check')); io.unobserve(e.target); } });
+  }, { rootMargin: "-35% 0px -35% 0px" });
+  document.querySelectorAll('[data-check]').forEach(function (el) { io.observe(el); });
+  if (reduce) {
+    var io2 = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { [1, 2, 3, 4].forEach(tick); io2.disconnect(); } });
+    }, { threshold: 0.4 });
+    io2.observe(stage);
+  }
+
+  // A záró aktusban a lista átadja a helyét a kipipált sornak (és nem takarja a láblécet).
+  new IntersectionObserver(function (es) {
+    dock.classList.toggle('is-away', es[0].isIntersecting);
+  }, { rootMargin: '0px 0px -40% 0px' }).observe(document.getElementById('get-the-app'));
+
+  // Ugrás egy bejegyzéshez. Az 1-4 a csúcs-aktuson belüli pozíció.
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var n = +b.getAttribute('data-go');
+      var y;
+      if (n <= 4 && !reduce) {
+        var top = act.getBoundingClientRect().top + scrollY;
+        var travel = act.offsetHeight - innerHeight;
+        var at = [0.06, 0.36, 0.60, 0.95][n - 1];
+        y = top + travel * at;
+      } else {
+        var el = n <= 4 ? act : document.querySelector('[data-check="' + n + '"]');
+        y = el.getBoundingClientRect().top + scrollY - (n === 5 || n === 6 ? 0 : 40);
+        if (n === 6 && !reduce) { var pan = document.getElementById('series'); y = pan.getBoundingClientRect().top + scrollY + (pan.offsetHeight - innerHeight) * 0.75; }
+        if (n === 5 && !reduce) { var pan2 = document.getElementById('series'); y = pan2.getBoundingClientRect().top + scrollY + (pan2.offsetHeight - innerHeight) * 0.35; }
+      }
+      scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,240 @@
+/* Közös réteg: tokenek, felső sáv, menü, jogi oldalak. A scrollcraft.css-re épül, azt nem írja felül. */
+:root {
+  --sc-canvas:     #070708;
+  --sc-surface:    #0E0E12;
+  --sc-ink:        #F5F5F7;
+  --sc-ink-soft:   #9E9EA6;
+  --sc-accent:     #A78BFA;
+  --sc-accent-ink: #070708;
+  --sc-font-display: "Space Grotesk", system-ui, sans-serif;
+  --sc-font-text:    "Inter", system-ui, sans-serif;
+
+  --teal: #06B6D4;
+  --gold: #E9C46A;
+  --stripe: linear-gradient(90deg, #7C3AED, #0891B2);
+  --line: rgba(245,245,247,.12);
+}
+body { background: var(--sc-canvas); color: var(--sc-ink); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- felső sáv ---------- */
+.bar { position: fixed; inset: 0 0 auto 0; z-index: 60; display: flex; align-items: center; gap: 12px;
+       justify-content: space-between; padding: 18px clamp(16px, 4vw, 48px); pointer-events: none; }
+.bar > * { pointer-events: auto; }
+.bar__right { display: flex; align-items: center; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand img:first-child { width: 34px; height: 34px; border-radius: 8px; }
+.brand img:last-child { height: 16px; width: auto; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 999px;
+       background: var(--sc-accent); color: var(--sc-accent-ink); font: 600 15px/1 var(--sc-font-text);
+       text-decoration: none; transition: transform .25s var(--sc-ease-out), box-shadow .25s; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -10px rgba(167,139,250,.7); }
+.icon-btn { position: relative; display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 999px;
+            background: rgba(14,14,18,.72); border: 1px solid var(--line); color: var(--sc-ink); cursor: pointer;
+            backdrop-filter: blur(10px); text-decoration: none; padding: 0; transition: border-color .25s; }
+.icon-btn:hover { border-color: rgba(245,245,247,.32); }
+.btn:focus-visible, .icon-btn:focus-visible, .menu a:focus-visible, .foot a:focus-visible,
+.legal a:focus-visible, .toc a:focus-visible, .faq summary:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 3px; }
+
+/* jogi oldalakon a sáv kap hátteret, hogy a görgetett szöveg ne fusson alá */
+.doc-page .bar { background: rgba(7,7,8,.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding-block: 12px; }
+.menu a:focus-visible { border-radius: 6px; }
+
+/* menü-ikon: két vonal, nyitva X */
+.burger { width: 18px; height: 12px; position: relative; }
+.burger::before, .burger::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; border-radius: 1px; background: currentColor;
+                                  transition: transform .35s var(--sc-ease-out), top .35s var(--sc-ease-out); }
+.burger::before { top: 1px; }
+.burger::after  { top: 9px; }
+[aria-expanded="true"] .burger::before { top: 5px; transform: rotate(45deg); }
+[aria-expanded="true"] .burger::after  { top: 5px; transform: rotate(-45deg); }
+
+.stripe { display: block; width: 72px; height: 4px; border-radius: 2px; background: var(--stripe); }
+.accent { color: var(--sc-accent); }
+
+/* ---------- menü-panel ---------- */
+.menu { position: fixed; inset: 0; z-index: 55; overflow-y: auto; background:
+          radial-gradient(50% 40% at 85% 100%, rgba(6,182,212,.16), transparent 70%),
+          var(--sc-canvas);
+        padding: 104px clamp(16px, 6vw, 96px) 48px; display: grid; align-content: start;
+        opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+.menu.is-open { opacity: 1; visibility: visible; transition: opacity .3s; }
+.menu__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 96px);
+              max-width: 1200px; width: 100%; margin-inline: auto; }
+.menu__group { display: grid; align-content: start; gap: var(--sc-4); }
+.menu__head { font: 600 12px/1 var(--sc-font-text); letter-spacing: .14em; text-transform: uppercase; color: var(--sc-ink-soft);
+              padding-bottom: var(--sc-4); border-bottom: 1px solid var(--line); }
+.menu__big a { display: block; font: 600 clamp(32px, 4.4vw, 56px)/1.15 var(--sc-font-display); letter-spacing: -.02em;
+               color: var(--sc-ink); text-decoration: none; padding: 4px 0; transition: color .2s; }
+.menu__big a:hover, .menu__big a[aria-current="page"] { color: var(--sc-accent); }
+.menu__list { list-style: none; margin: 0; padding: 0; display: grid; }
+.menu__list li { border-bottom: 1px solid var(--line); }
+.menu__list a { display: grid; gap: 6px; padding: var(--sc-5) 0; text-decoration: none; color: var(--sc-ink); }
+.menu__list b { font: 600 var(--sc-t-lg)/1.2 var(--sc-font-display); transition: color .2s; }
+.menu__list a:hover b, .menu__list a[aria-current="page"] b { color: var(--sc-accent); }
+.menu__list span { color: var(--sc-ink-soft); font-size: var(--sc-t-sm); line-height: 1.55; max-width: 52ch; }
+.menu__foot { max-width: 1200px; width: 100%; margin: var(--sc-8) auto 0; color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
+.menu__foot a { color: var(--sc-ink); }
+body.menu-open { overflow: hidden; }
+body.menu-open .dock { opacity: 0; pointer-events: none; }
+
+/* ---------- lábléc ---------- */
+.foot { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; align-items: center;
+        padding: var(--sc-6) clamp(16px, 4vw, 48px); border-top: 1px solid var(--line); font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
+.foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.foot a { color: var(--sc-ink-soft); text-decoration: none; }
+.foot a:hover, .foot a[aria-current="page"] { color: var(--sc-ink); }
+
+/* ---------- jogi oldalak ---------- */
+.doc-hero { position: relative; padding: 152px clamp(16px, 6vw, 96px) var(--sc-8); overflow: hidden;
+            background: radial-gradient(45% 70% at 90% 0%, rgba(6,182,212,.14), transparent 70%),
+                        radial-gradient(30% 50% at 70% 20%, rgba(124,58,237,.10), transparent 70%); }
+.doc-hero__in { max-width: 1200px; margin-inline: auto; display: grid; gap: var(--sc-5); }
+.doc-hero .sc-label { color: var(--sc-ink-soft); }
+.doc-hero h1 { margin: 0; }
+.doc-hero .updated { color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
+.doc-hero p { margin: 0; max-width: 56ch; }
+
+.doc { box-sizing: content-box; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: clamp(32px, 6vw, 96px);
+       max-width: 1200px; margin-inline: auto; padding: var(--sc-6) clamp(16px, 6vw, 96px) var(--sc-10); }
+.toc { position: sticky; top: 96px; align-self: start; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.toc a { display: block; padding: 6px 0 6px 16px; margin-left: -1px; border-left: 2px solid transparent;
+         color: var(--sc-ink-soft); text-decoration: none; font-size: var(--sc-t-sm); line-height: 1.35; transition: color .2s, border-color .2s; }
+.toc a:hover { color: var(--sc-ink); }
+.toc a.is-here { color: var(--sc-ink); border-left-color: var(--sc-accent); }
+
+.legal { max-width: 72ch; color: var(--sc-ink-soft); font-size: var(--sc-t-base); line-height: var(--sc-leading-body); }
+.legal section { padding-top: var(--sc-7); scroll-margin-top: 88px; }
+.legal section:first-child { padding-top: 0; }
+.legal h2 { font: 600 var(--sc-t-xl)/1.15 var(--sc-font-display); letter-spacing: -.015em; color: var(--sc-ink); margin: 0 0 var(--sc-5); }
+.legal h2 .no { color: var(--sc-accent); margin-right: .35em; }
+.legal p { margin: 0 0 var(--sc-4); }
+.legal strong, .legal b { color: var(--sc-ink); font-weight: 600; }
+.legal a { color: var(--sc-accent); text-underline-offset: 3px; }
+.legal ul { margin: 0 0 var(--sc-4); padding-left: 1.2em; }
+.legal li { margin-bottom: var(--sc-2); }
+.legal li::marker { color: var(--sc-accent); }
+.callout { margin: var(--sc-5) 0; padding: var(--sc-5) var(--sc-5); border-radius: 12px; background: var(--sc-surface);
+           border: 1px solid var(--line); border-left: 3px solid var(--sc-accent); }
+.callout p:last-child { margin-bottom: 0; }
+.table-wrap { overflow-x: auto; margin: var(--sc-5) 0; border: 1px solid var(--line); border-radius: 12px; }
+.legal table { width: 100%; border-collapse: collapse; font-size: var(--sc-t-sm); min-width: 520px; }
+.legal th { text-align: left; font: 600 12px/1.3 var(--sc-font-text); letter-spacing: .1em; text-transform: uppercase;
+            color: var(--sc-ink-soft); background: var(--sc-surface); padding: 14px 16px; }
+.legal td { padding: 14px 16px; border-top: 1px solid var(--line); vertical-align: top; }
+.legal td:first-child { color: var(--sc-ink); font-weight: 500; }
+
+.related { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: var(--sc-8); }
+.related a { display: grid; align-content: start; gap: 6px; padding: var(--sc-5); border-radius: 12px; background: var(--sc-surface);
+             border: 1px solid var(--line); text-decoration: none; color: var(--sc-ink); transition: border-color .25s; }
+.related a:hover { border-color: rgba(167,139,250,.55); }
+.related b { font: 600 var(--sc-t-md, 1.1rem)/1.2 var(--sc-font-display); }
+.related span { color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
+
+/* GYIK: lenyitható kérdések */
+.faq { display: grid; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 24px; align-items: center;
+               padding: var(--sc-5) 0; font: 600 var(--sc-t-lg)/1.3 var(--sc-font-display); color: var(--sc-ink); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: ""; flex: none; width: 10px; height: 10px; border-right: 2px solid var(--sc-accent); border-bottom: 2px solid var(--sc-accent);
+                      transform: translateY(-3px) rotate(45deg); transition: transform .3s var(--sc-ease-out); }
+.faq details[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+.faq details p { margin: 0 0 var(--sc-5); }
+
+/* ---------- "Coming soon" és 404 oldalak ---------- */
+.soon { min-height: 100svh; display: grid; overflow-x: clip; align-items: center; padding: 120px clamp(16px, 6vw, 96px) var(--sc-8);
+        background: radial-gradient(40% 55% at 78% 55%, rgba(233,196,106,.13), transparent 70%),
+                    radial-gradient(50% 70% at 95% 0%, rgba(6,182,212,.14), transparent 70%),
+                    radial-gradient(35% 50% at 60% 90%, rgba(124,58,237,.10), transparent 70%); }
+.soon__in { width: 100%; max-width: 1200px; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+            gap: clamp(40px, 7vw, 112px); align-items: center; }
+.soon__text { display: grid; gap: var(--sc-5); justify-items: start; }
+.soon__text h1 { margin: 0; }
+.soon__text p { margin: 0; max-width: 52ch; }
+.soon__text .sc-label { color: var(--sc-ink-soft); }
+.badge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 12px; border-radius: 999px;
+         border: 1px solid rgba(233,196,106,.38); background: rgba(233,196,106,.08); color: var(--gold);
+         font: 600 13px/1 var(--sc-font-text); letter-spacing: .08em; text-transform: uppercase; }
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--gold);
+                 box-shadow: 0 0 0 0 rgba(233,196,106,.6); animation: soon-pulse 2.4s var(--sc-ease-out) infinite; }
+@keyframes soon-pulse { 0% { box-shadow: 0 0 0 0 rgba(233,196,106,.55); } 70%, 100% { box-shadow: 0 0 0 10px rgba(233,196,106,0); } }
+.soon__facts { list-style: none; margin: var(--sc-3) 0 0; padding: 0; display: grid; gap: 0; width: 100%; max-width: 52ch;
+               border-top: 1px solid var(--line); }
+.soon__facts li { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);
+                  font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
+.soon__facts b { color: var(--sc-ink); font-weight: 600; }
+.soon__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sc-3); }
+.btn--ghost { background: transparent; color: var(--sc-ink); border: 1px solid var(--line); }
+.btn--ghost:hover { border-color: rgba(245,245,247,.4); box-shadow: none; }
+
+/* lezárt csomag: CSS-tárgy, kártyakép nélkül */
+.soon__art { position: relative; display: grid; place-items: center; min-height: 460px; }
+.soon__art::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: 6%; height: 28px; border-radius: 50%;
+                    background: radial-gradient(closest-side, rgba(0,0,0,.7), transparent); filter: blur(6px); }
+.pack { position: relative; z-index: 1; width: min(260px, 62vw); aspect-ratio: 5 / 8; transform: rotate(-6deg);
+        border-radius: 10px; overflow: hidden;
+        background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.16) 45%, transparent 60%),
+                    repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 2px, transparent 2px 9px),
+                    linear-gradient(160deg, #1A1530, #0E1A22 55%, #0B0B10);
+        box-shadow: 0 40px 80px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08) inset, 0 0 90px -20px rgba(233,196,106,.35); }
+.pack::before, .pack::after { content: ""; position: absolute; left: 0; right: 0; height: 18px;
+                              background: repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 3px, rgba(255,255,255,.04) 3px 7px); }
+.pack::before { top: 0; }
+.pack::after { bottom: 0; }
+.pack__body { position: absolute; inset: 18px 0; display: grid; align-content: center; justify-items: center; gap: 18px; padding: 24px; text-align: center; }
+.pack__body img { width: 64px; height: 64px; border-radius: 14px; box-shadow: 0 10px 30px -10px rgba(0,0,0,.8); }
+.pack__body .stripe { width: 56px; }
+.pack__name { font: 700 20px/1.1 var(--sc-font-display); letter-spacing: -.01em; }
+.pack__sub { font: 500 11px/1.4 var(--sc-font-text); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+.pack--back { position: absolute; z-index: 0; transform: translate(26%, 6%) rotate(8deg); opacity: .55; filter: blur(1px); }
+.pack--back .pack__body { display: none; }
+
+/* telefon-keret az app oldalhoz */
+.phone { position: relative; z-index: 1; width: min(250px, 60vw); aspect-ratio: 9 / 19; border-radius: 38px; padding: 10px;
+         background: linear-gradient(160deg, #24242C, #0C0C10); transform: rotate(-4deg);
+         box-shadow: 0 40px 80px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.1) inset, 0 0 90px -20px rgba(233,196,106,.3); }
+.phone__screen { height: 100%; border-radius: 30px; overflow: hidden; display: grid; align-content: center; justify-items: center; gap: 16px;
+                 background: radial-gradient(60% 40% at 50% 30%, rgba(6,182,212,.22), transparent 70%), #08080B; }
+.phone__screen img:first-child { width: 72px; height: 72px; border-radius: 16px; }
+.phone__screen img:nth-child(2) { width: 120px; height: auto; }
+.phone__bars { display: grid; gap: 8px; width: 70%; margin-top: 18px; }
+.phone__bars i { display: block; height: 34px; border-radius: 8px; background: rgba(245,245,247,.05); border: 1px solid var(--line); }
+.phone__bars i:first-child { border-color: rgba(167,139,250,.45); }
+
+.soon--404 .soon__in { grid-template-columns: minmax(0, 1fr); }
+.big-no { font: 700 clamp(96px, 20vw, 220px)/.85 var(--sc-font-display); letter-spacing: -.04em; color: var(--sc-ink); }
+.big-no span { color: var(--sc-accent); }
+.soon--404 .related { width: 100%; margin-top: var(--sc-5); }
+
+@media (prefers-reduced-motion: reduce) { .badge::before { animation: none; } }
+
+@media (max-width: 760px) {
+  .soon { padding-top: 104px; align-items: start; }
+  .soon__in { grid-template-columns: minmax(0, 1fr); }
+  .soon__art { min-height: 250px; order: -1; }
+  .pack { width: 140px; }
+  .pack__body { gap: 10px; padding: 12px; }
+  .pack__body img { width: 40px; height: 40px; border-radius: 9px; }
+  .pack__name { font-size: 14px; }
+  .pack__sub { font-size: 8px; }
+  .phone { width: 116px; border-radius: 24px; padding: 6px; }
+  .phone__screen { border-radius: 19px; gap: 8px; }
+  .phone__screen img:first-child { width: 36px; height: 36px; border-radius: 8px; }
+  .phone__screen img:nth-child(2) { width: 64px; }
+  .phone__bars { gap: 5px; margin-top: 8px; }
+  .phone__bars i { height: 16px; border-radius: 4px; }
+  .soon__facts li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .brand img:last-child { height: 12px; }
+  .bar .btn { padding: 10px 14px; font-size: 14px; }
+  .menu { padding-top: 88px; }
+  .menu__grid { grid-template-columns: 1fr; gap: var(--sc-7); }
+  .doc-hero { padding-top: 120px; }
+  .doc { grid-template-columns: minmax(0, 1fr); padding-top: 0; }
+  .toc { position: static; }
+  .toc ol { grid-template-columns: 1fr 1fr; border-left: 0; gap: 0 16px; }
+  .toc a { padding-left: 0; border-left: 0; }
+  .related { grid-template-columns: 1fr; }
+}
+@media (max-width: 350px) { .bar .btn { display: none; } }

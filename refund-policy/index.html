@@ -1,105 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Refund &amp; Shipping Policy — CardPrime</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<meta name="description" content="Refunds, shipping and withdrawal rights for sealed card packs bought from CardPrime.">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
-<link rel="stylesheet" href="../style.css?v=7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../scrollcraft.css?v=1">
+<link rel="stylesheet" href="../site.css?v=1">
 </head>
-<body>
-<div class="wrap">
-  <nav class="site-nav">
-    <details>
-      <summary>Menu</summary>
-      <div class="menu">
-        <a href="../">Home</a>
-        <div class="sep"></div>
-        <a href="../shop/">Shop</a>
-        <a href="../refund-policy/" aria-current="page">Refund &amp; Shipping</a>
-        <div class="sep"></div>
-        <a href="../privacy/">Privacy Policy</a>
-        <a href="../terms/">Terms of Service</a>
-        <a href="../support/">Support</a>
-      </div>
-    </details>
-    <a class="cart-link" href="../checkout/" aria-label="Cart">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      <span class="cart-count" hidden></span>
-    </a>
-  </nav>
-  <a class="home-link" href="../">
-    <header class="site-header">
-      <img class="mark" src="../assets/appicon.png?v=3" alt="CardPrime">
-      <img class="wordmark" src="../assets/wordmark.png?v=2" alt="CardPrime">
-    </header>
+<body class="doc-page">
+<div class="sc-grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="../" aria-label="CardPrime home">
+    <img src="../assets/CardPrime-AppIcon-rounded-512.png" alt="">
+    <img src="../assets/CardPrime-wordmark-transparent.png" alt="CardPrime">
   </a>
-
-  <h1>Refund &amp; Shipping Policy</h1>
-  <div class="updated">Last updated: August 24, 2026</div>
-
-  <h2>1. Who we are</h2>
-  <p>CardPrime is operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we", "us"), a company registered in Hungary.</p>
-  <div class="card">
-    <p>Registered office: <strong>2085 Pilisvörösvár, Semmelweis köz 1., Hungary</strong><br>
-    Company registration number: <strong>13-09-248460</strong><br>
-    Tax number: <strong>33096810-2-13</strong><br>
-    Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+  <div class="bar__right">
+    <a class="btn" href="../app/">Get the app</a>
+    <a class="icon-btn" href="../checkout/" aria-label="Cart">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </a>
+    <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="burger" aria-hidden="true"></span></button>
   </div>
-  <p>This policy applies to purchases of sealed card packs made through CardPrime.</p>
+</header>
 
-  <h2>2. Orders, prices and payment</h2>
-  <p>All prices are shown in <strong>Hungarian forint (HUF)</strong> and are gross prices, inclusive of 27% Hungarian VAT. The price you see is the price you pay. A flat delivery charge of <strong>1&nbsp;950&nbsp;Ft</strong> is added to every order, whatever its size, and is shown at checkout before you confirm.</p>
-  <p>Payment is collected by our payment processor, <strong>Stripe</strong>, on a secure page hosted by Stripe. We never see or store your card details. An order is confirmed once payment has been successfully collected. You will receive a payment receipt from Stripe and a VAT invoice by email.</p>
-
-  <h2>3. Shipping</h2>
-  <p>Sealed packs are physical goods and are shipped to the address or parcel locker you provide at checkout. Orders are dispatched within <strong>2 business days</strong> of payment being collected, and standard delivery takes a further <strong>2&ndash;5 business days</strong>. Delivery costs a flat <strong>1&nbsp;950&nbsp;Ft</strong> per order regardless of how many packs it contains. The delivery estimate and the carrier are shown at checkout and confirmed by email once your order ships.</p>
-  <p><strong>For consumer purchases, risk of loss or damage in transit stays with CardPrime until you (or a recipient you designate, other than the carrier itself) actually receive the parcel</strong> &mdash; not upon handover to the carrier. This follows Hungarian and EU consumer distance-selling law (Government Decree 45/2014 (II. 26.), implementing Directive 2011/83/EU), and is why non-delivery is handled as our responsibility in Section 8, not yours.</p>
-
-  <h2>4. Right to cancel &mdash; 14-day withdrawal</h2>
-  <p>If you are a consumer (a private individual, not buying for your trade, business or profession) in Hungary or elsewhere in the EU, you have a statutory right to withdraw from your purchase <strong>within 14 days of receiving your order, for any reason, without needing to justify it</strong> (Government Decree 45/2014 (II. 26.), implementing Directive 2011/83/EU). This is separate from, and broader than, the pre-shipment cancellation in Section 5 and the randomized-contents clause in Section 6.</p>
-  <p>To exercise this right, contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> within the 14-day period with a clear statement that you are withdrawing; a model withdrawal form is available on request. You must send the goods back within 14 days of that notice, at your own shipping cost, and we will refund you &mdash; including standard delivery cost, if any &mdash; within 14 days of receiving the returned goods or proof that you have sent them, whichever comes first.</p>
-
-  <h2>5. Cancelling before shipment</h2>
-  <p>Separately from the statutory withdrawal right above &mdash; and simpler, since it needs no form &mdash; you may cancel an order free of charge at any time <strong>before it has shipped</strong>. Email <a href="mailto:info@cardprime.io">info@cardprime.io</a> with your order number. Once an order has shipped, use the withdrawal right in Section 4 or the returns process in Section 10 instead.</p>
-
-  <h2>6. Sealed-pack contents and your withdrawal right</h2>
-  <p>Each pack's contents are randomized by design &mdash; that unpredictability is the product. Being unhappy with which card or cards you received is not, by itself, grounds for a discretionary refund or exchange beyond what is described in this policy, whether the outcome was better or worse than you expected.</p>
-  <p><strong>This does not limit your statutory withdrawal right under Section 4.</strong> Hungarian and EU law does not recognize any exemption from the 14-day withdrawal right for a sealed, randomized card pack &mdash; it is not a hygiene product, a sealed audio, video or software item, or goods inseparably mixed with others &mdash; so the right applies even once you have opened it. If you withdraw after opening a pack, we may deduct a <strong>value-diminishment amount</strong>, calculated as the pack purchase price minus the fair market value, at the time of your return, of the card or cards you actually received.</p>
-  <p>This reflects that an opened pack can no longer be resold as new, while the cards you pulled keep their own resale value &mdash; so the deduction is limited to what has genuinely been lost, not the full price.</p>
-
-  <h2>7. Damaged, defective or incorrect items</h2>
-  <p>If your pack arrives damaged or defective, or if we shipped you the wrong item, contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> within <strong>14 days of delivery</strong> with your order number and photos of the issue. We will offer a replacement or a full refund.</p>
-
-  <h2>8. Non-delivery or lost packages</h2>
-  <p>Most orders arrive within <strong>5 business days</strong> of dispatch; the specific estimate for your order is shown at checkout and confirmed by email once it ships. If your order has not arrived within that window plus a reasonable buffer, contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> with your order number. We will check the shipment status with our carrier; if the parcel is confirmed lost, or cannot be located within a reasonable investigation period, we will send a replacement or issue a full refund &mdash; your choice. This follows from the risk allocation in Section 3 and is not conditional on Section 6 or 7.</p>
-
-  <h2>9. Refund method and timing</h2>
-  <p>Refunds under this policy (Sections 4, 7 or 8) are issued to your original payment method via Stripe. Refunds are typically initiated within 5 business days of approval; the time for the funds to appear depends on your card issuer or bank.</p>
-
-  <h2>10. Returns</h2>
-  <p>Because pack contents are sealed and randomized, we do not accept discretionary returns of opened packs except under Section 7 (damaged, defective or incorrect) or your statutory withdrawal right under Section 4. Unopened, undamaged packs may also be returned within 14 days of delivery at your own shipping cost &mdash; contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> first to arrange this.</p>
-
-  <h2>11. Complaints and dispute resolution</h2>
-  <p>If something has gone wrong, write to <a href="mailto:info@cardprime.io">info@cardprime.io</a> first &mdash; we aim to answer every complaint within 30 days. If we cannot resolve it between us, as a consumer in the EU you may also use the European Commission's Online Dispute Resolution platform at <a href="https://ec.europa.eu/consumers/odr">ec.europa.eu/consumers/odr</a>, or turn to the conciliation board (b&eacute;k&eacute;ltető testület) competent for our registered office.</p>
-
-  <h2>12. Contact</h2>
-  <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
-
-  <div class="nav-links">
-    <a href="../terms/">Terms of Service</a>
-    <a href="../privacy/">Privacy Policy</a>
-    <a href="../support/">Support</a>
+<nav class="menu" id="site-menu" aria-label="Site">
+  <div class="menu__grid">
+    <div class="menu__group">
+      <span class="menu__head">CardPrime</span>
+      <div class="menu__big">
+        <a href="../">Home</a>
+        <a href="../shop/">Shop</a>
+        <a href="../app/">Get the app</a>
+        <a href="../refund-policy/" aria-current="page">Refund &amp; Shipping</a>
+      </div>
+    </div>
+    <div class="menu__group">
+      <span class="menu__head">Legal &amp; help</span>
+      <ul class="menu__list">
+        <li><a href="../privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a></li>
+        <li><a href="../terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a></li>
+        <li><a href="../support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a></li>
+      </ul>
+    </div>
   </div>
+  <p class="menu__foot">&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+</nav>
 
-  <footer>
-    &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
-  </footer>
-</div>
-<script src="../nav.js?v=2"></script>
+<main>
+  <header class="doc-hero">
+    <div class="doc-hero__in">
+      <span class="stripe" aria-hidden="true"></span>
+      <span class="sc-label">Shop</span>
+      <h1 class="sc-display sc-display--lg">Refund &amp; <span class="accent">Shipping Policy</span></h1>
+      <p class="updated">Last updated: August 24, 2026</p>
+    </div>
+  </header>
+
+  <div class="doc">
+    <nav class="toc" aria-label="On this page">
+      <ol>
+        <li><a href="#who-we-are">1. Who we are</a></li>
+        <li><a href="#orders">2. Orders, prices and payment</a></li>
+        <li><a href="#shipping">3. Shipping</a></li>
+        <li><a href="#withdrawal">4. 14-day withdrawal</a></li>
+        <li><a href="#cancel">5. Cancelling before shipment</a></li>
+        <li><a href="#sealed">6. Sealed-pack contents</a></li>
+        <li><a href="#damaged">7. Damaged or incorrect items</a></li>
+        <li><a href="#lost">8. Non-delivery or lost packages</a></li>
+        <li><a href="#refunds">9. Refund method and timing</a></li>
+        <li><a href="#returns">10. Returns</a></li>
+        <li><a href="#complaints">11. Complaints and disputes</a></li>
+        <li><a href="#contact">12. Contact</a></li>
+      </ol>
+    </nav>
+
+    <article class="legal">
+      <section id="who-we-are">
+        <h2><span class="no">1.</span>Who we are</h2>
+        <p>CardPrime is operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we", "us"), a company registered in Hungary.</p>
+        <div class="callout">
+          <p>Registered office: <strong>2085 Pilisvörösvár, Semmelweis köz 1., Hungary</strong><br>
+          Company registration number: <strong>13-09-248460</strong><br>
+          Tax number: <strong>33096810-2-13</strong><br>
+          Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+        </div>
+        <p>This policy applies to purchases of sealed card packs made through CardPrime.</p>
+      </section>
+
+      <section id="orders">
+        <h2><span class="no">2.</span>Orders, prices and payment</h2>
+        <p>All prices are shown in <strong>Hungarian forint (HUF)</strong> and are gross prices, inclusive of 27% Hungarian VAT. The price you see is the price you pay. A flat delivery charge of <strong>1&nbsp;950&nbsp;Ft</strong> is added to every order, whatever its size, and is shown at checkout before you confirm.</p>
+        <p>Payment is collected by our payment processor, <strong>Stripe</strong>, on a secure page hosted by Stripe. We never see or store your card details. An order is confirmed once payment has been successfully collected. You will receive a payment receipt from Stripe and a VAT invoice by email.</p>
+      </section>
+
+      <section id="shipping">
+        <h2><span class="no">3.</span>Shipping</h2>
+        <p>Sealed packs are physical goods and are shipped to the address or parcel locker you provide at checkout. Orders are dispatched within <strong>2 business days</strong> of payment being collected, and standard delivery takes a further <strong>2&ndash;5 business days</strong>. Delivery costs a flat <strong>1&nbsp;950&nbsp;Ft</strong> per order regardless of how many packs it contains. The delivery estimate and the carrier are shown at checkout and confirmed by email once your order ships.</p>
+        <p><strong>For consumer purchases, risk of loss or damage in transit stays with CardPrime until you (or a recipient you designate, other than the carrier itself) actually receive the parcel</strong> &mdash; not upon handover to the carrier. This follows Hungarian and EU consumer distance-selling law (Government Decree 45/2014 (II. 26.), implementing Directive 2011/83/EU), and is why non-delivery is handled as our responsibility in Section 8, not yours.</p>
+      </section>
+
+      <section id="withdrawal">
+        <h2><span class="no">4.</span>Right to cancel &mdash; 14-day withdrawal</h2>
+        <p>If you are a consumer (a private individual, not buying for your trade, business or profession) in Hungary or elsewhere in the EU, you have a statutory right to withdraw from your purchase <strong>within 14 days of receiving your order, for any reason, without needing to justify it</strong> (Government Decree 45/2014 (II. 26.), implementing Directive 2011/83/EU). This is separate from, and broader than, the pre-shipment cancellation in Section 5 and the randomized-contents clause in Section 6.</p>
+        <p>To exercise this right, contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> within the 14-day period with a clear statement that you are withdrawing; a model withdrawal form is available on request. You must send the goods back within 14 days of that notice, at your own shipping cost, and we will refund you &mdash; including standard delivery cost, if any &mdash; within 14 days of receiving the returned goods or proof that you have sent them, whichever comes first.</p>
+      </section>
+
+      <section id="cancel">
+        <h2><span class="no">5.</span>Cancelling before shipment</h2>
+        <p>Separately from the statutory withdrawal right above &mdash; and simpler, since it needs no form &mdash; you may cancel an order free of charge at any time <strong>before it has shipped</strong>. Email <a href="mailto:info@cardprime.io">info@cardprime.io</a> with your order number. Once an order has shipped, use the withdrawal right in Section 4 or the returns process in Section 10 instead.</p>
+      </section>
+
+      <section id="sealed">
+        <h2><span class="no">6.</span>Sealed-pack contents and your withdrawal right</h2>
+        <p>Each pack's contents are randomized by design &mdash; that unpredictability is the product. Being unhappy with which card or cards you received is not, by itself, grounds for a discretionary refund or exchange beyond what is described in this policy, whether the outcome was better or worse than you expected.</p>
+        <div class="callout">
+          <p><strong>This does not limit your statutory withdrawal right under Section 4.</strong> Hungarian and EU law does not recognize any exemption from the 14-day withdrawal right for a sealed, randomized card pack &mdash; it is not a hygiene product, a sealed audio, video or software item, or goods inseparably mixed with others &mdash; so the right applies even once you have opened it. If you withdraw after opening a pack, we may deduct a <strong>value-diminishment amount</strong>, calculated as the pack purchase price minus the fair market value, at the time of your return, of the card or cards you actually received.</p>
+        </div>
+        <p>This reflects that an opened pack can no longer be resold as new, while the cards you pulled keep their own resale value &mdash; so the deduction is limited to what has genuinely been lost, not the full price.</p>
+      </section>
+
+      <section id="damaged">
+        <h2><span class="no">7.</span>Damaged, defective or incorrect items</h2>
+        <p>If your pack arrives damaged or defective, or if we shipped you the wrong item, contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> within <strong>14 days of delivery</strong> with your order number and photos of the issue. We will offer a replacement or a full refund.</p>
+      </section>
+
+      <section id="lost">
+        <h2><span class="no">8.</span>Non-delivery or lost packages</h2>
+        <p>Most orders arrive within <strong>5 business days</strong> of dispatch; the specific estimate for your order is shown at checkout and confirmed by email once it ships. If your order has not arrived within that window plus a reasonable buffer, contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> with your order number. We will check the shipment status with our carrier; if the parcel is confirmed lost, or cannot be located within a reasonable investigation period, we will send a replacement or issue a full refund &mdash; your choice. This follows from the risk allocation in Section 3 and is not conditional on Section 6 or 7.</p>
+      </section>
+
+      <section id="refunds">
+        <h2><span class="no">9.</span>Refund method and timing</h2>
+        <p>Refunds under this policy (Sections 4, 7 or 8) are issued to your original payment method via Stripe. Refunds are typically initiated within 5 business days of approval; the time for the funds to appear depends on your card issuer or bank.</p>
+      </section>
+
+      <section id="returns">
+        <h2><span class="no">10.</span>Returns</h2>
+        <p>Because pack contents are sealed and randomized, we do not accept discretionary returns of opened packs except under Section 7 (damaged, defective or incorrect) or your statutory withdrawal right under Section 4. Unopened, undamaged packs may also be returned within 14 days of delivery at your own shipping cost &mdash; contact <a href="mailto:info@cardprime.io">info@cardprime.io</a> first to arrange this.</p>
+      </section>
+
+      <section id="complaints">
+        <h2><span class="no">11.</span>Complaints and dispute resolution</h2>
+        <p>If something has gone wrong, write to <a href="mailto:info@cardprime.io">info@cardprime.io</a> first &mdash; we aim to answer every complaint within 30 days. If we cannot resolve it between us, as a consumer in the EU you may also use the European Commission's Online Dispute Resolution platform at <a href="https://ec.europa.eu/consumers/odr">ec.europa.eu/consumers/odr</a>, or turn to the conciliation board (b&eacute;k&eacute;ltető testület) competent for our registered office.</p>
+      </section>
+
+      <section id="contact">
+        <h2><span class="no">12.</span>Contact</h2>
+        <div class="callout">
+          <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+        </div>
+      </section>
+
+      <nav class="related" aria-label="Related pages">
+        <a href="../terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a>
+        <a href="../privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a>
+        <a href="../support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a>
+      </nav>
+    </article>
+  </div>
+</main>
+
+<footer class="foot">
+  <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
+  <nav aria-label="Footer">
+    <a href="../shop/">Shop</a><a href="../refund-policy/" aria-current="page">Refund &amp; Shipping</a><a href="../privacy/">Privacy Policy</a><a href="../terms/">Terms of Service</a><a href="../support/">Support</a>
+  </nav>
+</footer>
+
+<script src="../menu.js?v=1"></script>
 </body>
 </html>
