@@ -196,7 +196,6 @@
       var mix = shop.basketMix || {};
       var kpis = [
         ['Készlet (pool)', formatNum(s.poolStock), 'tasak még eladható', true],
-        ['Foglalva', formatNum(s.packsReservedPending), 'tasak fizetésre vár'],
         ['Eladott tasak', formatNum(s.packsSold), 'fizetett rendelésekben, dobozok tasakjaival együtt'],
         ['Felhasználók', formatNum(u.total), s.users ? 'pontos szám · megerősített: ' + formatNum(u.confirmed) +
           ' · nem megerősített: ' + formatNum(u.unconfirmed) + (u.other ? ' · egyéb: ' + formatNum(u.other) : '') : 'nem sikerült lekérdezni'],
