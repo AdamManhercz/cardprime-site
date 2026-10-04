@@ -294,7 +294,8 @@
   // Fő bontás: legalább egyszer beolvasott (van claim-sora) vs. még soha. Külön kategória
   // ezen belül a kivett / törölt fiókos: a kivett kártya a beolvasás alapján továbbra is az
   // utolsó ismert tulajé (pontostul); a törölt fiókosé is kihúzott marad — egyiket sem
-  // igényelheti más (termékdöntés 2026-10-04).
+  // igényelheti más (termékdöntés 2026-10-04). A törölt user kártyái a véletlen
+  // formerOwnerRef alapján együtt látszanak ("törölt fiók #ref"), név nélkül.
   var CLAIM_STATES = { inCollection: 'Gyűjteményben', removed: 'Kivette', released: 'Fiók törölve' };
   function pct(n) {
     return n == null ? '—' : Number(n).toLocaleString('hu-HU', { maximumFractionDigits: 1 }) + '%';
@@ -330,7 +331,7 @@
         ['Legalább egyszer beolvasott', formatNum(c.scanned), pct(c.scannedPct)],
         ['Még nem beolvasott', formatNum(c.unscanned), pct(c.scannedPct == null ? null : 100 - c.scannedPct)],
         ['Gyűjteményben', formatNum(c.inCollection), 'beolvasott, most is valakinek a gyűjteményében'],
-        ['Kivett / törölt fiók', formatNum(c.notInCollection), 'kivette, de az övé maradt: ' + formatNum(c.removed) + ' · fiók törölve: ' + formatNum(c.released)],
+        ['Kivett / törölt fiók', formatNum(c.notInCollection), 'kivette, de az övé maradt: ' + formatNum(c.removed) + ' · fiók törölve: ' + formatNum(c.released) + ' (' + formatNum(c.deletedOwners || 0) + ' volt user)'],
         ['Gyűjtők', formatNum(c.collectors), 'akiknek most legalább 1 kártya van a gyűjteményükben'],
         ['Kártya / gyűjtő', formatAvg(c.avgCardsPerCollector), 'átlag · legtöbb: ' + formatNum(c.maxCardsPerCollector)],
         ['Kártya / felhasználó', formatAvg(c.avgCardsPerUser), 'átlag az összes megerősített felhasználóra (' + formatNum(u.confirmed) + ')']
@@ -372,7 +373,7 @@
         return '<tr><td><code>' + esc(c.sku) + '</code></td><td>' + esc(c.playerName || '') + '</td><td>' + tierText(c) +
           '</td><td class="num">' + formatNum(c.points) + '</td>' +
           (scanned ? '<td>' + esc(CLAIM_STATES[c.state] || c.state) + (c.leftAt ? '<br><span class="muted">' + formatDate(c.leftAt) + '</span>' : '') +
-            '</td><td>' + (c.owner ? esc(c.owner) : '<span class="muted">törölt fiók</span>') + '</td><td>' + formatDate(c.claimedAt) + '</td>' : '') + '</tr>';
+            '</td><td>' + (c.owner ? esc(c.owner) : '<span class="muted">törölt fiók' + (c.formerOwnerRef ? ' #' + esc(c.formerOwnerRef) : '') + '</span>') + '</td><td>' + formatDate(c.claimedAt) + '</td>' : '') + '</tr>';
       }).join('');
       $('#cards-table').innerHTML = '<thead><tr><th>SKU</th><th>Játékos</th><th>Tier</th><th class="num">Pont</th>' +
         (scanned ? '<th>Állapot</th><th>Tulaj / utolsó ismert tulaj</th><th>Beolvasva</th>' : '') + '</tr></thead><tbody>' +
