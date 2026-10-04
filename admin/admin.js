@@ -166,10 +166,11 @@
   }
 
   // ---------- nézetek ----------
+  var VIEWS = ['overview', 'orders', 'collection', 'statuses'];
   function showLogin() {
     $('#tabs').hidden = true;
     $('#logout').hidden = true;
-    ['overview', 'orders', 'statuses'].forEach(function (v) { $('#view-' + v).hidden = true; });
+    VIEWS.forEach(function (v) { $('#view-' + v).hidden = true; });
     $('#view-login').hidden = false;
   }
   function showApp() {
@@ -182,9 +183,10 @@
     document.querySelectorAll('.tab').forEach(function (t) {
       t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
     });
-    ['overview', 'orders', 'statuses'].forEach(function (v) { $('#view-' + v).hidden = v !== view; });
+    VIEWS.forEach(function (v) { $('#view-' + v).hidden = v !== view; });
     if (view === 'overview') loadStats();
     if (view === 'orders') loadOrders();
+    if (view === 'collection') loadCollection();
   }
 
   function loadStats() {
@@ -285,6 +287,98 @@
       $('#orders-meta').textContent = data.orders.length + ' / ' + data.total + ' rendelés';
     }).catch(function (e) {
       $('#orders-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
+    });
+  }
+
+  // ---------- V2 gyűjtemény ----------
+  // Fő bontás: legalább egyszer beolvasott (van claim-sora) vs. még soha. Külön kategória
+  // ezen belül a kivett / törölt fiókos: a kivett kártya a beolvasás alapján továbbra is az
+  // utolsó ismert tulajé (pontostul), más nem igényelheti; a törölt fiókosé újra igényelhető.
+  var CLAIM_STATES = { inCollection: 'Gyűjteményben', removed: 'Kivette', released: 'Fiók törölve' };
+  function pct(n) {
+    return n == null ? '—' : Number(n).toLocaleString('hu-HU', { maximumFractionDigits: 1 }) + '%';
+  }
+  function tierText(c) {
+    return esc([c.tier, c.variant].filter(Boolean).join(' · '));
+  }
+
+  function loadCollection() {
+    $('#scan-kpis').innerHTML = '<p class="muted">Betöltés…</p>';
+    api('collectionStats').then(function (c) {
+      var scans = c.scans || {};
+      var t = scans.totals || {};
+      var scanKpis = [
+        ['Hitelesítési kísérlet', formatNum(t.attempts), 'kamera: ' + formatNum(t.camera) + ' · kézi SKU: ' + formatNum(t.manual), true],
+        ['Sikeres', formatNum(t.authenticated), pct(t.successPct) + ' — a kód a mi nyomtatott kártyánk'],
+        ['Hibás', formatNum(t.failed), pct(t.failedPct) + ' — ismeretlen kód: ' + formatNum(t.notFound) + ' · SDK nem tudta olvasni: ' + formatNum(t.sdkFailed)],
+        ['Megszakítva', formatNum(t.cancelled), 'kamera bezárva eredmény nélkül, nem számít kísérletnek']
+      ];
+      $('#scan-kpis').innerHTML = scanKpis.map(kpiHtml).join('');
+      var drows = (scans.days || []).slice(0, 30).map(function (d) {
+        return '<tr><td>' + esc(d.day) + '</td><td class="num">' + formatNum(d.attempts) + '</td><td class="num">' + formatNum(d.authenticated) +
+          '</td><td class="num">' + formatNum(d.notFound) + '</td><td class="num">' + formatNum(d.sdkFailed) + '</td><td class="num">' + formatNum(d.cancelled) +
+          '</td><td class="num">' + formatNum(d.camera) + ' / ' + formatNum(d.manual) + '</td></tr>';
+      }).join('');
+      $('#scan-days').innerHTML = '<thead><tr><th>Nap (UTC)</th><th class="num">Kísérlet</th><th class="num">Sikeres</th><th class="num">Ismeretlen kód</th>' +
+        '<th class="num">SDK hiba</th><th class="num">Megszakítva</th><th class="num">Kamera / kézi</th></tr></thead><tbody>' +
+        (drows || '<tr><td colspan="7" class="muted">Még nem volt beolvasás.</td></tr>') + '</tbody>';
+
+      var u = c.users || {};
+      var colKpis = [
+        ['Nyomtatott kártyák', formatNum(c.printed), 'minden példány (cardprime-card-skus)', true],
+        ['Legalább egyszer beolvasott', formatNum(c.scanned), pct(c.scannedPct)],
+        ['Még nem beolvasott', formatNum(c.unscanned), pct(c.scannedPct == null ? null : 100 - c.scannedPct)],
+        ['Gyűjteményben', formatNum(c.inCollection), 'beolvasott, most is valakinek a gyűjteményében'],
+        ['Kivett / törölt fiók', formatNum(c.notInCollection), 'kivette, de az övé maradt: ' + formatNum(c.removed) + ' · fiók törölve: ' + formatNum(c.released)],
+        ['Gyűjtők', formatNum(c.collectors), 'akiknek most legalább 1 kártya van a gyűjteményükben'],
+        ['Kártya / gyűjtő', formatAvg(c.avgCardsPerCollector), 'átlag · legtöbb: ' + formatNum(c.maxCardsPerCollector)],
+        ['Kártya / felhasználó', formatAvg(c.avgCardsPerUser), 'átlag az összes megerősített felhasználóra (' + formatNum(u.confirmed) + ')']
+      ];
+      $('#collection-kpis').innerHTML = colKpis.map(kpiHtml).join('');
+      var rows = (c.designs || []).map(function (d) {
+        return '<tr><td><code>' + esc(d.cardTypeId) + '</code></td><td>' + esc(d.playerName || '') + '</td><td>' + tierText(d) +
+          '</td><td class="num">' + formatNum(d.printed) + '</td><td class="num">' + formatNum(d.scanned) + '</td><td class="num">' + share(d.scanned, d.printed) + '</td></tr>';
+      }).join('');
+      $('#design-table').innerHTML = '<thead><tr><th>Dizájn</th><th>Játékos</th><th>Tier</th><th class="num">Nyomtatva</th><th class="num">Beolvasva</th><th class="num">Arány</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="6" class="muted">Nincs nyomtatott kártya a táblában.</td></tr>') + '</tbody>';
+      $('#collection-meta').textContent = 'Frissítve: ' + formatDate(c.generatedAt);
+    }).catch(function (e) {
+      $('#scan-kpis').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
+    });
+
+    $('#leaderboard-table').innerHTML = '<tbody><tr><td class="muted">Betöltés…</td></tr></tbody>';
+    api('leaderboard', { limit: 100 }).then(function (data) {
+      var rows = data.entries.map(function (e) {
+        return '<tr><td class="num">' + esc(e.rank) + '.</td><td>' + esc(e.name) + '<br><span class="muted">' + esc(e.publicId || '') +
+          '</span></td><td class="num">' + formatNum(e.score) + '</td><td class="num">' + formatNum(e.cards) + '</td></tr>';
+      }).join('');
+      $('#leaderboard-table').innerHTML = '<thead><tr><th class="num">Hely</th><th>Gyűjtő</th><th class="num">Pont</th><th class="num">Kártya</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="4" class="muted">Még senki nincs a ranglistán.</td></tr>') + '</tbody>';
+    }).catch(function (e) {
+      $('#leaderboard-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
+    });
+
+    loadCards();
+  }
+
+  function loadCards() {
+    var f = $('#card-filters');
+    var scanned = f.state.value !== 'unscanned';
+    $('#cards-table').innerHTML = '<tbody><tr><td class="muted">Betöltés…</td></tr></tbody>';
+    $('#cards-meta').textContent = '';
+    api('listCards', { state: f.state.value, q: f.q.value, limit: 500 }).then(function (data) {
+      var rows = data.cards.map(function (c) {
+        return '<tr><td><code>' + esc(c.sku) + '</code></td><td>' + esc(c.playerName || '') + '</td><td>' + tierText(c) +
+          '</td><td class="num">' + formatNum(c.points) + '</td>' +
+          (scanned ? '<td>' + esc(CLAIM_STATES[c.state] || c.state) + (c.leftAt ? '<br><span class="muted">' + formatDate(c.leftAt) + '</span>' : '') +
+            '</td><td>' + (c.owner ? esc(c.owner) : '<span class="muted">törölt fiók</span>') + '</td><td>' + formatDate(c.claimedAt) + '</td>' : '') + '</tr>';
+      }).join('');
+      $('#cards-table').innerHTML = '<thead><tr><th>SKU</th><th>Játékos</th><th>Tier</th><th class="num">Pont</th>' +
+        (scanned ? '<th>Állapot</th><th>Tulaj / utolsó ismert tulaj</th><th>Beolvasva</th>' : '') + '</tr></thead><tbody>' +
+        (rows || '<tr><td colspan="7" class="muted">Nincs találat.</td></tr>') + '</tbody>';
+      $('#cards-meta').textContent = data.cards.length + ' / ' + data.total + ' kártya';
+    }).catch(function (e) {
+      $('#cards-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
     });
   }
 
@@ -444,6 +538,8 @@
     if (t) switchView(t.dataset.view);
   });
   $('#stats-refresh').addEventListener('click', loadStats);
+  $('#collection-refresh').addEventListener('click', loadCollection);
+  $('#card-filters').addEventListener('submit', function (ev) { ev.preventDefault(); loadCards(); });
   $('#order-filters').addEventListener('submit', function (ev) { ev.preventDefault(); loadOrders(); });
   $('#orders-table').addEventListener('click', function (ev) {
     var tr = ev.target.closest('tr[data-id]');

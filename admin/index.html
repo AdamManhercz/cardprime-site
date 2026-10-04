@@ -23,6 +23,7 @@
   <nav class="tabs" id="tabs" hidden aria-label="Admin">
     <button type="button" class="tab" data-view="overview" aria-selected="true">Áttekintés</button>
     <button type="button" class="tab" data-view="orders" aria-selected="false">Rendelések</button>
+    <button type="button" class="tab" data-view="collection" aria-selected="false">Gyűjtemény</button>
     <button type="button" class="tab" data-view="statuses" aria-selected="false">Státuszok</button>
   </nav>
   <button type="button" class="btn btn--ghost" id="logout" hidden>Kilépés</button>
@@ -88,6 +89,38 @@
     </div>
     <div class="table-wrap"><table class="table table--click" id="orders-table"></table></div>
     <p class="muted" id="orders-meta"></p>
+  </section>
+
+  <!-- V2 gyűjtemény: beolvasások, gyűjtemények, ranglista, kártyalisták -->
+  <section class="view" id="view-collection" hidden>
+    <div class="head">
+      <h2>Gyűjtemény</h2>
+      <button type="button" class="btn btn--ghost" id="collection-refresh">Frissítés</button>
+    </div>
+    <h3>Hitelesítések (beolvasások)</h3>
+    <div class="kpis" id="scan-kpis"></div>
+    <div class="table-wrap"><table class="table" id="scan-days"></table></div>
+    <h3>Kártyák és gyűjtemények</h3>
+    <div class="kpis" id="collection-kpis"></div>
+    <h3>Dizájnok szerint</h3>
+    <div class="table-wrap"><table class="table" id="design-table"></table></div>
+    <h3>Ranglista</h3>
+    <div class="table-wrap"><table class="table" id="leaderboard-table"></table></div>
+    <div class="head">
+      <h3>Kártyák</h3>
+      <form class="filters" id="card-filters">
+        <select name="state" aria-label="Kártyák szűrése">
+          <option value="scanned">Legalább egyszer beolvasott</option>
+          <option value="unscanned">Még nem beolvasott</option>
+          <option value="left">Kivett / törölt fiók</option>
+        </select>
+        <input name="q" type="search" placeholder="SKU, játékos, dizájn" aria-label="Keresés">
+        <button class="btn" type="submit">Szűrés</button>
+      </form>
+    </div>
+    <div class="table-wrap"><table class="table" id="cards-table"></table></div>
+    <p class="muted" id="cards-meta"></p>
+    <p class="muted" id="collection-meta"></p>
   </section>
 
   <!-- státusz-referencia — a teljes változat: docs/order-statuses.md -->
