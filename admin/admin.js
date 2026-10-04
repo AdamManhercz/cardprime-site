@@ -293,7 +293,8 @@
   // ---------- V2 gyűjtemény ----------
   // Fő bontás: legalább egyszer beolvasott (van claim-sora) vs. még soha. Külön kategória
   // ezen belül a kivett / törölt fiókos: a kivett kártya a beolvasás alapján továbbra is az
-  // utolsó ismert tulajé (pontostul), más nem igényelheti; a törölt fiókosé újra igényelhető.
+  // utolsó ismert tulajé (pontostul); a törölt fiókosé is kihúzott marad — egyiket sem
+  // igényelheti más (termékdöntés 2026-10-04).
   var CLAIM_STATES = { inCollection: 'Gyűjteményben', removed: 'Kivette', released: 'Fiók törölve' };
   function pct(n) {
     return n == null ? '—' : Number(n).toLocaleString('hu-HU', { maximumFractionDigits: 1 }) + '%';
