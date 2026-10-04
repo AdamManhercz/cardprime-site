@@ -1,2 +1,15 @@
 /.well-known/apple-app-site-association
   Content-Type: application/json
+
+# Admin portal — not linked from anywhere on the site. Real protection is the Cognito
+# login enforced by the backend (POST /admin, separate admin user pool); these headers
+# only keep it out of search engines, frames and caches.
+/admin
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://cognito-idp.eu-north-1.amazonaws.com https://q8gld60qn0.execute-api.eu-north-1.amazonaws.com; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
