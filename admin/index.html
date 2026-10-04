@@ -52,6 +52,11 @@
       <button type="button" class="btn btn--ghost" id="stats-refresh">Frissítés</button>
     </div>
     <div class="kpis" id="kpis"></div>
+    <h3>Kosár — fizetett tasak-rendelések</h3>
+    <div class="kpis" id="basket-kpis"></div>
+    <h3>Termékek szerint</h3>
+    <div class="table-wrap"><table class="table" id="product-table"></table></div>
+    <p class="muted" id="auction-meta"></p>
     <h3>Rendelések státusz szerint</h3>
     <div class="table-wrap"><table class="table" id="status-table"></table></div>
     <p class="muted" id="stats-meta"></p>
@@ -70,6 +75,12 @@
           <option value="refunded">refunded</option>
           <option value="cancelled">cancelled</option>
           <option value="expired">expired</option>
+        </select>
+        <select name="content" aria-label="Tartalom szűrő">
+          <option value="">Minden tartalom</option>
+          <option value="boxOnly">Csak doboz</option>
+          <option value="looseOnly">Csak önálló tasak</option>
+          <option value="mixed">Vegyes</option>
         </select>
         <input name="q" type="search" placeholder="Rendelésszám, e-mail, név" aria-label="Keresés">
         <button class="btn" type="submit">Szűrés</button>
@@ -91,7 +102,7 @@
         <tr><td><span class="badge s-expired">expired</span></td><td>30 percig nem fizettek. A készlet visszakerül a poolba, a Stripe session lejár.</td><td>order_expiry_handler (15 percenként)</td><td>Csak készlet — egyik szolgáltató felé sincs teendő</td></tr>
         <tr><td><span class="badge s-reversing">reversing</span></td><td>Átmeneti: admin visszatérítés/sztornó fut. Ha itt ragad, ugyanazzal a gombbal folytatható.</td><td>admin_handler</td><td>Belső zár, dupla visszatérítés ellen</td></tr>
         <tr><td><span class="badge s-refunded">refunded</span></td><td>Valódi vásárlás visszafordítva (visszaküldés, panasz, elveszett csomag). Készlet alapból NEM jön vissza.</td><td>admin_handler · refundOrder (vagy CLI)</td><td>Stripe (refund), Számlázz.hu (sztornó számla), szállító (kézi lemondás)</td></tr>
-        <tr><td><span class="badge s-cancelled">cancelled</span></td><td>Hibás vagy teszt vásárlás érvénytelenítve. Fizetett rendelésnél pénz vissza + sztornó számla; fizetetlennél a Stripe session lezárva. Készlet alapból visszajön.</td><td>admin_handler · stornoOrder</td><td>Stripe, Számlázz.hu, szállító (kézi), készlet</td></tr>
+        <tr><td><span class="badge s-cancelled">cancelled</span></td><td>Hibás vagy teszt vásárlás érvénytelenítve. Fizetett rendelésnél pénz vissza + sztornó számla; fizetetlennél a Stripe session lezárva. A tasakok mindig visszakerülnek a készletbe (bontatlanok).</td><td>admin_handler · stornoOrder</td><td>Stripe, Számlázz.hu, szállító (kézi), készlet</td></tr>
       </tbody>
     </table></div>
     <h3>Al-státuszok</h3>

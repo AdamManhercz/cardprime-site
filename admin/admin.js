@@ -191,19 +191,41 @@
     $('#kpis').innerHTML = '<p class="muted">Betöltés…</p>';
     api('stats').then(function (s) {
       var paid = (s.ordersByStatus.paid || {}).count || 0;
+      var u = s.users || {};
+      var shop = s.shop || {};
+      var mix = shop.basketMix || {};
       var kpis = [
         ['Készlet (pool)', formatNum(s.poolStock), 'tasak még eladható', true],
         ['Foglalva', formatNum(s.packsReservedPending), 'tasak fizetésre vár'],
-        ['Eladott tasak', formatNum(s.packsSold), 'fizetett rendelésekben'],
-        ['Felhasználók', formatNum(s.userCount), 'Cognito becslés, nem megerősítettekkel együtt'],
+        ['Eladott tasak', formatNum(s.packsSold), 'fizetett rendelésekben, dobozok tasakjaival együtt'],
+        ['Felhasználók', formatNum(u.total), s.users ? 'pontos szám · megerősített: ' + formatNum(u.confirmed) +
+          ' · nem megerősített: ' + formatNum(u.unconfirmed) + (u.other ? ' · egyéb: ' + formatNum(u.other) : '') : 'nem sikerült lekérdezni'],
+        ['Összes rendelés', formatNum(s.totalOrders), 'minden státusz, a lejártakkal együtt'],
         ['Fizetett rendelések', formatNum(paid), channelHint(s.paidByChannel)],
         ['Bevétel', formatHuf(s.revenueCents), 'fizetett, bruttó'],
         ['Visszatérítve', formatHuf(s.refundedCents), 'refunded + cancelled']
       ];
-      $('#kpis').innerHTML = kpis.map(function (k) {
-        return '<div class="kpi' + (k[3] ? ' kpi--accent' : '') + '"><div class="kpi__label">' + esc(k[0]) +
-          '</div><div class="kpi__value">' + esc(k[1]) + '</div><div class="kpi__hint">' + esc(k[2]) + '</div></div>';
+      var basket = [
+        ['Átlagos kosárérték', formatHuf(shop.avgBasketCents), 'fizetett tasak-rendelés, szállítás nélkül', true],
+        ['Eladott doboz', formatNum(shop.boxes), 'átlag ' + formatAvg(shop.avgBoxesPerOrder) + ' / rendelés'],
+        ['Eladott önálló tasak', formatNum(shop.loosePacks), 'átlag ' + formatAvg(shop.avgLoosePacksPerOrder) + ' / rendelés'],
+        ['Tasak / rendelés', formatAvg(shop.avgPacksPerOrder), 'átlag, a dobozok 4 tasakjával együtt'],
+        ['Kosár összetétele', formatNum(mix.looseOnly) + ' / ' + formatNum(mix.boxOnly) + ' / ' + formatNum(mix.mixed),
+          'csak tasak / csak doboz / vegyes']
+      ];
+      $('#kpis').innerHTML = kpis.map(kpiHtml).join('');
+      $('#basket-kpis').innerHTML = basket.map(kpiHtml).join('');
+      var prows = (shop.products || []).map(function (p) {
+        return '<tr><td>' + esc(p.name || p.packId) + '</td><td>' + (p.packCount > 1 ? 'doboz (' + esc(p.packCount) + ' tasak)' : 'tasak') +
+          '</td><td class="num">' + formatNum(p.quantity) + '</td><td class="num">' + formatNum(p.orders) +
+          '</td><td class="num">' + formatHuf(p.revenueCents) + '</td><td class="num">' + share(p.revenueCents, shop.revenueCents) + '</td></tr>';
       }).join('');
+      $('#product-table').innerHTML = '<thead><tr><th>Termék</th><th>Típus</th><th class="num">Eladott db</th><th class="num">Rendelésben</th>' +
+        '<th class="num">Bevétel</th><th class="num">Arány</th></tr></thead><tbody>' +
+        (prows || '<tr><td colspan="6" class="muted">Még nincs fizetett rendelés.</td></tr>') + '</tbody>';
+      $('#auction-meta').textContent = s.auction && s.auction.orders
+        ? 'Aukció (nincs benne a fenti átlagokban): ' + formatNum(s.auction.orders) + ' rendelés, ' + formatHuf(s.auction.revenueCents)
+        : '';
       var rows = Object.keys(s.ordersByStatus).sort().map(function (st) {
         var e = s.ordersByStatus[st];
         return '<tr><td>' + badge(st) + '</td><td class="num">' + formatNum(e.count) + '</td><td class="num">' + formatHuf(e.totalCents) + '</td></tr>';
@@ -215,6 +237,30 @@
       $('#kpis').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
     });
   }
+  // Mit rendelt a vevő: dobozt vagy önálló tasakot. A készlet ezt nem látja (egy doboz és
+  // 4 önálló tasak egyaránt 4-et von le), ezért külön, a tételekből számolva mutatjuk.
+  function compositionText(c) {
+    if (!c || !c.kind) return '';
+    var parts = [];
+    if (c.boxes) parts.push(c.boxes + ' doboz');
+    if (c.loosePacks) parts.push(c.loosePacks + ' önálló tasak');
+    return parts.join(' + ');
+  }
+  function compositionHtml(c, packs) {
+    var text = compositionText(c);
+    if (!text) return '<span class="muted">—</span>';
+    return esc(text) + (packs ? '<br><span class="muted">készletből: ' + esc(packs) + ' tasak</span>' : '');
+  }
+  function kpiHtml(k) {
+    return '<div class="kpi' + (k[3] ? ' kpi--accent' : '') + '"><div class="kpi__label">' + esc(k[0]) +
+      '</div><div class="kpi__value">' + esc(k[1]) + '</div><div class="kpi__hint">' + esc(k[2]) + '</div></div>';
+  }
+  function formatAvg(n) {
+    return n == null ? '—' : Number(n).toLocaleString('hu-HU', { maximumFractionDigits: 2 });
+  }
+  function share(part, whole) {
+    return whole ? Math.round(part / whole * 100) + '%' : '—';
+  }
   function channelHint(ch) {
     var parts = Object.keys(ch || {}).map(function (k) { return k + ': ' + ch[k]; });
     return parts.length ? parts.join(' · ') : 'csatorna szerint';
@@ -223,19 +269,20 @@
   function loadOrders() {
     var f = $('#order-filters');
     $('#orders-table').innerHTML = '<tbody><tr><td class="muted">Betöltés…</td></tr></tbody>';
-    api('listOrders', { status: f.status.value, q: f.q.value }).then(function (data) {
+    api('listOrders', { status: f.status.value, content: f.content.value, q: f.q.value }).then(function (data) {
       var rows = data.orders.map(function (o) {
         return '<tr tabindex="0" data-id="' + esc(o.orderId) + '">' +
           '<td><b>' + esc(o.orderNumber || o.orderId) + '</b></td>' +
           '<td>' + formatDate(o.createdAt) + '</td>' +
           '<td>' + esc(o.customerName || '') + '<br><span class="muted">' + esc(o.customerEmail || '') + '</span></td>' +
+          '<td>' + compositionHtml(o.composition, o.packsReserved) + '</td>' +
           '<td class="num">' + formatHuf(o.totalCents) + '</td>' +
           '<td>' + badge(o.status) + '</td>' +
           '<td>' + badge(o.invoiceStatus) + '</td>' +
           '<td>' + (o.auctionId ? 'aukció' : esc(o.channel || 'app')) + '</td></tr>';
       }).join('');
-      $('#orders-table').innerHTML = '<thead><tr><th>Rendelés</th><th>Dátum</th><th>Vevő</th><th class="num">Összeg</th><th>Státusz</th><th>Számla</th><th>Csatorna</th></tr></thead><tbody>' +
-        (rows || '<tr><td colspan="7" class="muted">Nincs találat.</td></tr>') + '</tbody>';
+      $('#orders-table').innerHTML = '<thead><tr><th>Rendelés</th><th>Dátum</th><th>Vevő</th><th>Tartalom</th><th class="num">Összeg</th><th>Státusz</th><th>Számla</th><th>Csatorna</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="8" class="muted">Nincs találat.</td></tr>') + '</tbody>';
       $('#orders-meta').textContent = data.orders.length + ' / ' + data.total + ' rendelés';
     }).catch(function (e) {
       $('#orders-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
@@ -264,7 +311,8 @@
     $('#order-title').textContent = o.orderNumber || o.orderId;
     var addr = o.shippingAddress || {};
     var items = (o.items || []).map(function (i) {
-      return esc(i.quantity) + ' × ' + esc(i.packName || i.packId) + ' (' + formatHuf(i.priceCentsAtPurchase) + ')';
+      var kind = i.packId === 'shipping' ? '' : (Number(i.packCount) > 1 ? ' — doboz, ' + esc(i.packCount) + ' tasak' : ' — önálló tasak');
+      return esc(i.quantity) + ' × ' + esc(i.packName || i.packId) + kind + ' (' + formatHuf(i.priceCentsAtPurchase) + ' / db)';
     }).join('<br>');
     var log = (o.adminLog || []).slice().reverse().map(function (l) {
       return '<li><b>' + esc(l.action) + '</b> · ' + formatDate(l.at) + ' · ' + esc(l.operator) +
@@ -279,7 +327,8 @@
         ['Frissítve', formatDate(o.updatedAt), true],
         ['Csatorna', o.auctionId ? 'aukció (' + o.auctionId + ')' : (o.channel || 'app')],
         ['Összeg', formatHuf(o.totalCents), true],
-        ['Tasak (foglalt)', o.packsReserved],
+        ['Tartalom', compositionText(o.composition)],
+        ['Készletből levonva', o.packsReserved != null ? o.packsReserved + ' tasak' : null],
         ['Visszavett tasak', o.restockedPacks]
       ]) +
       '<div class="section"><h3>Vevő</h3>' + kv([
@@ -309,9 +358,9 @@
       desc: 'Valódi vásárlás visszafordítása. Stripe: teljes összeg vissza a vevőnek → Számlázz.hu: sztornó számla → szállító: kézi teendő, ha volt címke. Státusz: refunded.'
     },
     stornoPaid: {
-      api: 'stornoOrder', label: 'Sztornó (hibás / teszt)', cls: 'btn--warn', restock: true,
+      api: 'stornoOrder', label: 'Sztornó (hibás / teszt)', cls: 'btn--warn', restock: null,
       title: 'Sztornó — fizetett rendelés',
-      desc: 'Hibás vagy teszt vásárlás érvénytelenítése. Stripe: pénz vissza → Számlázz.hu: sztornó számla → szállító: kézi teendő, ha volt címke. Státusz: cancelled.'
+      desc: 'Hibás vagy teszt vásárlás érvénytelenítése. Stripe: pénz vissza → Számlázz.hu: sztornó számla → szállító: kézi teendő, ha volt címke. A tasakok mindig visszakerülnek a készletbe (bontatlanok, újra eladhatók). Státusz: cancelled.'
     },
     stornoUnpaid: {
       api: 'stornoOrder', label: 'Sztornó (fizetés lezárása)', cls: 'btn--warn', restock: null,
