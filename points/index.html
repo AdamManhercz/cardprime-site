@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How points work — CardPrime</title>
+<meta name="description" content="How CardPrime points work: points for every printed card you scan, one-time quest bonuses, and the levels and badges your score unlocks.">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="../assets/appicon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../scrollcraft.css?v=1">
+<link rel="stylesheet" href="../site.css?v=1">
+<style>
+  /* tokenek, sáv, menü, lábléc, táblázat: site.css. Itt csak a pontoldal saját anyaga. */
+  .legal h3 { font: 600 var(--sc-t-lg)/1.2 var(--sc-font-display); color: var(--sc-ink); margin: var(--sc-6) 0 var(--sc-3); }
+  .legal td.num, .legal th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .legal td.pts { color: var(--gold); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right; }
+  .legal td.none { color: var(--sc-ink-soft); }
+  .legal td.secret, .legal td.secret + td { color: var(--sc-ink-soft); font-style: italic; }
+  .legal tr.top td { background: rgba(233,196,106,.06); }
+  .legal .cat { display: block; color: var(--sc-ink-soft); font: 500 11px/1.3 var(--sc-font-text); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
+  /* a háromoszlopos quest-táblák telefonon tördelnek, nem görgetnek; a lappont-tábla görget (site.css .table-wrap) */
+  #quests table { min-width: 0; }
+
+  /* szintek: sorba rendezett csempék */
+  .levels { list-style: none; margin: var(--sc-5) 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .levels li { margin: 0; display: grid; gap: 6px; padding: var(--sc-4) var(--sc-4) var(--sc-4); border-radius: 12px;
+               background: var(--sc-surface); border: 1px solid var(--line); }
+  .levels .lvl-no { font: 600 11px/1 var(--sc-font-text); letter-spacing: .14em; text-transform: uppercase; color: var(--sc-ink-soft); }
+  .levels b { font: 600 var(--sc-t-lg)/1.15 var(--sc-font-display); color: var(--sc-ink); }
+  .levels .lvl-pts { color: var(--gold); font-weight: 600; font-variant-numeric: tabular-nums; font-size: var(--sc-t-sm); }
+  .levels li:last-child { border-color: rgba(233,196,106,.45); background: linear-gradient(160deg, rgba(233,196,106,.10), var(--sc-surface) 60%); }
+
+  .facts { list-style: none; padding: 0; margin: var(--sc-5) 0; display: grid; border-top: 1px solid var(--line); }
+  .legal .facts li { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .legal .facts li::marker { content: none; }
+
+  /* egyoszlopos lap: a fülsor váltja ki az oldalsó tartalomjegyzéket */
+  .points-page .doc { grid-template-columns: minmax(0, 1fr); }
+  .points-page .legal { max-width: 860px; margin-inline: auto; width: 100%; }
+  .tabs { position: sticky; top: 80px; z-index: 5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+          padding: 6px; margin: 0 0 var(--sc-7); border-radius: 999px; background: var(--sc-surface); border: 1px solid var(--line);
+          backdrop-filter: blur(10px); }
+  .tabs[hidden] { display: none; }
+  .tabs button { appearance: none; border: 0; border-radius: 999px; padding: 12px 8px; cursor: pointer; background: transparent;
+                 color: var(--sc-ink-soft); font: 600 15px/1 var(--sc-font-text); letter-spacing: .02em; transition: color .2s, background .2s; }
+  .tabs button:hover { color: var(--sc-ink); }
+  .tabs button[aria-selected="true"] { background: var(--sc-accent); color: var(--sc-accent-ink); }
+  .tabs button:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
+  .panel > section:first-child { padding-top: 0; }
+  @media (max-width: 760px) { .tabs { top: 68px; } .tabs button { padding: 11px 4px; font-size: 14px; } }
+</style>
+</head>
+<body class="doc-page points-page">
+<div class="sc-grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="../" aria-label="CardPrime home">
+    <img src="../assets/CardPrime-AppIcon-rounded-512.png" alt="">
+    <img src="../assets/CardPrime-wordmark-transparent.png" alt="CardPrime">
+  </a>
+  <div class="bar__right">
+    <a class="btn" href="../app/">Get the app</a>
+    <a class="icon-btn" href="../checkout/" aria-label="Cart">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </a>
+    <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="burger" aria-hidden="true"></span></button>
+  </div>
+</header>
+
+<nav class="menu" id="site-menu" aria-label="Site">
+  <div class="menu__grid">
+    <div class="menu__group">
+      <span class="menu__head">CardPrime</span>
+      <div class="menu__big">
+        <a href="../">Home</a>
+        <a href="../shop/">Shop</a>
+        <a href="../points/" aria-current="page">Points</a>
+        <a href="../app/">Get the app</a>
+        <a href="../refund-policy/">Refund &amp; Shipping</a>
+      </div>
+    </div>
+    <div class="menu__group">
+      <span class="menu__head">Legal &amp; help</span>
+      <ul class="menu__list">
+        <li><a href="../privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a></li>
+        <li><a href="../terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a></li>
+        <li><a href="../support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="menu__foot">&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
+</nav>
+
+<main>
+  <header class="doc-hero">
+    <div class="doc-hero__in">
+      <span class="stripe" aria-hidden="true"></span>
+      <span class="sc-label">Collect</span>
+      <h1 class="sc-display sc-display--lg">How <span class="accent">points</span> work</h1>
+      <p class="sc-lede">Scan printed CardPrime cards, complete quests, and climb from Rookie to Immortal.</p>
+    </div>
+  </header>
+
+  <div class="doc">
+    <article class="legal">
+      <!-- Fülsor: egyszerre egy témakör látszik, hogy ne kelljen végiggörgetni az egészet.
+           JS nélkül a gombok rejtve maradnak és minden szakasz látszik (tabs.js kapcsolja be). -->
+      <div class="tabs" role="tablist" aria-label="Topics" hidden>
+        <button type="button" role="tab" id="tab-points" aria-controls="panel-points" aria-selected="true">Points</button>
+        <button type="button" role="tab" id="tab-levels" aria-controls="panel-levels" aria-selected="false" tabindex="-1">Levels</button>
+        <button type="button" role="tab" id="tab-quests" aria-controls="panel-quests" aria-selected="false" tabindex="-1">Quests</button>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-points" aria-labelledby="tab-points">
+      <section id="overview">
+        <h2>The basics</h2>
+        <p>CardPrime has one currency: <strong>points</strong>. You earn them by scanning printed CardPrime cards in the app, and by completing quests.</p>
+        <ul class="facts">
+          <li><strong>Every physical card counts.</strong> Each printed card gives its own points &mdash; pull the same Base card twice and both copies score. Each physical card can only be claimed once, by the first collector who scans it.</li>
+          <li><strong>Rarer cards are worth more.</strong> The fewer copies of a card that exist, the more points it gives, and cards of higher-tier players are worth more than the same card of a lower tier. Base cards are 10 points for everyone.</li>
+          <li><strong>Quests give one-time bonuses.</strong> Each quest can be completed once and pays a bonus of up to 2,000 points. Quest points are yours to keep, even if the cards later leave your collection.</li>
+          <li><strong>Your score sets your level.</strong> Your total points decide your level, and every level comes with its own badge.</li>
+        </ul>
+        <div class="callout">
+          <p>Your own score, level and quest progress are shown in the CardPrime app. This page explains the rules &mdash; it doesn't show personal progress.</p>
+        </div>
+      </section>
+      
+      <section id="card-points">
+        <h2>Card points</h2>
+        <p>Points for one card, by version and player tier. A dash means that card doesn't exist for that tier. Not every player appears in every insert set.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Card</th><th scope="col" class="num">Tier 1</th><th scope="col" class="num">Tier 2</th><th scope="col" class="num">Tier 3</th><th scope="col" class="num">Tier 4</th></tr>
+            </thead>
+            <tbody>
+              <tr class="top"><td><span class="cat">Autograph</span>Auto 1/1</td><td class="pts">4,290</td><td class="pts">3,960</td><td class="pts">3,630</td><td class="pts">3,300</td></tr>
+              <tr><td><span class="cat">Insert</span>Immortals SSP (/3)</td><td class="pts">3,250</td><td class="pts">3,000</td><td class="pts">2,750</td><td class="pts">2,500</td></tr>
+              <tr><td><span class="cat">Parallel</span>Black 1/1</td><td class="pts">1,560</td><td class="pts">1,440</td><td class="pts">1,320</td><td class="pts">1,200</td></tr>
+              <tr><td><span class="cat">Autograph</span>Auto /5</td><td class="pts">1,560</td><td class="pts">1,440</td><td class="pts">1,320</td><td class="pts">1,200</td></tr>
+              <tr><td><span class="cat">Autograph</span>Auto /10</td><td class="pts">780</td><td class="pts">720</td><td class="pts">660</td><td class="pts">600</td></tr>
+              <tr><td><span class="cat">Insert</span>Masterminds (/5)</td><td class="pts">650</td><td class="pts">600</td><td class="pts">550</td><td class="pts">500</td></tr>
+              <tr><td><span class="cat">Parallel</span>Red /10</td><td class="pts">390</td><td class="pts">360</td><td class="num none">&mdash;</td><td class="num none">&mdash;</td></tr>
+              <tr><td><span class="cat">SP</span>SP Variation</td><td class="pts">260</td><td class="pts">240</td><td class="pts">220</td><td class="pts">200</td></tr>
+              <tr><td><span class="cat">Insert</span>War Council</td><td class="pts">260</td><td class="pts">240</td><td class="pts">220</td><td class="pts">200</td></tr>
+              <tr><td><span class="cat">Autograph</span>Base Autograph</td><td class="pts">260</td><td class="pts">240</td><td class="pts">220</td><td class="pts">200</td></tr>
+              <tr><td><span class="cat">Insert</span>Aqua Force</td><td class="pts">228</td><td class="pts">210</td><td class="pts">193</td><td class="pts">175</td></tr>
+              <tr><td><span class="cat">Insert</span>Future Wave</td><td class="pts">195</td><td class="pts">180</td><td class="pts">165</td><td class="pts">150</td></tr>
+              <tr><td><span class="cat">Insert</span>Game Changers</td><td class="pts">195</td><td class="pts">180</td><td class="pts">165</td><td class="pts">150</td></tr>
+              <tr><td><span class="cat">Insert</span>Golden Champions</td><td class="pts">195</td><td class="pts">180</td><td class="pts">165</td><td class="pts">150</td></tr>
+              <tr><td><span class="cat">Parallel</span>Silver</td><td class="pts">195</td><td class="pts">180</td><td class="pts">165</td><td class="pts">150</td></tr>
+              <tr><td><span class="cat">Parallel</span>Gold /50</td><td class="pts">130</td><td class="pts">120</td><td class="pts">110</td><td class="num none">&mdash;</td></tr>
+              <tr><td><span class="cat">Base</span>Base</td><td class="pts">10</td><td class="pts">10</td><td class="pts">10</td><td class="pts">10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The Auto 1/1 is the most valuable card in the game &mdash; even a Tier 4 Auto 1/1 outscores a Tier 1 Immortals.</p>
+      </section>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-levels" aria-labelledby="tab-levels">
+      <section id="levels">
+        <h2>Levels &amp; badges</h2>
+        <p>Seven levels, each with its own badge. Your level always follows your current score &mdash; if your score goes down because a card leaves your collection, your level and badge can go down with it.</p>
+        <ol class="levels">
+          <li><span class="lvl-no">Level 1</span><b>Rookie</b><span class="lvl-pts">0 pts</span></li>
+          <li><span class="lvl-no">Level 2</span><b>Collector</b><span class="lvl-pts">500 pts</span></li>
+          <li><span class="lvl-no">Level 3</span><b>Pro Collector</b><span class="lvl-pts">1,500 pts</span></li>
+          <li><span class="lvl-no">Level 4</span><b>Elite</b><span class="lvl-pts">3,500 pts</span></li>
+          <li><span class="lvl-no">Level 5</span><b>Master</b><span class="lvl-pts">7,000 pts</span></li>
+          <li><span class="lvl-no">Level 6</span><b>Legend</b><span class="lvl-pts">12,000 pts</span></li>
+          <li><span class="lvl-no">Level 7</span><b>Immortal</b><span class="lvl-pts">20,000 pts</span></li>
+        </ol>
+      </section>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-quests" aria-labelledby="tab-quests">
+      <section id="quests">
+        <h2>Quests</h2>
+        <p>Every quest can be completed once and pays a one-time bonus. Collection goals count <strong>different cards</strong>, not copies &mdash; two identical Base cards are still one player. &ldquo;Player&rdquo; here also includes the head coach, who has his own cards in the set.</p>
+
+        <h3>Getting started</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td>Welcome to CardPrime</td><td>Scan your first card</td><td class="pts">+50</td></tr>
+              <tr><td>Starting Five</td><td>Cards of 5 different players</td><td class="pts">+100</td></tr>
+              <tr><td>Full Squad</td><td>The Base card of all 18 players</td><td class="pts">+1,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Tiers</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td>Superstars</td><td>Any card of all 6 Tier 1 players</td><td class="pts">+500</td></tr>
+              <tr><td>Tier II Hunter</td><td>Any card of all 5 Tier 2 players</td><td class="pts">+600</td></tr>
+              <tr><td>Tier III Hunter</td><td>Any card of all 3 Tier 3 players</td><td class="pts">+700</td></tr>
+              <tr><td>Tier IV Hunter</td><td>Any card of all 4 Tier 4 players</td><td class="pts">+1,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Parallels &amp; Rainbow</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td>Gold Squad</td><td>All 6 Gold /50 cards</td><td class="pts">+1,200</td></tr>
+              <tr><td>Red Squad</td><td>All 9 Red /10 cards</td><td class="pts">+2,000</td></tr>
+              <tr><td>Rainbow</td><td>Every parallel and signed version of one player that exists, not counting the 1/1s</td><td class="pts">+1,500</td></tr>
+              <tr><td>Full Rainbow</td><td>A Rainbow plus that player's Black 1/1 and Auto 1/1</td><td class="pts">+2,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Rainbow and Full Rainbow can be completed with any player. Only one copy of each 1/1 exists in the world.</p>
+
+        <h3>Insert sets</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td>Seven Collections</td><td>At least one card from each of the 7 insert sets</td><td class="pts">+1,500</td></tr>
+              <tr><td>Future Wave Set</td><td>All 6 Future Wave cards</td><td class="pts">+750</td></tr>
+              <tr><td>Game Changers Set</td><td>All 9 Game Changers cards</td><td class="pts">+1,000</td></tr>
+              <tr><td>War Council Set</td><td>All 7 War Council cards</td><td class="pts">+1,250</td></tr>
+              <tr><td>Immortal</td><td>Any Immortals card</td><td class="pts">+1,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Autographs</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td>First Signature</td><td>Your first signed card</td><td class="pts">+250</td></tr>
+              <tr><td>Signature Trio</td><td>Signed cards of 3 different players</td><td class="pts">+500</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Player fan</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td>[Player] Fan</td><td>5 different cards of the same player</td><td class="pts">+750</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Every player has their own Fan quest &mdash; in the app they appear together as one quest, with a goal for each player.</p>
+
+        <h3>Secret</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Quest</th><th scope="col">Goal</th><th scope="col" class="num">Points</th></tr></thead>
+            <tbody>
+              <tr><td class="secret">???</td><td>Revealed when you complete it</td><td class="pts">?</td></tr>
+              <tr><td class="secret">???</td><td>Revealed when you complete it</td><td class="pts">?</td></tr>
+              <tr><td class="secret">???</td><td>Revealed when you complete it</td><td class="pts">?</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Secret quests stay hidden until you complete one &mdash; then it unlocks with a surprise.</p>
+      </section>
+      </div>
+
+
+
+      <nav class="related" aria-label="Related pages">
+        <a href="../app/"><b>Get the app</b><span>Scan your cards and track your score, level and quests</span></a>
+        <a href="../shop/"><b>Shop</b><span>Sealed packs of printed CardPrime cards</span></a>
+        <a href="../support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a>
+      </nav>
+    </article>
+  </div>
+</main>
+
+<footer class="foot">
+  <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
+  <nav aria-label="Footer">
+    <a href="../shop/">Shop</a><a href="../points/" aria-current="page">Points</a><a href="../refund-policy/">Refund &amp; Shipping</a><a href="../privacy/">Privacy Policy</a><a href="../terms/">Terms of Service</a><a href="../support/">Support</a>
+  </nav>
+</footer>
+
+<script src="../menu.js?v=1"></script>
+<script src="tabs.js?v=1"></script>
+</body>
+</html>
