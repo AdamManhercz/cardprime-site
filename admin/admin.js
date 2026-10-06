@@ -310,20 +310,22 @@
       var scans = c.scans || {};
       var t = scans.totals || {};
       var scanKpis = [
-        ['Hitelesítési kísérlet', formatNum(t.attempts), 'kamera: ' + formatNum(t.camera) + ' · kézi SKU: ' + formatNum(t.manual), true],
-        ['Sikeres', formatNum(t.authenticated), pct(t.successPct) + ' — a kód a mi nyomtatott kártyánk'],
-        ['Hibás', formatNum(t.failed), pct(t.failedPct) + ' — ismeretlen kód: ' + formatNum(t.notFound) + ' · SDK nem tudta olvasni: ' + formatNum(t.sdkFailed)],
-        ['Megszakítva', formatNum(t.cancelled), 'kamera bezárva eredmény nélkül, nem számít kísérletnek']
+        ['Hitelesítési kísérlet', formatNum(t.attempts), 'kamerás beolvasás eredménnyel (sikeres + sikertelen)', true],
+        ['Sikeres', formatNum(t.authenticated), pct(t.successPct) + ' a kísérletekből — a kód a mi nyomtatott kártyánk'],
+        ['Sikertelen', formatNum(t.failed), pct(t.failedPct) + ' a kísérletekből'],
+        ['Ismeretlen kód', formatNum(t.notFound), pct(t.notFoundPct) + ' a kísérletekből — olvasható, de nem a mi kártyánk'],
+        ['SDK nem tudta hitelesíteni', formatNum(t.sdkFailed), pct(t.sdkFailedPct) + ' a kísérletekből']
       ];
       $('#scan-kpis').innerHTML = scanKpis.map(kpiHtml).join('');
       var drows = (scans.days || []).slice(0, 30).map(function (d) {
-        return '<tr><td>' + esc(d.day) + '</td><td class="num">' + formatNum(d.attempts) + '</td><td class="num">' + formatNum(d.authenticated) +
-          '</td><td class="num">' + formatNum(d.notFound) + '</td><td class="num">' + formatNum(d.sdkFailed) + '</td><td class="num">' + formatNum(d.cancelled) +
-          '</td><td class="num">' + formatNum(d.camera) + ' / ' + formatNum(d.manual) + '</td></tr>';
+        return '<tr><td>' + esc(d.day) + '</td><td class="num">' + formatNum(d.attempts) +
+          '</td><td class="num">' + formatNum(d.authenticated) + ' (' + pct(d.successPct) + ')' +
+          '</td><td class="num">' + formatNum(d.notFound) + ' (' + pct(d.notFoundPct) + ')' +
+          '</td><td class="num">' + formatNum(d.sdkFailed) + ' (' + pct(d.sdkFailedPct) + ')</td></tr>';
       }).join('');
       $('#scan-days').innerHTML = '<thead><tr><th>Nap (UTC)</th><th class="num">Kísérlet</th><th class="num">Sikeres</th><th class="num">Ismeretlen kód</th>' +
-        '<th class="num">SDK hiba</th><th class="num">Megszakítva</th><th class="num">Kamera / kézi</th></tr></thead><tbody>' +
-        (drows || '<tr><td colspan="7" class="muted">Még nem volt beolvasás.</td></tr>') + '</tbody>';
+        '<th class="num">SDK hiba</th></tr></thead><tbody>' +
+        (drows || '<tr><td colspan="5" class="muted">Még nem volt beolvasás.</td></tr>') + '</tbody>';
 
       var u = c.users || {};
       var colKpis = [
@@ -370,7 +372,7 @@
     $('#cards-meta').textContent = '';
     api('listCards', { state: f.state.value, q: f.q.value, limit: 500 }).then(function (data) {
       var rows = data.cards.map(function (c) {
-        return '<tr><td><code>' + esc(c.sku) + '</code></td><td>' + esc(c.playerName || '') + '</td><td>' + tierText(c) +
+        return '<tr tabindex="0" data-sku="' + esc(c.sku) + '"><td><code>' + esc(c.sku) + '</code></td><td>' + esc(c.playerName || '') + '</td><td>' + tierText(c) +
           '</td><td class="num">' + formatNum(c.points) + '</td>' +
           (scanned ? '<td>' + esc(CLAIM_STATES[c.state] || c.state) + (c.leftAt ? '<br><span class="muted">' + formatDate(c.leftAt) + '</span>' : '') +
             '</td><td>' + (c.owner ? esc(c.owner) : '<span class="muted">törölt fiók' + (c.formerOwnerRef ? ' #' + esc(c.formerOwnerRef) : '') + '</span>') + '</td><td>' + formatDate(c.claimedAt) + '</td>' : '') + '</tr>';
@@ -382,6 +384,85 @@
     }).catch(function (e) {
       $('#cards-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
     });
+  }
+
+  // ---------- kártya-előzmény ----------
+  // Egy nyomtatott példány teljes története: tulajdonosi események (cardprime-v2-ownership-
+  // events) és minden beolvasási kísérlet (cardprime-v2-scan-events), időkorlát nélkül
+  // megőrizve (termékdöntés 2026-10-06). Törölt fióknál csak az álnév (#ref) látszik.
+  var OWNERSHIP_EVENTS = {
+    claimed: ['Gyűjteménybe vette (első beolvasó)', 's-paid'],
+    removed: ['Kivette a gyűjteményből', 's-pending_payment'],
+    restored: ['Visszatette a gyűjteményébe', 's-paid'],
+    released: ['Fiók törölve', 's-refunded']
+  };
+  var SCAN_RESULTS = {
+    authenticated: ['Sikeres', 's-paid'],
+    notFound: ['Ismeretlen kód', 's-failed'],
+    sdkFailed: ['SDK hiba', 's-failed']
+  };
+
+  function whoHtml(w) {
+    if (!w) return '—';
+    if (w.name) return esc(w.name) + (w.publicId ? ' <span class="muted">' + esc(w.publicId) + '</span>' : '');
+    return '<span class="muted">törölt fiók' + (w.formerOwnerRef ? ' #' + esc(w.formerOwnerRef) : '') + '</span>';
+  }
+  function labelBadge(map, key) {
+    var m = map[key] || [key, ''];
+    return '<span class="badge ' + m[1] + '">' + esc(m[0]) + '</span>';
+  }
+  function placeText(s) {
+    if (s.lat == null || s.lng == null) return '<span class="muted">nincs (nem engedélyezte)</span>';
+    return esc(Number(s.lat).toFixed(2) + ', ' + Number(s.lng).toFixed(2));
+  }
+
+  function openCard(sku) {
+    $('#card-title').textContent = sku;
+    $('#card-body').innerHTML = '<p class="muted">Betöltés…</p>';
+    var dlg = $('#card-dialog');
+    if (!dlg.open) dlg.showModal();
+    api('cardHistory', { sku: sku }).then(renderCard)
+      .catch(function (e) { $('#card-body').innerHTML = '<p class="error">' + esc(e.message) + '</p>'; });
+  }
+
+  function renderCard(h) {
+    $('#card-title').textContent = h.sku;
+    var c = h.card || {};
+    var cur = h.current;
+    var own = (h.ownership || []).map(function (e) {
+      return '<li>' + labelBadge(OWNERSHIP_EVENTS, e.event) + ' · ' + formatDate(e.at) + '<br>' + whoHtml(e.who) + '</li>';
+    }).join('');
+    var scans = (h.scans || []).map(function (s) {
+      return '<tr><td>' + formatDate(s.at) + '</td><td>' + whoHtml(s.who) + '</td><td>' + labelBadge(SCAN_RESULTS, s.result) +
+        (s.geoVelocityAlert ? ' <span class="badge s-failed" title="Ugyanez a példány túl gyorsan, túl messze is beolvasva (>200 km/h, 30 percen belül)">helyjelzés</span>' : '') +
+        '</td><td>' + placeText(s) + '</td></tr>';
+    }).join('');
+    var alerts = (h.scans || []).filter(function (s) { return s.geoVelocityAlert; }).length;
+
+    $('#card-body').innerHTML =
+      kv([
+        ['Játékos', c.playerName],
+        ['Dizájn', c.cardTypeId],
+        ['Tier', [c.tier, c.variant].filter(Boolean).join(' · ')],
+        ['Pont', c.points],
+        ['Mesteradat', h.card ? 'van' : 'NINCS — ez a kód nem a mi nyomtatott kártyánk']
+      ]) +
+      '<div class="section"><h3>Jelenlegi állapot</h3>' + (cur ? kv([
+        ['Állapot', CLAIM_STATES[cur.state] || cur.state],
+        ['Tulaj / utolsó ismert tulaj', whoHtml(cur.owner), true],
+        ['Első beolvasás (igénylés)', formatDate(cur.claimedAt), true],
+        ['Kikerült a gyűjteményből', cur.leftAt ? formatDate(cur.leftAt) : '—', true],
+        ['Kapott pont', cur.pointsAwarded]
+      ]) : '<p class="muted">Még senki nem vette gyűjteményébe.</p>') + '</div>' +
+      '<div class="section"><h3>Tulajdonosi történet</h3>' +
+        (h.ownershipDerived ? '<p class="muted">A tulajdonosi napló előtti kártya: a történet a jelenlegi állapotból van visszaállítva, a korábbi kivétel/visszatétel nem látszik.</p>' : '') +
+        (own ? '<ul class="log">' + own + '</ul>' : '<p class="muted">Nincs tulajdonosi esemény.</p>') + '</div>' +
+      '<div class="section"><h3>Beolvasási történet</h3>' +
+        '<p class="muted">' + formatNum((h.scans || []).length) + ' beolvasás' + (h.scansTruncated ? ' (a legutóbbiak)' : '') +
+        (alerts ? ' · <b>' + formatNum(alerts) + ' helyjelzés</b>' : '') + '. Hely: kb. 1 km pontosság.</p>' +
+        '<div class="table-wrap"><table class="table"><thead><tr><th>Időpont</th><th>Ki olvasta be</th><th>Eredmény</th><th>Hely (kb.)</th></tr></thead><tbody>' +
+        (scans || '<tr><td colspan="4" class="muted">Nincs beolvasás.</td></tr>') + '</tbody></table></div></div>' +
+      '<p class="muted">Frissítve: ' + formatDate(h.generatedAt) + '</p>';
   }
 
   // ---------- rendelés-részletek ----------
@@ -428,8 +509,11 @@
       ]) +
       '<div class="section"><h3>Vevő</h3>' + kv([
         ['Név', o.customerName], ['E-mail', o.customerEmail], ['Telefon', o.customerPhone],
-        ['Cím', [addr.postalCode, addr.city, addr.line1, addr.line2, addr.country].filter(Boolean).join(', ')],
-        ['Szállítás', o.shippingMethod + (o.foxpostLockerName ? ' — ' + o.foxpostLockerName : '')],
+        // A házszám 2026-10-06 óta külön mező (a MyGLS csak számot fogad el); régi rendelésnél nincs.
+        ['Cím', [addr.postalCode, addr.city, [addr.line1, addr.houseNumber].filter(Boolean).join(' '), addr.line2, addr.country].filter(Boolean).join(', ')],
+        ['Szállítás', o.shippingMethod +
+          (o.foxpostLockerName ? ' — ' + o.foxpostLockerName : '') +
+          (o.glsPointName ? ' — ' + o.glsPointName + (o.glsPointId ? ' (' + o.glsPointId + ')' : '') : '')],
         ['Tételek', items || '—', true]
       ]) + '</div>' +
       '<div class="section"><h3>Szolgáltatók</h3>' + kv([
@@ -438,6 +522,7 @@
         ['Számla (Számlázz.hu)', badge(o.invoiceStatus) + ' ' + esc(o.invoiceNumber || ''), true],
         ['Sztornó számla', badge(o.stornoInvoiceStatus) + ' ' + esc(o.stornoInvoiceNumber || ''), true],
         ['Foxpost címke', badge(o.foxpostLabelStatus) + ' ' + esc(o.foxpostTrackingNumber || ''), true],
+        ['GLS címke (MyGLS)', badge(o.glsLabelStatus) + ' ' + esc(o.glsParcelId || ''), true],
         ['Szállító lemondás', badge(o.carrierCancelStatus), true],
         ['Visszaigazoló e-mail', badge(o.confirmationEmailStatus), true]
       ]) + '</div>' +
@@ -470,7 +555,7 @@
     markCarrierCancelled: {
       label: 'Szállítónál lemondva ✓', cls: 'btn--ghost', restock: null,
       title: 'Szállító — kézi lemondás jelölése',
-      desc: 'Jelöld, ha a Foxpost felé a csomagot kézzel lemondtad / visszahívtad (Foxpost ügyfélportál). Az API-integráció később jön.'
+      desc: 'Jelöld, ha a szállítónál a csomagot kézzel lemondtad / visszahívtad (Foxpost ügyfélportál, GLS-nél a címke törlése a MyGLS-ben). Az API-integráció később jön.'
     }
   };
 
@@ -552,6 +637,20 @@
     if (tr && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); openOrder(tr.dataset.id); }
   });
   $('#order-close').addEventListener('click', function () { $('#order-dialog').close(); });
+  $('#cards-table').addEventListener('click', function (ev) {
+    var tr = ev.target.closest('tr[data-sku]');
+    if (tr) openCard(tr.dataset.sku);
+  });
+  $('#cards-table').addEventListener('keydown', function (ev) {
+    var tr = ev.target.closest('tr[data-sku]');
+    if (tr && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); openCard(tr.dataset.sku); }
+  });
+  $('#history-lookup').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var sku = ev.target.sku.value.trim().toUpperCase();
+    if (sku) openCard(sku);
+  });
+  $('#card-close').addEventListener('click', function () { $('#card-dialog').close(); });
   $('#order-actions').addEventListener('click', function (ev) {
     var b = ev.target.closest('button[data-action]');
     if (b) openActionForm(b.dataset.action);

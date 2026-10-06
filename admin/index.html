@@ -117,8 +117,13 @@
         <input name="q" type="search" placeholder="SKU, játékos, dizájn" aria-label="Keresés">
         <button class="btn" type="submit">Szűrés</button>
       </form>
+      <form class="filters" id="history-lookup">
+        <input name="sku" required placeholder="SKU előzménye" aria-label="Kártya előzményének megnyitása SKU alapján">
+        <button class="btn btn--ghost" type="submit">Előzmény</button>
+      </form>
     </div>
-    <div class="table-wrap"><table class="table" id="cards-table"></table></div>
+    <p class="muted">Egy kártya sorára kattintva megnyílik a teljes tulajdonosi és beolvasási története.</p>
+    <div class="table-wrap"><table class="table table--click" id="cards-table"></table></div>
     <p class="muted" id="cards-meta"></p>
     <p class="muted" id="collection-meta"></p>
   </section>
@@ -131,7 +136,7 @@
       <thead><tr><th>Státusz</th><th>Mikor / miért</th><th>Ki állítja</th><th>Kinek fontos</th></tr></thead>
       <tbody>
         <tr><td><span class="badge s-pending_payment">pending_payment</span></td><td>Rendelés létrejött, a készlet lefoglalva, a vevő a Stripe fizetési oldalon van.</td><td>packs_handler · createOrder</td><td>Stripe (Checkout Session él), készlet</td></tr>
-        <tr><td><span class="badge s-paid">paid</span></td><td>Stripe visszaigazolta a fizetést. Ekkor indul a számla és a Foxpost címke.</td><td>stripe_webhook_handler; aukciónál auction_close_handler</td><td>Stripe, Számlázz.hu, Foxpost, Resend (visszaigazoló e-mail)</td></tr>
+        <tr><td><span class="badge s-paid">paid</span></td><td>Stripe visszaigazolta a fizetést. Ekkor indul a számla és a szállítói címke (Foxpost vagy GLS).</td><td>stripe_webhook_handler; aukciónál auction_close_handler</td><td>Stripe, Számlázz.hu, Foxpost / GLS, Resend (visszaigazoló e-mail)</td></tr>
         <tr><td><span class="badge s-expired">expired</span></td><td>30 percig nem fizettek. A készlet visszakerül a poolba, a Stripe session lejár.</td><td>order_expiry_handler (15 percenként)</td><td>Csak készlet — egyik szolgáltató felé sincs teendő</td></tr>
         <tr><td><span class="badge s-reversing">reversing</span></td><td>Átmeneti: admin visszatérítés/sztornó fut. Ha itt ragad, ugyanazzal a gombbal folytatható.</td><td>admin_handler</td><td>Belső zár, dupla visszatérítés ellen</td></tr>
         <tr><td><span class="badge s-refunded">refunded</span></td><td>Valódi vásárlás visszafordítva (visszaküldés, panasz, elveszett csomag). Készlet alapból NEM jön vissza.</td><td>admin_handler · refundOrder (vagy CLI)</td><td>Stripe (refund), Számlázz.hu (sztornó számla), szállító (kézi lemondás)</td></tr>
@@ -146,6 +151,7 @@
         <tr><td><code>stornoInvoiceStatus</code> + <code>stornoInvoiceNumber</code></td><td>issued · failed · not_applicable</td><td>Számlázz.hu</td><td>Sztornó számla visszatérítéskor. <b>failed</b> → „Sztornó számla újra” gomb. <b>not_applicable</b> = nem volt mit sztornózni.</td></tr>
         <tr><td><code>stripePaymentIntentId</code> / <code>stripeRefundId</code></td><td>pi_… / re_…</td><td>Stripe</td><td>A fizetés és a visszatérítés azonosítója a Stripe Dashboardban.</td></tr>
         <tr><td><code>foxpostLabelStatus</code> + <code>foxpostTrackingNumber</code></td><td>created · failed</td><td>Foxpost</td><td>Címke létrehozása fizetéskor. Aukciós rendelésnél nincs.</td></tr>
+        <tr><td><code>glsLabelStatus</code> + <code>glsParcelId</code></td><td>created · failed</td><td>GLS (MyGLS)</td><td>GLS csomagpontos rendelésnél a címkeadat létrehozása fizetéskor. <b>created</b> után a címkét kézzel kell kinyomtatni a MyGLS-ben; <b>failed</b> = kézzel kell felvinni a MyGLS-be.</td></tr>
         <tr><td><code>carrierCancelStatus</code></td><td>manual_required · done_manually · not_applicable</td><td>Szállító</td><td>Visszatérítés után: ha volt címke, a szállítónál kézzel kell lemondani, majd itt jelölni. API-integráció később.</td></tr>
         <tr><td><code>confirmationEmailStatus</code></td><td>sent · failed · skipped</td><td>Resend</td><td>A CardPrime saját visszaigazoló e-mailje fizetéskor.</td></tr>
         <tr><td><code>adminLog</code></td><td>lista</td><td>—</td><td>Minden admin művelet: idő, művelet, operátor neve, indok, eredmény.</td></tr>
@@ -174,6 +180,15 @@
     </div>
     <p class="error" id="action-error" role="alert"></p>
   </form>
+</dialog>
+
+<!-- kártya-előzmény: tulajdonosi és beolvasási történet -->
+<dialog class="drawer" id="card-dialog" aria-labelledby="card-title">
+  <div class="drawer__head">
+    <h2 id="card-title">Kártya</h2>
+    <button type="button" class="icon-btn" id="card-close" aria-label="Bezárás">✕</button>
+  </div>
+  <div id="card-body"></div>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
