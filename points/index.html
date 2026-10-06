@@ -41,14 +41,16 @@
   /* egyoszlopos lap: a fülsor váltja ki az oldalsó tartalomjegyzéket */
   .points-page .doc { grid-template-columns: minmax(0, 1fr); }
   .points-page .legal { max-width: 860px; margin-inline: auto; width: 100%; }
-  .tabs { position: sticky; top: 80px; z-index: 5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-          padding: 6px; margin: 0 0 var(--sc-7); border-radius: 999px; background: var(--sc-surface); border: 1px solid var(--line);
-          backdrop-filter: blur(10px); }
+  /* Különálló, körvonalas gombok üres háttérrel; a kiválasztott a menü aria-current mintáját követi
+     (accent szöveg) + halvány accent keret és tónus. A tömör accent kitöltés a "Get the app" gombé. */
+  .tabs { position: sticky; top: 80px; z-index: 5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+          padding: 10px 0; margin: 0 0 var(--sc-7); background: rgba(7,7,8,.86); backdrop-filter: blur(12px); }
   .tabs[hidden] { display: none; }
-  .tabs button { appearance: none; border: 0; border-radius: 999px; padding: 12px 8px; cursor: pointer; background: transparent;
-                 color: var(--sc-ink-soft); font: 600 15px/1 var(--sc-font-text); letter-spacing: .02em; transition: color .2s, background .2s; }
-  .tabs button:hover { color: var(--sc-ink); }
-  .tabs button[aria-selected="true"] { background: var(--sc-accent); color: var(--sc-accent-ink); }
+  .tabs button { appearance: none; border: 1px solid var(--line); border-radius: 999px; padding: 12px 8px; cursor: pointer;
+                 background: transparent; color: var(--sc-ink-soft); font: 600 15px/1 var(--sc-font-text); letter-spacing: .02em;
+                 transition: color .2s, border-color .2s, background .2s; }
+  .tabs button:hover { color: var(--sc-ink); border-color: rgba(245,245,247,.4); }
+  .tabs button[aria-selected="true"] { color: var(--sc-accent); border-color: rgba(167,139,250,.55); background: rgba(167,139,250,.08); }
   .tabs button:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
   .panel > section:first-child { padding-top: 0; }
   @media (max-width: 760px) { .tabs { top: 68px; } .tabs button { padding: 11px 4px; font-size: 14px; } }
