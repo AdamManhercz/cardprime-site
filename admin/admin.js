@@ -512,6 +512,8 @@
         // A házszám 2026-10-06 óta külön mező (a MyGLS csak számot fogad el); régi rendelésnél nincs.
         ['Cím', [addr.postalCode, addr.city, [addr.line1, addr.houseNumber].filter(Boolean).join(' '), addr.line2, addr.country].filter(Boolean).join(', ')],
         ['Szállítás', o.shippingMethod +
+          // Házhozszállításnál a választott szállító; régi rendelésnél nincs → Foxpost.
+          (o.shippingMethod === 'home_delivery' ? ' — ' + (o.homeCarrier === 'gls' ? 'GLS' : 'Foxpost') : '') +
           (o.foxpostLockerName ? ' — ' + o.foxpostLockerName : '') +
           (o.glsPointName ? ' — ' + o.glsPointName + (o.glsPointId ? ' (' + o.glsPointId + ')' : '') : '')],
         ['Tételek', items || '—', true]
@@ -533,14 +535,14 @@
 
   var ACTIONS = {
     refundOrder: {
-      label: 'Visszatérítés (refund)', cls: 'btn--danger', restock: false,
+      label: 'Visszatérítés (refund)', cls: 'btn--danger', restock: false, cancelCarrier: false,
       title: 'Visszatérítés',
-      desc: 'Valódi vásárlás visszafordítása. Stripe: teljes összeg vissza a vevőnek → Számlázz.hu: sztornó számla → szállító: kézi teendő, ha volt címke. Státusz: refunded.'
+      desc: 'Valódi vásárlás visszafordítása, akár már kézbesített csomagnál is. Stripe: teljes összeg vissza a vevőnek → Számlázz.hu: sztornó számla → szállító: a csomagot csak akkor törli, ha bejelölöd. Státusz: refunded.'
     },
     stornoPaid: {
-      api: 'stornoOrder', label: 'Sztornó (hibás / teszt)', cls: 'btn--warn', restock: null,
+      api: 'stornoOrder', label: 'Sztornó (hibás / teszt)', cls: 'btn--warn', restock: null, cancelCarrier: true,
       title: 'Sztornó — fizetett rendelés',
-      desc: 'Hibás vagy teszt vásárlás érvénytelenítése. Stripe: pénz vissza → Számlázz.hu: sztornó számla → szállító: kézi teendő, ha volt címke. A tasakok mindig visszakerülnek a készletbe (bontatlanok, újra eladhatók). Státusz: cancelled.'
+      desc: 'Hibás vagy teszt vásárlás érvénytelenítése. Stripe: pénz vissza → Számlázz.hu: sztornó számla → szállító: a csomag törlése API-n. A tasakok mindig visszakerülnek a készletbe (bontatlanok, újra eladhatók). Státusz: cancelled.'
     },
     stornoUnpaid: {
       api: 'stornoOrder', label: 'Sztornó (fizetés lezárása)', cls: 'btn--warn', restock: null,
@@ -552,10 +554,15 @@
       title: 'Sztornó számla újrapróbálása',
       desc: 'Csak a Számlázz.hu sztornó számlát próbálja újra kiállítani. Pénzmozgás nincs.'
     },
+    cancelCarrier: {
+      label: 'Csomag törlése a szállítónál', cls: 'btn--ghost', restock: null,
+      title: 'Szállító — csomag törlése API-n',
+      desc: 'Újra megpróbálja törölni a csomagot a Foxpostnál / GLS-nél (vagy törli a visszatérítéskor megtartottat). Pénzmozgás és számla nincs. Ha a szállító elutasítja (pl. már feladott csomag), kézi teendő marad.'
+    },
     markCarrierCancelled: {
       label: 'Szállítónál lemondva ✓', cls: 'btn--ghost', restock: null,
       title: 'Szállító — kézi lemondás jelölése',
-      desc: 'Jelöld, ha a szállítónál a csomagot kézzel lemondtad / visszahívtad (Foxpost ügyfélportál, GLS-nél a címke törlése a MyGLS-ben). Az API-integráció később jön.'
+      desc: 'Jelöld, ha a szállító elutasította az API-s törlést, és a csomagot kézzel rendezted (Foxpost ügyfélportál, GLS-nél a MyGLS, vagy a csomag már kézbesítve, nincs teendő).'
     }
   };
 
@@ -565,6 +572,8 @@
     if (o.status === 'reversing') keys.push(o.reversalTarget === 'cancelled' ? 'stornoPaid' : 'refundOrder');
     if (o.status === 'pending_payment') keys.push('stornoUnpaid');
     if ((o.status === 'refunded' || o.status === 'cancelled') && o.invoiceNumber && o.stornoInvoiceStatus !== 'issued') keys.push('retryStorno');
+    if ((o.status === 'refunded' || o.status === 'cancelled') &&
+        (o.carrierCancelStatus === 'manual_required' || o.carrierCancelStatus === 'kept')) keys.push('cancelCarrier');
     if (o.carrierCancelStatus === 'manual_required') keys.push('markCarrierCancelled');
 
     $('#order-actions').innerHTML = keys.length ? '<div class="actions">' + keys.map(function (k) {
@@ -586,6 +595,11 @@
     var showRestock = a.restock !== null && Number(state.order.packsReserved || 0) > 0;
     $('#restock-row').hidden = !showRestock;
     form.restock.checked = !!a.restock;
+    // Csak ha van csomag a szállítónál; sztornónál alapból törlés, visszatérítésnél nem
+    // (ott a csomag gyakran már úton van vagy kézbesítve).
+    var hasParcel = state.order.foxpostLabelStatus === 'created' || state.order.glsLabelStatus === 'created';
+    $('#carrier-row').hidden = !(a.cancelCarrier !== undefined && hasParcel);
+    form.cancelCarrier.checked = !!a.cancelCarrier;
     form.hidden = false;
     (form.operator.value ? form.reason : form.operator).focus();
   }
@@ -604,6 +618,7 @@
     try { localStorage.setItem(OPERATOR_KEY, form.operator.value.trim()); } catch (e) { /* nincs tároló */ }
     var payload = { orderId: o.orderId, operator: form.operator.value, reason: form.reason.value };
     if (!$('#restock-row').hidden) payload.restock = form.restock.checked;
+    if (!$('#carrier-row').hidden) payload.cancelCarrier = form.cancelCarrier.checked;
 
     api(a.api || key, payload).then(function (data) {
       form.hidden = true;
