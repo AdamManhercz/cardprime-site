@@ -97,6 +97,8 @@
   .hero__floor { position: absolute; inset: 64% -10% -10% -10%;
                  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(6,182,212,.07) 60%, rgba(6,182,212,.12));
                  border-top: 1px solid rgba(255,255,255,.07); }
+  /* a függöny alatt hátrébb lépő réteg: a sík-mozgás és az emelés az oldal-JS-ből jön */
+  .hero__lift { position: absolute; inset: 0; transform-origin: 50% 35%; will-change: transform, opacity; }
   .hero__planes > div { position: absolute; will-change: transform; }
   .p-back  { right: 34%; top: 24%; }
   .p-back .slab { --w: clamp(150px, 13vw, 210px); transform: rotate(-9deg); filter: blur(1.6px) brightness(.62); }
@@ -112,8 +114,17 @@
   .hero h1 { white-space: nowrap; font-size: clamp(40px, 7.2vw, 128px); }
   .hero .sc-lede { max-width: 30ch; margin-top: var(--sc-5); }
 
-  /* ---------- act 2: quiet statement ---------- */
-  .quiet { min-height: 90vh; display: grid; align-content: center; }
+  /* ---------- act 2: quiet statement ----------
+     Függöny: a szekció egy képernyőnyivel visszahúzva ráfut a még rögzített herora,
+     a felső élén lágy átmenettel, így a hero nem "elindul", hanem letakarja a lap. */
+  .quiet { position: relative; z-index: 2; margin-top: -100vh; margin-top: -100svh;
+           min-height: 170vh; min-height: 170svh; padding-block: 0;
+           background: var(--sc-canvas); }
+  /* a mondat a képernyő közepén megáll ~0.7 képernyőnyi görgetésre, mielőtt továbbmegy */
+  .quiet .sc-wrap { position: sticky; top: 0; min-height: 100vh; min-height: 100svh;
+                    align-content: center; }
+  .quiet::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 32vh; pointer-events: none;
+                   background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--sc-canvas) 70%, transparent) 55%, var(--sc-canvas)); }
   .quiet .sc-wrap { display: grid; gap: var(--sc-6); }
   .quiet p { max-width: 36ch; }
 
@@ -128,7 +139,7 @@
   .peak__floor { position: absolute; inset: 78% 0 0 0; background: linear-gradient(180deg, rgba(255,255,255,.03), transparent); border-top: 1px solid rgba(255,255,255,.06); }
   .peak__copy { position: relative; z-index: 2; height: 46vh; }
   .peak__copy .sc-label { margin-bottom: var(--sc-5); display: block; color: var(--sc-ink-soft); }
-  .entry { position: absolute; top: 2.4em; left: 0; right: 0; }
+  .entry { position: absolute; top: 2.4em; left: 0; right: 0; opacity: 0; will-change: opacity, transform; }
   .entry__no { font: 600 var(--sc-t-sm)/1 var(--sc-font-text); letter-spacing: .14em; color: var(--sc-accent); text-transform: uppercase; }
   .entry h2 { margin: var(--sc-3) 0 var(--sc-4); }
   .entry p { max-width: 30ch; }
@@ -147,7 +158,7 @@
   /* ---------- act 4: pan rail ---------- */
   .range { display: flex; align-items: center; overflow: hidden;
            background: radial-gradient(60% 50% at 50% 100%, rgba(6,182,212,.10), transparent 70%); }
-  .rail { display: flex; align-items: center; gap: clamp(48px, 7vw, 120px); padding: 0 clamp(16px, 6vw, 96px); width: max-content; }
+  .rail { display: flex; align-items: center; gap: clamp(48px, 7vw, 120px); padding: 0 clamp(16px, 6vw, 96px); width: max-content; will-change: transform; }
   .rail__lead { width: min(420px, 78vw); flex: none; }
   .item { flex: none; display: grid; gap: var(--sc-5); justify-items: start; }
   .item .slab { --w: clamp(220px, 20vw, 300px); }
@@ -159,7 +170,8 @@
   .rail__end { width: min(360px, 74vw); flex: none; }
 
   /* ---------- act 5: front / back ---------- */
-  .fb .sc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .fb__stage { display: grid; align-content: center; }
+  .fb .sc-wrap { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
   .fb__copy { display: grid; gap: var(--sc-5); max-width: 40ch; }
   .fb__fig { position: relative; justify-self: center; margin: 0; }
   .fb__fig .slab { --w: clamp(250px, 24vw, 340px); }
@@ -258,6 +270,8 @@
     .peak__copy { height: auto; }
     .entry { position: static; opacity: 1 !important; transform: none !important; margin-bottom: 24px; }
     .band { display: none; }
+    .rail { transform: none !important; }
+    .rail > * { scroll-snap-align: center; }
   }
 </style>
 </head>
@@ -324,44 +338,49 @@
 <main id="top">
 
   <!-- 1 · DESIRE: pin + parallax planes -->
-  <section data-sc-act="pin" data-sc-span="1.8" data-sc-drift="#070708">
+  <!-- span 2.3: ~0.3 képernyő nyugodt kép, utána 1 képernyőnyi függöny, amíg a hero még rögzített -->
+  <section id="hero" data-sc-act="pin" data-sc-span="2.3" data-sc-drift="#070708">
     <div data-sc-stage class="hero">
+     <div class="hero__lift" id="hero-lift">
       <div class="hero__planes" aria-hidden="true">
-        <div class="p-mist" data-sc-parallax="-0.6"></div>
+        <div class="p-mist" data-depth="-0.5"></div>
         <div class="hero__floor"></div>
-        <div class="p-back" data-sc-parallax="0.5">
+        <div class="p-back" data-depth="0.3">
           <div class="slab f-gold reflect"><div class="slab__label"><b>Golden Champions</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><span class="face__num">01/50</span><div class="face__plate">Player<small>Club</small></div></div></div></div>
         </div>
-        <div class="p-side" data-sc-parallax="-1.2">
+        <div class="p-side" data-depth="-0.9">
           <div class="slab f-refr reflect"><div class="slab__label"><b>Future Wave</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player<small>Club</small></div></div></div></div>
         </div>
-        <div class="p-main" data-sc-parallax="-0.5">
+        <div class="p-main" data-depth="-0.4">
           <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
         </div>
-        <div class="p-fore" data-sc-parallax="-6">
+        <div class="p-fore" data-depth="-1.6">
           <div class="slab f-gold"><div class="slab__label"><b>CardPrime</b></div><div class="slab__card"><div class="face"><div class="face__plate">Player<small>Club</small></div></div></div></div>
         </div>
       </div>
       <div class="sc-scrim sc-scrim--lead" aria-hidden="true"></div>
-      <div class="sc-copy sc-copy--lead" data-sc-cue="0 0.62 0">
+      <!-- a szöveg végig áll, amíg a hero látszik: a függöny takarja le, nem fade -->
+      <div class="sc-copy sc-copy--lead">
         <span class="sc-label hero__eyebrow">Sports card printing &amp; collection management</span>
         <h1 class="sc-display sc-display--xl">Collector-grade.<br><span class="accent">In hand.</span></h1>
         <p class="sc-lede">CardPrime prints its own range of sports cards, sold in sealed packs in our <a href="shop/">shop</a>.</p>
       </div>
+     </div>
     </div>
   </section>
 
-  <!-- 2 · ANTICIPATION: authored quiet before the peak -->
+  <!-- 2 · ANTICIPATION: authored quiet before the peak. Függönyként fut rá a herora;
+       a sorok a görgetéssel együtt jönnek, nem időzített fade-del. -->
   <section class="sc-section quiet" data-sc-act="flow" data-sc-drift="#070708">
-    <div class="sc-wrap" data-sc-in data-sc-stagger="120">
-      <span class="stripe" aria-hidden="true"></span>
-      <h2 class="sc-display sc-display--lg">One player.<br><span class="accent">Many parallels.</span></h2>
-      <p class="sc-body">Same card, four finishes. Watch the light.</p>
+    <div class="sc-wrap">
+      <span class="stripe" aria-hidden="true" data-sc-cue="0.19"></span>
+      <h2 class="sc-display sc-display--lg" data-sc-cue="0.21">One player.<br><span class="accent">Many parallels.</span></h2>
+      <p class="sc-body" data-sc-cue="0.24">Same card, four finishes. Watch the light.</p>
     </div>
   </section>
 
   <!-- 3 · AWE: PEAK. Largest span. Bespoke light-sweep re-foil (page JS below). -->
-  <section id="parallels" data-sc-act="pin" data-sc-span="4.4" data-sc-drift="#060607">
+  <section id="parallels" data-sc-act="pin" data-sc-span="9" data-sc-drift="#060607">
     <div data-sc-stage class="peak" id="peak">
       <div class="peak__glow peak__glow--teal" aria-hidden="true"></div>
       <div class="peak__glow peak__glow--gold" aria-hidden="true"></div>
@@ -370,10 +389,10 @@
 
       <div class="peak__copy">
         <span class="sc-label">The parallels</span>
-        <div class="entry" data-sc-cue="0 0.3 0.15 0.3"><span class="entry__no">No. 1 · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">The card as issued. Chrome frame, full colour.</p></div>
-        <div class="entry" data-sc-cue="0.27 0.54 0.2 0.25"><span class="entry__no">No. 2 · Refractor</span><h2 class="sc-display sc-display--lg">Refractor.</h2><p class="sc-body">Same card, with rainbow light running through the surface.</p></div>
-        <div class="entry" data-sc-cue="0.51 0.78 0.2 0.25"><span class="entry__no">No. 3 · Numbered</span><h2 class="sc-display sc-display--lg">Numbered.</h2><p class="sc-body">Gold foil, serial-numbered to a fixed print run. 01/50.</p></div>
-        <div class="entry" data-sc-cue="0.75 1 0.2 0.15"><span class="entry__no">No. 4 · Autograph</span><h2 class="sc-display sc-display--lg">Autograph.</h2><p class="sc-body">Signed. The one everybody looks for first.</p></div>
+        <div class="entry"><span class="entry__no">No. 1 · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">The card as issued. Chrome frame, full colour.</p></div>
+        <div class="entry"><span class="entry__no">No. 2 · Refractor</span><h2 class="sc-display sc-display--lg">Refractor.</h2><p class="sc-body">Same card, with rainbow light running through the surface.</p></div>
+        <div class="entry"><span class="entry__no">No. 3 · Numbered</span><h2 class="sc-display sc-display--lg">Numbered.</h2><p class="sc-body">Gold foil, serial-numbered to a fixed print run. 01/50.</p></div>
+        <div class="entry"><span class="entry__no">No. 4 · Autograph</span><h2 class="sc-display sc-display--lg">Autograph.</h2><p class="sc-body">Signed. The one everybody looks for first.</p></div>
       </div>
 
       <div class="peak__card">
@@ -398,9 +417,9 @@
   </section>
 
   <!-- 4 · CURIOSITY: pan -->
-  <section id="series" data-sc-act="pan" data-sc-span="2.8" data-sc-drift="#08090b">
+  <section id="series" data-sc-act="pan" data-sc-span="5.6" data-sc-drift="#08090b">
     <div data-sc-stage class="range">
-      <div class="rail" data-sc-pan="0.06">
+      <div class="rail" id="rail">
         <div class="rail__lead sc-stack">
           <span class="stripe" aria-hidden="true"></span>
           <h2 class="sc-display sc-display--md">Beyond<br><span class="accent">the base set.</span></h2>
@@ -425,8 +444,9 @@
     </div>
   </section>
 
-  <!-- 5 · INTIMACY: flow + reveal wipe -->
-  <section class="sc-section fb" data-sc-act="flow" data-sc-drift="#070809" data-check="7">
+  <!-- 5 · INTIMACY: pin + reveal wipe. Rögzítve, hogy a kártya álljon, amíg a hátoldal végigtörlődik. -->
+  <section class="fb" id="front-back" data-sc-act="pin" data-sc-span="2.6" data-sc-drift="#070809" data-check="7">
+   <div data-sc-stage class="fb__stage">
     <div class="sc-wrap">
       <div class="fb__copy" data-sc-in data-sc-stagger="90">
         <span class="entry__no">No. 7 · Front &amp; back</span>
@@ -435,7 +455,7 @@
       </div>
       <figure class="fb__fig">
         <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Front</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
-        <div class="fb__back" data-sc-reveal="left" data-sc-reveal-at="0.28 0.62">
+        <div class="fb__back" data-sc-reveal="left" data-sc-reveal-at="0.22 0.8">
           <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Back</span></div><div class="slab__card">
             <div class="back">
               <div class="back__head"><b>Player name</b><span>No. —</span></div>
@@ -453,6 +473,7 @@
         <figcaption class="sr-only">Card back layout with placeholder stats.</figcaption>
       </figure>
     </div>
+   </div>
   </section>
 
   <!-- 6 · CALM / OWNERSHIP: flow + in -->
@@ -512,9 +533,20 @@
   var got = {};
 
   // A három fénysöprés ablaka az aktus p-jében (0..1), és mikor pipál a lista.
-  var SWEEPS = [[0.16, 0.30], [0.40, 0.54], [0.64, 0.78]];
-  var SIG = [0.78, 0.93];
-  var TICK_AT = [0.04, 0.30, 0.54, 0.80];
+  // 9 képernyős pin (8 képernyő út): minden söprés ~1.0 képernyő, köztük ~1.0 képernyő
+  // megállás a kész kártyán. A szövegváltás a söprés közepén van.
+  var SWEEPS = [[0.12, 0.25], [0.38, 0.51], [0.64, 0.77]];
+  var SIG = [0.80, 0.92];
+  var TICK_AT = [0.02, 0.23, 0.49, 0.75];
+  // Bejegyzések: [be-kezdet, be-vég, ki-kezdet, ki-vég]; az engine helyett innen hajtva,
+  // hogy a szöveg ugyanazt a simított p-t kövesse, mint a kártya.
+  var ENTRY = [[0, 0.03, 0.15, 0.185], [0.185, 0.22, 0.41, 0.445], [0.445, 0.48, 0.67, 0.705], [0.705, 0.74, 2, 2]];
+  var entries = act.querySelectorAll('.entry');
+  // Simítás + sebességkorlát: egy gyors pörgetés sem ugorhat át egy söprésen,
+  // legalább ~0.3 mp alatt végigsiklik rajta.
+  var P_LERP = matchMedia('(pointer: fine)').matches ? 0.08 : 0.22;
+  var P_MAX = 0.007;
+  var sp = -1;
 
   function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
   function ease(t) { return t * t * (3 - 2 * t); }
@@ -530,8 +562,25 @@
 
   var last = -1;
   function frame() {
-    var p = parseFloat(act.style.getPropertyValue('--sc-p')) || 0;
+    var raw = parseFloat(act.style.getPropertyValue('--sc-p')) || 0;
+    var rr = act.getBoundingClientRect();
+    // Ha az aktus nem látszik (pl. ugrás a dockról), nincs mit animálni: azonnal beáll.
+    if (sp < 0 || rr.bottom < 0 || rr.top > innerHeight) sp = raw;
+    else {
+      var d = (raw - sp) * P_LERP;
+      sp += d > P_MAX ? P_MAX : d < -P_MAX ? -P_MAX : d;
+      if (Math.abs(raw - sp) < 0.0004) sp = raw;
+    }
+    var p = sp;
     if (p !== last) {
+      for (var j = 0; j < 4; j++) {
+        var w = ENTRY[j];
+        var v = ease(clamp((p - w[0]) / (w[1] - w[0]))) * (1 - ease(clamp((p - w[2]) / (w[3] - w[2]))));
+        if (j === 0 && p <= 0) v = 1;
+        entries[j].style.opacity = v.toFixed(3);
+        entries[j].style.transform = 'translate3d(0,' + ((1 - v) * 14).toFixed(2) + 'px,0)';
+        entries[j].style.visibility = v < 0.01 ? 'hidden' : '';
+      }
       last = p;
       var bandPos = -1.2, bandOp = 0;
       for (var i = 0; i < 3; i++) {
@@ -542,19 +591,42 @@
       band.style.setProperty('--b', bandPos.toFixed(4));
       band.style.setProperty('--bo', bandOp.toFixed(3));
       sig.style.setProperty('--sig', ease(clamp((p - SIG[0]) / (SIG[1] - SIG[0]))).toFixed(4));
-      var gold = clamp((p - 0.45) / 0.12) * (1 - clamp((p - 0.70) / 0.1));
-      var white = clamp((p - 0.70) / 0.1);
+      var gold = clamp((p - 0.40) / 0.11) * (1 - clamp((p - 0.66) / 0.1));
+      var white = clamp((p - 0.66) / 0.1);
       gGold.style.opacity = gold.toFixed(3);
       gWhite.style.opacity = white.toFixed(3);
       gTeal.style.opacity = (1 - Math.max(gold, white)).toFixed(3);
-      var r = act.getBoundingClientRect();
-      if (r.top < innerHeight * 0.5 && r.bottom > 0) {
+      if (rr.top < innerHeight * 0.5 && rr.bottom > 0) {
         for (var k = 0; k < 4; k++) if (p >= TICK_AT[k]) tick(k + 1);
       }
     }
     requestAnimationFrame(frame);
   }
   if (!reduce) requestAnimationFrame(frame);
+
+  // Vízszintes sín: az engine lineáris pan-ja helyett, mert az a sín végén azonnal elengedi
+  // a szakaszt. Itt a sín p 0.03..0.78 között halad végig, utána ~1 képernyőnyi megállás
+  // a záró szövegen ("Printed for clubs and teams."). Ugyanaz a simítás, mint fent.
+  var panAct = document.getElementById('series');
+  var rail = document.getElementById('rail');
+  var PAN = [0.03, 0.78], PAN_EXTRA = 0.06;
+  var rp = -1, railLast = '';
+  function railFrame() {
+    var raw = parseFloat(panAct.style.getPropertyValue('--sc-p')) || 0;
+    var r = panAct.getBoundingClientRect();
+    if (rp < 0 || r.bottom < 0 || r.top > innerHeight) rp = raw;
+    else {
+      var d = (raw - rp) * P_LERP;
+      rp += d > P_MAX ? P_MAX : d < -P_MAX ? -P_MAX : d;
+      if (Math.abs(raw - rp) < 0.0004) rp = raw;
+    }
+    var over = rail.scrollWidth - innerWidth;
+    var q = clamp((rp - PAN[0]) / (PAN[1] - PAN[0]));
+    var css = over > 0 ? 'translate3d(' + (-(over * (1 + PAN_EXTRA)) * q).toFixed(1) + 'px,0,0)' : 'none';
+    if (css !== railLast) { railLast = css; rail.style.transform = css; }
+    requestAnimationFrame(railFrame);
+  }
+  if (!reduce) requestAnimationFrame(railFrame);
 
   // 5-8: a bejegyzés begyűjtve, amikor a fele látszik.
   var io = new IntersectionObserver(function (es) {
@@ -569,6 +641,49 @@
   }
 
   // A záró aktusban a lista átadja a helyét a kipipált sornak (és nem takarja a láblécet).
+  // Hero: síkok + függöny alatti hátralépés. A síkok elmozdulása p-vel arányos, így
+  // betöltéskor pontosan a CSS-beli kompozíció látszik (nincs kezdő eltolás). A függöny
+  // fázisa (t) a pin utolsó képernyőnyi útja: ekkor fut rá a következő szekció.
+  // Egérrel kis tehetetlenség simítja a görgő lépcsőit; érintésnél nincs, mert ott a
+  // késve követő réteg lomhának hat.
+  var heroAct = document.getElementById('hero');
+  var lift = document.getElementById('hero-lift');
+  var planes = Array.prototype.map.call(heroAct.querySelectorAll('[data-depth]'), function (el) {
+    return { el: el, rate: parseFloat(el.getAttribute('data-depth')) || 0, cur: null };
+  });
+  var LERP = matchMedia('(pointer: fine)').matches ? 0.16 : 1;
+  var heroP = -1, heroT = 0, liftLast = '';
+  // Méret cache-elve: képkockánként olvasott offsetHeight a motor írásai után layoutot kényszerítene.
+  var travel = 1, vhNow = innerHeight;
+  function measure() { vhNow = innerHeight; travel = Math.max(heroAct.offsetHeight - vhNow, 1); }
+  measure();
+  addEventListener('resize', function () { requestAnimationFrame(measure); });
+  function heroFrame() {
+    var p = parseFloat(heroAct.style.getPropertyValue('--sc-p')) || 0;
+    var t = clamp((p * travel - (travel - vhNow)) / vhNow);
+    if (heroP < 0) { heroP = p; heroT = t; }   // első képkocka: nincs beúszás betöltéskor
+    heroP += (p - heroP) * LERP;
+    heroT += (t - heroT) * LERP;
+    if (Math.abs(p - heroP) < 0.0005) heroP = p;
+    if (Math.abs(t - heroT) < 0.0005) heroT = t;
+    for (var i = 0; i < planes.length; i++) {
+      var y = Math.round(planes[i].rate * heroP * 100 * 20) / 20;
+      if (y !== planes[i].cur) {
+        planes[i].cur = y;
+        planes[i].el.style.transform = 'translate3d(0,' + y + 'px,0)';
+      }
+    }
+    var e = ease(heroT);
+    var css = 'translate3d(0,' + (-9 * e).toFixed(3) + 'vh,0) scale(' + (1 - 0.05 * e).toFixed(4) + ')';
+    if (css !== liftLast) {
+      liftLast = css;
+      lift.style.transform = css;
+      lift.style.opacity = (1 - 0.6 * heroT).toFixed(3);
+    }
+    requestAnimationFrame(heroFrame);
+  }
+  if (!reduce) requestAnimationFrame(heroFrame);
+
   new IntersectionObserver(function (es) {
     dock.classList.toggle('is-away', es[0].isIntersecting);
   }, { rootMargin: '0px 0px -40% 0px' }).observe(document.getElementById('get-the-app'));
@@ -581,13 +696,13 @@
       if (n <= 4 && !reduce) {
         var top = act.getBoundingClientRect().top + scrollY;
         var travel = act.offsetHeight - innerHeight;
-        var at = [0.06, 0.36, 0.60, 0.95][n - 1];
+        var at = [0.06, 0.31, 0.575, 0.96][n - 1];
         y = top + travel * at;
       } else {
         var el = n <= 4 ? act : document.querySelector('[data-check="' + n + '"]');
         y = el.getBoundingClientRect().top + scrollY - (n === 5 || n === 6 ? 0 : 40);
-        if (n === 6 && !reduce) { var pan = document.getElementById('series'); y = pan.getBoundingClientRect().top + scrollY + (pan.offsetHeight - innerHeight) * 0.75; }
-        if (n === 5 && !reduce) { var pan2 = document.getElementById('series'); y = pan2.getBoundingClientRect().top + scrollY + (pan2.offsetHeight - innerHeight) * 0.35; }
+        if (n === 6 && !reduce) { var pan = document.getElementById('series'); y = pan.getBoundingClientRect().top + scrollY + (pan.offsetHeight - innerHeight) * 0.59; }
+        if (n === 5 && !reduce) { var pan2 = document.getElementById('series'); y = pan2.getBoundingClientRect().top + scrollY + (pan2.offsetHeight - innerHeight) * 0.29; }
       }
       scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
     });
