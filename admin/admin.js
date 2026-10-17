@@ -267,10 +267,90 @@
     return parts.length ? parts.join(' · ') : 'csatorna szerint';
   }
 
+  // ---------- szállító + feladási folyamat (2026-10-17) ----------
+  // A backend (admin_handler _carrier / _fulfillment) adja: carrier = foxpost | gls | null,
+  // fulfillment csak fizetett rendelésnél. Foxpost: címke API-n → kinyomtatva → feladva
+  // (kézi jelölés); GLS: eCsomagba felvinni → felvive (kézi pipa).
+  var FULFILLMENT = {
+    label_ready: { text: 'Nyomtatásra vár', cls: 's-pending_payment' },
+    label_failed: { text: 'Címke hiba', cls: 's-failed' },
+    printed: { text: 'Kinyomtatva', cls: 's-refunded' },
+    handed_over: { text: 'Feladva', cls: 's-paid' },
+    gls_todo: { text: 'eCsomagba felvinni', cls: 's-pending_payment' },
+    gls_entered: { text: 'eCsomagban felvive', cls: 's-paid' }
+  };
+  function fulfillmentBadge(value) {
+    var f = FULFILLMENT[value];
+    return f ? '<span class="badge ' + f.cls + '">' + esc(f.text) + '</span>' : '<span class="muted">—</span>';
+  }
+  function carrierText(o) {
+    if (!o.carrier) return '<span class="muted">—</span>';
+    var mode = o.shippingMethod === 'home_delivery' ? 'házhoz' : (o.carrier === 'gls' ? 'csomagpont' : 'automata');
+    return '<b>' + (o.carrier === 'gls' ? 'GLS' : 'Foxpost') + '</b><br><span class="muted">' + mode + '</span>';
+  }
+
+  // A pipák állapotából a következő tárolt lépés (fulfillmentStep); null = visszavonás.
+  function nextStep(o, step, checked) {
+    if (o.carrier === 'gls') return checked ? 'entered' : null;
+    if (step === 'printed') return checked ? 'printed' : null;
+    return checked ? 'handed_over' : 'printed';
+  }
+
+  function renderFulfillment(o) {
+    if (!o.fulfillment) return '';
+    var f = o.fulfillment;
+    var boxes;
+    if (o.carrier === 'gls') {
+      boxes = checkbox('entered', 'Felvittem az eCsomag felületén (feladás kész)', f === 'gls_entered', false);
+    } else {
+      var noLabel = f === 'label_failed';
+      boxes =
+        '<p class="muted">' + (noLabel
+          ? 'A Foxpost címke nem jött létre — vidd fel kézzel a Foxpost ügyfélportálon.'
+          : 'Címke létrehozva (API): ' + esc(o.foxpostTrackingNumber || '') + ' · méret: XS') + '</p>' +
+        checkbox('printed', 'Kinyomtatva', f === 'printed' || f === 'handed_over', noLabel) +
+        checkbox('handed_over', 'Feladva (automatában / csomagponton leadva)', f === 'handed_over', noLabel);
+    }
+    return '<div class="section fulfillment"><h3>Feladás — ' + (o.carrier === 'gls' ? 'GLS (kézi)' : 'Foxpost') + ' ' +
+      fulfillmentBadge(f) + '</h3>' + boxes +
+      (o.fulfillmentAt ? '<p class="muted">Utoljára módosítva: ' + formatDate(o.fulfillmentAt) + '</p>' : '') + '</div>';
+  }
+  function checkbox(step, label, checked, disabled) {
+    return '<label class="check"><input type="checkbox" data-step="' + step + '"' + (checked ? ' checked' : '') +
+      (disabled ? ' disabled' : '') + '> ' + esc(label) + '</label>';
+  }
+
+  function onFulfillmentChange(ev) {
+    var input = ev.target.closest('input[data-step]');
+    if (!input) return;
+    var o = state.order;
+    var operator = '';
+    try { operator = localStorage.getItem(OPERATOR_KEY) || ''; } catch (e) { /* nincs tároló */ }
+    if (!operator) {
+      operator = (window.prompt('Operátor neve (a naplóba kerül):') || '').trim();
+      if (!operator) { input.checked = !input.checked; return; }
+      try { localStorage.setItem(OPERATOR_KEY, operator); } catch (e) { /* csak most */ }
+    }
+    var boxes = document.querySelectorAll('#order-body input[data-step]');
+    Array.prototype.forEach.call(boxes, function (b) { b.disabled = true; });
+    api('setFulfillment', { orderId: o.orderId, step: nextStep(o, input.dataset.step, input.checked), operator: operator })
+      .then(function (data) {
+        renderOrder(data.order);
+        toast('Feladási állapot: ' + (FULFILLMENT[data.order.fulfillment] || {}).text);
+        if (!$('#view-orders').hidden) loadOrders();
+      }).catch(function (e) {
+        toast(e.message);
+        api('getOrder', { orderId: o.orderId }).then(function (d) { renderOrder(d.order); }).catch(function () {});
+      });
+  }
+
   function loadOrders() {
     var f = $('#order-filters');
     $('#orders-table').innerHTML = '<tbody><tr><td class="muted">Betöltés…</td></tr></tbody>';
-    api('listOrders', { status: f.status.value, content: f.content.value, q: f.q.value }).then(function (data) {
+    api('listOrders', {
+      status: f.status.value, content: f.content.value, carrier: f.carrier.value,
+      fulfillment: f.fulfillment.value, q: f.q.value
+    }).then(function (data) {
       var rows = data.orders.map(function (o) {
         return '<tr tabindex="0" data-id="' + esc(o.orderId) + '">' +
           '<td><b>' + esc(o.orderNumber || o.orderId) + '</b></td>' +
@@ -279,11 +359,13 @@
           '<td>' + compositionHtml(o.composition, o.packsReserved) + '</td>' +
           '<td class="num">' + formatHuf(o.totalCents) + '</td>' +
           '<td>' + badge(o.status) + '</td>' +
+          '<td>' + carrierText(o) + '</td>' +
+          '<td>' + fulfillmentBadge(o.fulfillment) + '</td>' +
           '<td>' + badge(o.invoiceStatus) + '</td>' +
           '<td>' + (o.auctionId ? 'aukció' : esc(o.channel || 'app')) + '</td></tr>';
       }).join('');
-      $('#orders-table').innerHTML = '<thead><tr><th>Rendelés</th><th>Dátum</th><th>Vevő</th><th>Tartalom</th><th class="num">Összeg</th><th>Státusz</th><th>Számla</th><th>Csatorna</th></tr></thead><tbody>' +
-        (rows || '<tr><td colspan="8" class="muted">Nincs találat.</td></tr>') + '</tbody>';
+      $('#orders-table').innerHTML = '<thead><tr><th>Rendelés</th><th>Dátum</th><th>Vevő</th><th>Tartalom</th><th class="num">Összeg</th><th>Státusz</th><th>Szállító</th><th>Feladás</th><th>Számla</th><th>Csatorna</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="10" class="muted">Nincs találat.</td></tr>') + '</tbody>';
       $('#orders-meta').textContent = data.orders.length + ' / ' + data.total + ' rendelés';
     }).catch(function (e) {
       $('#orders-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
@@ -482,6 +564,104 @@
     }).join('') + '</dl>';
   }
 
+  function addressText(a) {
+    return [a.postalCode, a.city, [a.line1, a.houseNumber].filter(Boolean).join(' '), a.line2, a.country].filter(Boolean).join(', ');
+  }
+
+  // ---------- GLS eCsomag (kézi feladás, 2026-10-17) ----------
+  // A GLS-nek nincs API-ja a mi esetünkben: a külföldi (EU) házhoz rendeléseket kézzel kell
+  // felvinni az ecsomag.gls-hungary.com felületére. A díjak az eCsomag nyilvános 2026-os
+  // export árai (bruttó, automatából / CsomagPontból feladva) — ugyanazok, mint a backend
+  // shipping_fees.py-ban, ott XS-sel számolunk.
+  var ECSOMAG_URL = 'https://ecsomag.gls-hungary.com/';
+  var ECSOMAG_ZONES = {
+    I: { xs: 6490, s: 10190, countries: { AT: 'Ausztria', CZ: 'Csehország', HR: 'Horvátország', RO: 'Románia', SI: 'Szlovénia', SK: 'Szlovákia' } },
+    II: { xs: 7790, s: 11890, countries: { BE: 'Belgium', BG: 'Bulgária', DE: 'Németország', LU: 'Luxemburg', NL: 'Hollandia', PL: 'Lengyelország' } },
+    III: { xs: 9390, s: 13790, countries: { DK: 'Dánia', FR: 'Franciaország', IT: 'Olaszország' } },
+    IV: { xs: 12390, s: 20690, countries: { EE: 'Észtország', ES: 'Spanyolország', FI: 'Finnország', LT: 'Litvánia', LV: 'Lettország', PT: 'Portugália', SE: 'Svédország' } }
+  };
+  function ecsomagZone(country) {
+    for (var z in ECSOMAG_ZONES) {
+      if (ECSOMAG_ZONES[z].countries[country]) return { zone: z, name: ECSOMAG_ZONES[z].countries[country], fee: ECSOMAG_ZONES[z] };
+    }
+    return null;
+  }
+  function isGlsOrder(o) {
+    return o.shippingMethod === 'gls_locker' || (o.shippingMethod === 'home_delivery' && o.homeCarrier === 'gls');
+  }
+  function forintText(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ft';
+  }
+
+  function renderEcsomag(o) {
+    var a = o.deliveryAddress || o.shippingAddress || {};
+    var z = ecsomagZone(a.country);
+    var countryText = z ? z.name + ' (' + a.country + ')' : (a.countryName || a.country || '');
+    // Az eCsomag űrlap sorrendjében; minden sor külön másolható.
+    var fields = [
+      ['Címzett neve', o.customerName],
+      ['Telefon', o.customerPhone],
+      ['E-mail', o.customerEmail],
+      ['Ország', countryText],
+      ['Irányítószám', a.postalCode],
+      ['Település', a.city],
+      ['Utca', a.line1],
+      ['Házszám', a.houseNumber],
+      ['Emelet, ajtó, egyéb', a.line2],
+      ['Hivatkozás (rendelésszám)', o.orderNumber || o.orderId]
+    ];
+    var all = fields.filter(function (f) { return f[1]; }).map(function (f) { return f[0] + ': ' + f[1]; }).join('\n');
+    var rows = fields.map(function (f) {
+      var v = f[1];
+      return '<dt>' + esc(f[0]) + '</dt><dd class="copy-row">' +
+        (v ? '<span class="copy-val">' + esc(v) + '</span>' +
+          '<button type="button" class="copy-btn" data-copy="' + esc(v) + '" aria-label="' + esc('Másolás: ' + f[0]) + '">Másol</button>'
+          : '<span class="muted">—</span>') +
+        '</dd>';
+    }).join('');
+
+    var warn = '';
+    if (o.shippingMethod === 'gls_locker') {
+      warn = '<p class="ecsomag-warn">Régi GLS csomagpontos rendelés (' + esc(o.glsPointName || '') + ' ' + esc(o.glsPointId || '') +
+        ') — az eCsomag ezt nem kezeli, egyeztess a vevővel.</p>';
+    } else if (!z) {
+      warn = '<p class="ecsomag-warn">Ebbe az országba (' + esc(a.country || '?') + ') az eCsomag nem szállít — egyeztess a vevővel, vagy sztornózd.</p>';
+    }
+    var cost = z
+      ? kv([
+        ['Zóna', z.zone + '. zóna'],
+        ['Méret', 'XS, ha a leghosszabb + legrövidebb oldal ≤ 35 cm (1 doboz 12,5×9×7 cm = 19,5 cm). S: ≤ 50 cm.'],
+        ['eCsomag díj', 'XS: ' + forintText(z.fee.xs) + ' · S: ' + forintText(z.fee.s) + ' (automatából / CsomagPontból feladva; futárral +500 Ft)'],
+        ['A vevő fizetett', formatHuf(o.shippingFeeCents), true]
+      ])
+      : '';
+
+    return '<div class="section ecsomag"><h3>GLS — eCsomag feladás</h3>' +
+      '<p class="muted">Feladás: <a href="' + ECSOMAG_URL + '" target="_blank" rel="noopener">ecsomag.gls-hungary.com</a> → export csomag. ' +
+      'Állapot: ' + badge(o.glsLabelStatus) + '</p>' + warn +
+      '<dl class="kv">' + rows + '</dl>' +
+      '<div class="ecsomag-tools"><button type="button" class="btn btn--ghost copy-btn" data-copy="' + esc(all) + '">Összes adat másolása</button></div>' +
+      cost + '</div>';
+  }
+
+  // Vágólap: a Clipboard API csak biztonságos (https) környezetben él; helyben a régi úton.
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { /* lent kezeljük */ }
+      document.body.removeChild(ta);
+      if (ok) resolve(); else reject(new Error('copy failed'));
+    });
+  }
+
   function renderOrder(o) {
     state.order = o;
     $('#order-title').textContent = o.orderNumber || o.orderId;
@@ -510,21 +690,25 @@
       '<div class="section"><h3>Vevő</h3>' + kv([
         ['Név', o.customerName], ['E-mail', o.customerEmail], ['Telefon', o.customerPhone],
         // A házszám 2026-10-06 óta külön mező (a MyGLS csak számot fogad el); régi rendelésnél nincs.
-        ['Cím', [addr.postalCode, addr.city, [addr.line1, addr.houseNumber].filter(Boolean).join(' '), addr.line2, addr.country].filter(Boolean).join(', ')],
+        [o.deliveryAddress ? 'Számlázási cím' : 'Cím', addressText(addr)],
+        // Eltérő házhoz szállítási cím (2026-10-09 óta); hiánya = a számlázási címre megy.
+        o.deliveryAddress ? ['Szállítási cím', addressText(o.deliveryAddress)] : null,
         ['Szállítás', o.shippingMethod +
           // Házhozszállításnál a választott szállító; régi rendelésnél nincs → Foxpost.
           (o.shippingMethod === 'home_delivery' ? ' — ' + (o.homeCarrier === 'gls' ? 'GLS' : 'Foxpost') : '') +
           (o.foxpostLockerName ? ' — ' + o.foxpostLockerName : '') +
           (o.glsPointName ? ' — ' + o.glsPointName + (o.glsPointId ? ' (' + o.glsPointId + ')' : '') : '')],
         ['Tételek', items || '—', true]
-      ]) + '</div>' +
+      ].filter(Boolean)) + '</div>' +
+      renderFulfillment(o) +
+      (isGlsOrder(o) ? renderEcsomag(o) : '') +
       '<div class="section"><h3>Szolgáltatók</h3>' + kv([
         ['Stripe fizetés', o.stripePaymentIntentId],
         ['Stripe visszatérítés', o.stripeRefundId],
         ['Számla (Számlázz.hu)', badge(o.invoiceStatus) + ' ' + esc(o.invoiceNumber || ''), true],
         ['Sztornó számla', badge(o.stornoInvoiceStatus) + ' ' + esc(o.stornoInvoiceNumber || ''), true],
         ['Foxpost címke', badge(o.foxpostLabelStatus) + ' ' + esc(o.foxpostTrackingNumber || ''), true],
-        ['GLS címke (MyGLS)', badge(o.glsLabelStatus) + ' ' + esc(o.glsParcelId || ''), true],
+        ['GLS (eCsomag, kézi)', badge(o.glsLabelStatus) + ' ' + esc(o.glsParcelId || ''), true],
         ['Szállító lemondás', badge(o.carrierCancelStatus), true],
         ['Visszaigazoló e-mail', badge(o.confirmationEmailStatus), true]
       ]) + '</div>' +
@@ -652,6 +836,16 @@
     if (tr && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); openOrder(tr.dataset.id); }
   });
   $('#order-close').addEventListener('click', function () { $('#order-dialog').close(); });
+  $('#order-body').addEventListener('change', onFulfillmentChange);
+  $('#order-body').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-copy]');
+    if (!b) return;
+    copyText(b.dataset.copy).then(function () {
+      toast('Vágólapra másolva');
+      b.classList.add('is-copied');
+      setTimeout(function () { b.classList.remove('is-copied'); }, 1500);
+    }).catch(function () { toast('Nem sikerült másolni — jelöld ki kézzel'); });
+  });
   $('#cards-table').addEventListener('click', function (ev) {
     var tr = ev.target.closest('tr[data-sku]');
     if (tr) openCard(tr.dataset.sku);
