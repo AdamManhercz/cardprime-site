@@ -102,7 +102,7 @@ textarea { resize: vertical; }
 .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font: 600 12px/1.4 var(--sc-font-text);
          background: var(--sc-surface-2); color: var(--sc-ink-soft); white-space: nowrap; }
 .s-paid, .s-issued, .s-created, .s-sent, .s-done_manually { background: rgba(74,222,128,.14); color: var(--ok); }
-.s-pending_payment, .s-reversing, .s-manual_required { background: rgba(233,196,106,.16); color: var(--gold); }
+.s-pending_payment, .s-reversing, .s-manual_required, .s-manual { background: rgba(233,196,106,.16); color: var(--gold); }
 .s-refunded, .s-cancelled { background: rgba(6,182,212,.14); color: var(--teal); }
 .s-failed { background: rgba(248,113,113,.14); color: var(--danger); }
 
@@ -119,6 +119,20 @@ textarea { resize: vertical; }
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 .action-form { margin-top: 20px; }
 .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 13px; }
+/* GLS eCsomag kézi feladás: soronként másolható mezők */
+.ecsomag { background: var(--sc-surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.ecsomag h3 { margin-top: 0; }
+.ecsomag a { color: var(--sc-accent); }
+.ecsomag .kv { margin-top: 12px; }
+.ecsomag-warn { color: var(--gold); font-size: 14px; }
+.ecsomag-tools { margin: 14px 0; }
+.copy-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.copy-val { font-variant-numeric: tabular-nums; }
+.copy-btn:not(.btn) { flex: none; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--sc-surface-2);
+                      color: var(--sc-ink); font: 600 12px/1.4 var(--sc-font-text); cursor: pointer; }
+.copy-btn:not(.btn):hover { border-color: rgba(245,245,247,.32); }
+.copy-btn:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
+.copy-btn.is-copied { border-color: var(--ok); color: var(--ok); }
 .log li { background: var(--sc-surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
 
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--sc-surface-2);
