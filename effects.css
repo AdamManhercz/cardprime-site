@@ -1,0 +1,171 @@
+/* Főoldali effektek (a lab v6-ból), a <html> fx-* osztályaival kapcsolva.
+   Az engine-hez (scrollcraft.css/js) nem nyúl, csak felülírja / kiegészíti. */
+
+/* ---------- fx-intro: a hero sorai betöltéskor, elmosódásból élesedve ---------- */
+@keyframes lab-rise {
+  from { opacity: 0; transform: translate3d(0, 36px, 0); filter: blur(8px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+@keyframes lab-fade { from { opacity: 0; } to { opacity: 1; } }
+.fx-intro .hero .sc-copy > * { animation: lab-rise 1.1s var(--sc-ease-out) both; }
+.fx-intro .hero .sc-copy > :nth-child(2) { animation-delay: .14s; }
+.fx-intro .hero .sc-copy > :nth-child(3) { animation-delay: .28s; }
+.fx-intro .hero__planes { animation: lab-fade 1.6s var(--sc-ease-out) both; }
+
+/* ---------- fx-blur: a flow-reveal elmosódásból jön; a cue-k blurját az effects.js írja ---------- */
+.fx-blur [data-sc-in], .fx-blur [data-sc-stagger] > * {
+  transform: translate3d(0, 28px, 0); filter: blur(6px);
+  transition: opacity 760ms var(--sc-ease-out), transform 760ms var(--sc-ease-out), filter 760ms var(--sc-ease-out);
+}
+/* magasabb specificitás, mint a fenti: különben a kész állapot is eltolva maradna */
+html.fx-blur [data-sc-in].sc-in, html.fx-blur [data-sc-stagger] > .sc-in { transform: none; filter: none; }
+
+/* ---------- fx-glass: lebegő pill-sáv, a hero után üveg háttérrel ---------- */
+.fx-glass .bar { inset: auto; left: 50%; top: calc(12px + env(safe-area-inset-top));
+                 width: min(1200px, calc(100% - 24px)); transform: translateX(-50%);
+                 padding: 8px 8px 8px 16px; border-radius: 999px; }
+.fx-glass .bar::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+                         background: rgba(14,14,18,.62); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2);
+                         box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 6px 14px -4px rgba(0,0,0,.28), 0 22px 44px -16px rgba(0,0,0,.5);
+                         opacity: 0; transition: opacity .5s var(--sc-ease-out); }
+.fx-glass .bar.is-solid::before { opacity: 1; }
+.fx-glass body.menu-open .bar::before { opacity: 0; }
+.fx-glass .bar > * { position: relative; }
+
+/* ---------- fx-giant: óriási körvonalas szó a kártya mögött ---------- */
+.lab-giant { position: absolute; left: 0; top: 50%; z-index: 0; white-space: nowrap; pointer-events: none;
+             font: 700 min(30vw, 40vh)/1 var(--sc-font-display); letter-spacing: -.05em; text-transform: uppercase;
+             color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07);
+             opacity: 0; transform: translate3d(0, -50%, 0); will-change: transform, opacity; }
+
+/* ---------- fx-atmos: jelenetenkénti fényfoltok egy fix rétegen ----------
+   A szakaszok háttere átlátszatlan, ezért nem mögöttük, hanem fölöttük, "screen" keveréssel:
+   a fehér szöveget nem halványítja, a sötét felületet színezi. */
+.lab-atmos { position: fixed; inset: 0; z-index: 4; pointer-events: none; mix-blend-mode: screen;
+             transition: opacity .4s; }
+body.menu-open .lab-atmos { opacity: 0; }
+
+/* ---------- fx-shadow: kontaktárnyék a kártyák alatt ---------- */
+.fx-shadow .peak__card .layers, .fx-shadow .fb__fig { isolation: isolate; }
+.fx-shadow .peak__card .layers::after, .fx-shadow .fb__fig::after {
+  content: ""; position: absolute; left: 4%; right: 4%; bottom: -4.5%; height: 9%; z-index: -1; pointer-events: none;
+  border-radius: 50%; filter: blur(7px);
+  background: radial-gradient(closest-side, rgba(0,0,0,.82), rgba(0,0,0,.42) 55%, transparent);
+}
+
+/* ---------- fx-stepped: a lépést az effects.js animálja, a natív sima görgetés zavarná ---------- */
+html.fx-stepped { scroll-behavior: auto; overscroll-behavior: none; }
+
+/* ---------- fx-glow: az óriás szó színes betűhatárt és átúszó, színes megvilágítást kap ----------
+   A kitöltést a háttér adja (background-clip: text), így a fény csak a betűkön belül látszik. */
+.lab-giant[data-tone="base"]      { --g1: 6 182 212;   --g2: 167 139 250; }
+.lab-giant[data-tone="refractor"] { --g1: 236 72 153;  --g2: 34 211 238; }
+.lab-giant[data-tone="numbered"]  { --g1: 233 196 106; --g2: 217 119 6; }
+.lab-giant[data-tone="autograph"] { --g1: 214 222 255; --g2: 96 130 250; }
+.lab-giant[data-tone="back"]      { --g1: 6 182 212;   --g2: 100 116 139; }
+.fx-glow .lab-giant {
+  -webkit-text-stroke: 1.5px rgb(var(--g1) / .4);
+  background: radial-gradient(38% 80% at var(--gx, 50%) 55%, rgb(var(--g1) / .24), rgb(var(--g2) / .08) 55%, transparent 85%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ---------- fx-prail: oldalsín csak a parallel-részen, doboz és számláló nélkül (eredeti betűk) ---------- */
+.fx-prail .dock { display: none; }
+.lab-prail { position: fixed; right: clamp(16px, 3vw, 48px); top: 50%; z-index: 44; transform: translateY(-50%);
+             display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+             opacity: 0; pointer-events: none; transition: opacity .4s var(--sc-ease-out); }
+.lab-prail.is-on { opacity: 1; pointer-events: auto; }
+body.menu-open .lab-prail { opacity: 0; pointer-events: none; }
+.lab-prail button { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 4px 0; border: 0; background: none; cursor: pointer;
+                    font: 600 11px/1 var(--sc-font-text); letter-spacing: .14em; text-transform: uppercase; color: var(--sc-ink-soft); }
+.lab-prail button span { opacity: 0; transform: translateX(6px); transition: opacity .25s var(--sc-ease-out), transform .25s var(--sc-ease-out); }
+.lab-prail button i { display: block; width: 14px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.22);
+                      transition: width .3s var(--sc-ease-out), background-color .3s; }
+.lab-prail button[aria-current="true"] { color: var(--sc-ink); }
+.lab-prail button[aria-current="true"] span, .lab-prail button:focus-visible span { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) { .lab-prail:hover button span { opacity: 1; transform: none; } }
+.lab-prail button[aria-current="true"] i { width: 34px; background: var(--sc-accent); }
+.lab-prail button:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 3px; }
+
+/* ---------- fx-tidy: a sín zárószövege ne lógjon a jobb szélbe, és ne törjön szét ---------- */
+@media (min-width: 761px) {
+  /* margó, nem padding: a sín teljes szélessége nő, így a vége beljebb áll meg */
+  .fx-tidy .rail__end { width: min(460px, 74vw); margin-right: clamp(48px, 16vw, 260px); }
+  .fx-tidy .rail__end .sc-display { white-space: nowrap; }
+}
+
+/* ---------- fx-sync: semmi nem úszik tovább megérkezés után; a blokkok a lépéssel együtt érkeznek ---------- */
+.fx-sync [data-sc-in], .fx-sync [data-sc-stagger] > * { opacity: 1; transform: none; transition: none; }
+.fx-sync .peak__glow { transition: none; }
+/* a sín a zárószövegnél áll meg, a jobb szélnél (a sín saját belső margójával), nem tolja középre */
+.fx-sync.fx-tidy .rail__end { margin-right: 0; }
+
+/* ---------- fx-curtain: minden fő felület úgy fut rá az előzőre, mint a quiet a herora ----------
+   A következő szekció fölötte, telített háttérrel, lágy felső éllel; az előzőt a JS tartja és hátraléptetzi. */
+.fx-curtain #parallels, .fx-curtain #series, .fx-curtain #front-back, .fx-curtain #app, .fx-curtain #get-the-app {
+  position: relative; background-color: var(--sc-canvas); }
+.fx-curtain #parallels { z-index: 3; }
+.fx-curtain #series { z-index: 4; }
+.fx-curtain #front-back { z-index: 5; }
+.fx-curtain #app { z-index: 6; }
+.fx-curtain #get-the-app { z-index: 7; }
+.fx-curtain #parallels::before, .fx-curtain #series::before, .fx-curtain #front-back::before,
+.fx-curtain #app::before, .fx-curtain #get-the-app::before {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 32vh; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--sc-canvas) 70%, transparent) 55%, var(--sc-canvas)); }
+/* a fényfoltok a felemelt szekciók fölött maradjanak */
+.fx-curtain .lab-atmos { z-index: 40; }
+
+/* ---------- fx-unify: a fő felületek főcímei egy méretben ---------- */
+.fx-unify .hero h1, .fx-unify .quiet h2, .fx-unify .entry h2, .fx-unify .rail__lead h2,
+.fx-unify .fb h2, .fx-unify .app h2, .fx-unify .close h2 {
+  font-size: var(--sc-t-3xl); letter-spacing: var(--sc-track-tight); }
+@media (max-width: 760px) {
+  .fx-unify .hero h1, .fx-unify .quiet h2, .fx-unify .entry h2, .fx-unify .rail__lead h2,
+  .fx-unify .fb h2, .fx-unify .app h2, .fx-unify .close h2 { font-size: var(--sc-t-2xl); }
+}
+
+/* ---------- fx-turn: a Front & Back kártya a lépéssel 3D-ben átfordul, a törlés helyett ----------
+   Az engine továbbra is írja a hátoldal clip-path-ját; az !important ezt felülírja. A JS a két
+   lapot egy közös 3D-s tartóba teszi, és vékony éleket ad hozzá, hogy a kártyának vastagsága legyen. */
+.fx-turn .fb__back { clip-path: none !important; }
+.fx-turn .fb__fig .slab { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.fx-turn .fb__back .slab { transform: rotateY(180deg); }
+.lab-turn { position: relative; transform-style: preserve-3d; will-change: transform; }
+.lab-turn > .slab { transform: translateZ(var(--half, 5px)); }
+.lab-turn > .fb__back { transform-style: preserve-3d; }
+.lab-turn > .fb__back .slab { transform: rotateY(180deg) translateZ(var(--half, 5px)); }
+.lab-turn__edge { position: absolute; left: 50%; top: 50%; pointer-events: none;
+                  background: linear-gradient(90deg, #1b1d22, #8a8f99 45%, #d9dce2 52%, #3a3d44); }
+.lab-turn__edge--y { background: linear-gradient(180deg, #1b1d22, #8a8f99 45%, #d9dce2 52%, #3a3d44); }
+/* átsuhanó fény a lapokon: a forgás szögével vándorol */
+.lab-turn .slab::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent calc(var(--glare, -40) * 1% - 18%), rgba(255,255,255,.22) calc(var(--glare, -40) * 1%), transparent calc(var(--glare, -40) * 1% + 18%));
+  mix-blend-mode: screen; }
+
+/* ---------- fx-center: a hero szövege függőlegesen középen, balra zárva, mint a többi felületen ----------
+   translate, nem transform: a transformot az fx-intro animációja és az engine is írhatja.
+   Mobilon marad felül, mert ott a kártyák a szöveg alatt állnak. */
+@media (min-width: 761px) {
+  .fx-center .hero .sc-copy { top: 50%; bottom: auto; translate: 0 -50%; }
+  /* a sarok-scrim helyett bal oldali sáv: a szöveg már nem a bal alsó sarokban ül */
+  .fx-center .hero .sc-scrim--lead {
+    background: linear-gradient(to right,
+      color-mix(in oklab, var(--sc-canvas) 90%, transparent) 0%,
+      color-mix(in oklab, var(--sc-canvas) 60%, transparent) 30%,
+      transparent 58%); }
+}
+
+/* ---------- fx-nostripe: a főcímek fölötti színes csík sehol ---------- */
+.fx-nostripe .stripe { display: none; }
+
+/* ---------- telefon ---------- */
+@media (max-width: 760px) {
+  .fx-glass .bar { top: calc(8px + env(safe-area-inset-top)); width: calc(100% - 16px); padding-left: 12px; }
+  .lab-giant { top: auto; bottom: 30%; font-size: 40vw; transform: translate3d(0, 0, 0); }
+  .lab-prail { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-intro .hero .sc-copy > *, .fx-intro .hero__planes { animation: none; }
+  .fx-blur [data-sc-in], .fx-blur [data-sc-stagger] > * { filter: none; transform: none; }}

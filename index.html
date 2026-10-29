@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="fx-intro fx-blur fx-glass fx-giant fx-atmos fx-shadow fx-sway fx-glow fx-stepped fx-prail fx-tidy fx-sync fx-curtain fx-unify fx-turn fx-center fx-nostripe">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -274,6 +274,7 @@
     .rail > * { scroll-snap-align: center; }
   }
 </style>
+<link rel="stylesheet" href="effects.css?v=1">
 </head>
 <body>
 
@@ -542,10 +543,10 @@
   // hogy a szöveg ugyanazt a simított p-t kövesse, mint a kártya.
   var ENTRY = [[0, 0.03, 0.15, 0.185], [0.185, 0.22, 0.41, 0.445], [0.445, 0.48, 0.67, 0.705], [0.705, 0.74, 2, 2]];
   var entries = act.querySelectorAll('.entry');
-  // Simítás + sebességkorlát: egy gyors pörgetés sem ugorhat át egy söprésen,
-  // legalább ~0.3 mp alatt végigsiklik rajta.
-  var P_LERP = matchMedia('(pointer: fine)').matches ? 0.08 : 0.22;
-  var P_MAX = 0.007;
+  // Nincs külön simítás: a lépéses görgetés tweenje (effects.js) már simít, a tartalom
+  // késés nélkül követi, így vele együtt áll meg.
+  var P_LERP = 1;
+  var P_MAX = 1;
   var sp = -1;
 
   function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
@@ -576,7 +577,7 @@
       for (var j = 0; j < 4; j++) {
         var w = ENTRY[j];
         var v = ease(clamp((p - w[0]) / (w[1] - w[0]))) * (1 - ease(clamp((p - w[2]) / (w[3] - w[2]))));
-        if (j === 0 && p <= 0) v = 1;
+        if (j === 0 && p <= w[1]) v = 1;
         entries[j].style.opacity = v.toFixed(3);
         entries[j].style.transform = 'translate3d(0,' + ((1 - v) * 14).toFixed(2) + 'px,0)';
         entries[j].style.visibility = v < 0.01 ? 'hidden' : '';
@@ -609,7 +610,7 @@
   // a záró szövegen ("Printed for clubs and teams."). Ugyanaz a simítás, mint fent.
   var panAct = document.getElementById('series');
   var rail = document.getElementById('rail');
-  var PAN = [0.03, 0.78], PAN_EXTRA = 0.06;
+  var PAN = [0.03, 0.78], PAN_EXTRA = 0;
   var rp = -1, railLast = '';
   function railFrame() {
     var raw = parseFloat(panAct.style.getPropertyValue('--sc-p')) || 0;
@@ -651,7 +652,7 @@
   var planes = Array.prototype.map.call(heroAct.querySelectorAll('[data-depth]'), function (el) {
     return { el: el, rate: parseFloat(el.getAttribute('data-depth')) || 0, cur: null };
   });
-  var LERP = matchMedia('(pointer: fine)').matches ? 0.16 : 1;
+  var LERP = 1;
   var heroP = -1, heroT = 0, liftLast = '';
   // Méret cache-elve: képkockánként olvasott offsetHeight a motor írásai után layoutot kényszerítene.
   var travel = 1, vhNow = innerHeight;
@@ -709,5 +710,6 @@
   });
 })();
 </script>
+<script src="effects.js?v=1"></script>
 </body>
 </html>
