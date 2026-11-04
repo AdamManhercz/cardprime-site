@@ -8,9 +8,9 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="assets/appicon.png?v=3">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css?v=1">
 <link rel="stylesheet" href="scrollcraft.css?v=1">
 <link rel="stylesheet" href="site.css?v=1">
 <style>
@@ -37,7 +37,7 @@
   .slab__card { position: relative; flex: 1; border-radius: 4px; overflow: hidden; background: var(--frame); }
   .face { position: absolute; inset: 5.5%; border-radius: 2px; overflow: hidden;
           background: var(--tex) center/cover, var(--face); }
-  .face__mark { position: absolute; left: 50%; top: 40%; width: 36%; transform: translate(-50%,-50%);
+  .face__mark { position: absolute; left: 50%; top: 40%; width: 36%; height: auto; transform: translate(-50%,-50%);
                 opacity: .22; filter: grayscale(1) brightness(2); border-radius: 18%; }
   .face__plate { position: absolute; inset: auto 0 0 0; padding: 7% 8%; background: var(--plate, rgba(4,6,8,.62));
                  color: var(--plate-ink, #F5F5F7); font: 700 7.5cqi/1 var(--sc-font-display); letter-spacing: .02em; text-transform: uppercase; }
@@ -87,6 +87,20 @@
 
   /* wet floor reflection (deck) */
   .reflect { -webkit-box-reflect: below 10px linear-gradient(transparent 62%, rgba(255,255,255,.22)); }
+
+  /* ---------- első festés: a motor geometriája előre ----------
+     A pinelt szekciók magasságát (span × 100vh) és a sticky stage-et a scrollcraft
+     csak mountkor állítja be. Addig a hero 0 magas, a .quiet a képernyő tetejére
+     csúszik, majd mountkor minden ~két képernyőnyit ugrik (CLS = 1). Ugyanaz az
+     érték itt is: a data-sc-span módosításakor ezt is frissíteni kell. */
+  [data-sc-act="pin"], [data-sc-act="pan"] { position: relative; }
+  [data-sc-act="pin"] > [data-sc-stage], [data-sc-act="pan"] > [data-sc-stage] {
+    position: sticky; top: 0; height: 100vh; height: 100svh; overflow: clip; z-index: var(--sc-z-stage); }
+  #hero { height: 230vh; }
+  #parallels { height: 900vh; }
+  #series { height: 560vh; }
+  #front-back { height: 260vh; }
+  #get-the-app { height: 120vh; }
 
   /* ---------- act 1: hero ---------- */
   .hero { overflow: hidden;
@@ -284,8 +298,8 @@
 
 <header class="bar">
   <a class="brand" href="#top" aria-label="CardPrime home">
-    <img src="assets/CardPrime-AppIcon-rounded-512.png" alt="">
-    <img src="assets/CardPrime-wordmark-transparent.png" alt="CardPrime">
+    <img src="assets/CardPrime-AppIcon-rounded-512.png" width="34" height="34" alt="">
+    <img src="assets/CardPrime-wordmark-transparent.png" width="1163" height="174" alt="CardPrime">
   </a>
   <div class="bar__right">
     <a class="btn" href="app/">Get the app</a>
@@ -347,13 +361,13 @@
         <div class="p-mist" data-depth="-0.5"></div>
         <div class="hero__floor"></div>
         <div class="p-back" data-depth="0.3">
-          <div class="slab f-gold reflect"><div class="slab__label"><b>Golden Champions</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><span class="face__num">01/50</span><div class="face__plate">Player<small>Club</small></div></div></div></div>
+          <div class="slab f-gold reflect"><div class="slab__label"><b>Golden Champions</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><span class="face__num">01/50</span><div class="face__plate">Player<small>Club</small></div></div></div></div>
         </div>
         <div class="p-side" data-depth="-0.9">
-          <div class="slab f-refr reflect"><div class="slab__label"><b>Future Wave</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player<small>Club</small></div></div></div></div>
+          <div class="slab f-refr reflect"><div class="slab__label"><b>Future Wave</b></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><div class="face__plate">Player<small>Club</small></div></div></div></div>
         </div>
         <div class="p-main" data-depth="-0.4">
-          <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+          <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
         </div>
         <div class="p-fore" data-depth="-1.6">
           <div class="slab f-gold"><div class="slab__label"><b>CardPrime</b></div><div class="slab__card"><div class="face"><div class="face__plate">Player<small>Club</small></div></div></div></div>
@@ -399,10 +413,10 @@
       <div class="peak__card">
         <div class="peak__anim">
           <div class="layers">
-            <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
-            <div class="slab f-refr" data-k="1"><div class="slab__label"><b>CardPrime</b><span>Refractor</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
-            <div class="slab f-gold" data-k="2"><div class="slab__label"><b>CardPrime</b><span>Numbered</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><span class="face__num">01/50</span><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
-            <div class="slab f-auto" data-k="3"><div class="slab__label"><b>CardPrime</b><span>Autograph</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><svg class="face__sig" viewBox="0 0 196 64" aria-hidden="true"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-base reflect"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-refr" data-k="1"><div class="slab__label"><b>CardPrime</b><span>Refractor</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-gold" data-k="2"><div class="slab__label"><b>CardPrime</b><span>Numbered</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><span class="face__num">01/50</span><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab f-auto" data-k="3"><div class="slab__label"><b>CardPrime</b><span>Autograph</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><svg class="face__sig" viewBox="0 0 196 64" aria-hidden="true"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
             <div class="band-clip" aria-hidden="true"><div class="band"></div></div>
           </div>
         </div>
@@ -455,7 +469,7 @@
         <p class="sc-body">Turn it over: stats, bio and club identity, laid out as carefully as the front.</p>
       </div>
       <figure class="fb__fig">
-        <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Front</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+        <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Front</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
         <div class="fb__back" data-sc-reveal="left" data-sc-reveal-at="0.22 0.8">
           <div class="slab f-base"><div class="slab__label"><b>CardPrime</b><span>Back</span></div><div class="slab__card">
             <div class="back">
