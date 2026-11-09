@@ -20,8 +20,10 @@
   </span>
   <nav class="tabs" id="tabs" hidden aria-label="Admin">
     <button type="button" class="tab" data-view="overview" aria-selected="true">Áttekintés</button>
+    <button type="button" class="tab" data-view="growth" aria-selected="false">Növekedés</button>
     <button type="button" class="tab" data-view="orders" aria-selected="false">Rendelések</button>
     <button type="button" class="tab" data-view="collection" aria-selected="false">Gyűjtemény</button>
+    <button type="button" class="tab" data-view="weekly" aria-selected="false">Heti questek</button>
     <button type="button" class="tab" data-view="statuses" aria-selected="false">Státuszok</button>
   </nav>
   <button type="button" class="btn btn--ghost" id="logout" hidden>Kilépés</button>
@@ -84,7 +86,7 @@
         <select name="carrier" aria-label="Szállító szűrő">
           <option value="">Minden szállító</option>
           <option value="foxpost">Foxpost</option>
-          <option value="gls">GLS (eCsomag)</option>
+          <option value="gls">GLS (export, kézi)</option>
           <option value="none">Nincs (aukció)</option>
         </select>
         <select name="fulfillment" aria-label="Feladási állapot szűrő">
@@ -93,7 +95,7 @@
           <option value="printed">Foxpost: kinyomtatva</option>
           <option value="handed_over">Foxpost: feladva</option>
           <option value="label_failed">Foxpost: címke hiba</option>
-          <option value="gls_todo">GLS: eCsomagba felvinni</option>
+          <option value="gls_todo">GLS: GLS-be felvinni</option>
           <option value="gls_entered">GLS: felvive</option>
         </select>
         <input name="q" type="search" placeholder="Rendelésszám, e-mail, név" aria-label="Keresés">
@@ -141,6 +143,55 @@
     <p class="muted" id="collection-meta"></p>
   </section>
 
+  <!-- növekedés: napi trend a backend meglévő adataiból; csak megnyitáskor és Frissítésre kér adatot -->
+  <section class="view" id="view-growth" hidden>
+    <div class="head">
+      <h2>Növekedés</h2>
+      <button type="button" class="btn btn--ghost" id="growth-refresh">Frissítés</button>
+    </div>
+    <div class="kpis" id="growth-kpis"></div>
+    <div class="head">
+      <h3>Napi bontás</h3>
+      <div class="filters">
+        <select id="growth-range" aria-label="Időszak">
+          <option value="7">Utolsó 7 nap</option>
+          <option value="30" selected>Utolsó 30 nap</option>
+          <option value="90">Utolsó 90 nap</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap"><table class="table" id="growth-table"></table></div>
+    <p class="muted">Azt nem mutatja, honnan jött a felhasználó: a kampányforrás az App Store Connect kampánylinkjeiben látszik. Napi aktív: aki aznap (UTC) elindította az appot vagy bejelentkezett; a háttérből visszahozott app csak újraindításkor számít, ezért ez alsó becslés. Törölt fiók nem számít az új felhasználók közé.</p>
+    <p class="muted" id="growth-meta"></p>
+  </section>
+
+  <!-- heti questek: párbajok, Top 3 és kérdőívek eredménye — csak a csapatnak, a user semmilyen
+       összesítést nem lát (2026-11-09). Csak megnyitáskor és Frissítésre kér adatot. -->
+  <section class="view" id="view-weekly" hidden>
+    <div class="head">
+      <h2>Heti questek</h2>
+      <div class="filters">
+        <button type="button" class="btn btn--ghost" id="weekly-export">CSV letöltése</button>
+        <button type="button" class="btn btn--ghost" id="weekly-refresh">Frissítés</button>
+      </div>
+    </div>
+    <p class="muted" id="weekly-season"></p>
+    <div class="kpis" id="weekly-kpis"></div>
+    <h3>Hány questet teljesítettek</h3>
+    <div class="table-wrap"><table class="table" id="weekly-completion"></table></div>
+    <h3>Napi válaszok</h3>
+    <div class="table-wrap"><table class="table" id="weekly-daily"></table></div>
+    <div class="head">
+      <h3>Questek</h3>
+      <div class="filters">
+        <select id="weekly-week" aria-label="Hét"></select>
+      </div>
+    </div>
+    <div id="weekly-quests"></div>
+    <p class="muted">A számok a névtelen összesítőből jönnek, ezért az azóta törölt fiókok válaszait is tartalmazzák. A napi bontás, a teljesítés, a „miért” a választott oldal szerint, a Top 3 helyezései, a szöveges válaszok és a CSV a még meglévő válaszokból készül, így ezek kisebbek lehetnek. A CSV-ben a válaszadó csak egy szezononkénti álnév (R-…): össze lehet kötni egy ember válaszait, de nem derül ki, ki az.</p>
+    <p class="muted" id="weekly-meta"></p>
+  </section>
+
   <!-- státusz-referencia — a teljes változat: docs/order-statuses.md -->
   <section class="view" id="view-statuses" hidden>
     <h2>Rendelési státuszok</h2>
@@ -149,7 +200,7 @@
       <thead><tr><th>Státusz</th><th>Mikor / miért</th><th>Ki állítja</th><th>Kinek fontos</th></tr></thead>
       <tbody>
         <tr><td><span class="badge s-pending_payment">pending_payment</span></td><td>Rendelés létrejött, a készlet lefoglalva, a vevő a Stripe fizetési oldalon van.</td><td>packs_handler · createOrder</td><td>Stripe (Checkout Session él), készlet</td></tr>
-        <tr><td><span class="badge s-paid">paid</span></td><td>Stripe visszaigazolta a fizetést. Ekkor indul a számla és a Foxpost címke; GLS-nél (külföld) kézi eCsomag-feladás.</td><td>stripe_webhook_handler; aukciónál auction_close_handler</td><td>Stripe, Számlázz.hu, Foxpost / GLS, Resend (visszaigazoló e-mail)</td></tr>
+        <tr><td><span class="badge s-paid">paid</span></td><td>Stripe visszaigazolta a fizetést. Ekkor indul a számla és a Foxpost címke; GLS-nél (külföld) kézi feladás.</td><td>stripe_webhook_handler; aukciónál auction_close_handler</td><td>Stripe, Számlázz.hu, Foxpost / GLS, Resend (visszaigazoló e-mail)</td></tr>
         <tr><td><span class="badge s-expired">expired</span></td><td>30 percig nem fizettek. A készlet visszakerül a poolba, a Stripe session lejár.</td><td>order_expiry_handler (15 percenként)</td><td>Csak készlet — egyik szolgáltató felé sincs teendő</td></tr>
         <tr><td><span class="badge s-reversing">reversing</span></td><td>Átmeneti: admin visszatérítés/sztornó fut. Ha itt ragad, ugyanazzal a gombbal folytatható.</td><td>admin_handler</td><td>Belső zár, dupla visszatérítés ellen</td></tr>
         <tr><td><span class="badge s-refunded">refunded</span></td><td>Valódi vásárlás visszafordítva (visszaküldés, panasz, elveszett csomag). Készlet alapból NEM jön vissza.</td><td>admin_handler · refundOrder (vagy CLI)</td><td>Stripe (refund), Számlázz.hu (sztornó számla), szállító (kézi lemondás)</td></tr>
@@ -164,8 +215,8 @@
         <tr><td><code>stornoInvoiceStatus</code> + <code>stornoInvoiceNumber</code></td><td>issued · failed · not_applicable</td><td>Számlázz.hu</td><td>Sztornó számla visszatérítéskor. <b>failed</b> → „Sztornó számla újra” gomb. <b>not_applicable</b> = nem volt mit sztornózni.</td></tr>
         <tr><td><code>stripePaymentIntentId</code> / <code>stripeRefundId</code></td><td>pi_… / re_…</td><td>Stripe</td><td>A fizetés és a visszatérítés azonosítója a Stripe Dashboardban.</td></tr>
         <tr><td><code>foxpostLabelStatus</code> + <code>foxpostTrackingNumber</code></td><td>created · failed</td><td>Foxpost</td><td>Címke létrehozása fizetéskor. Aukciós rendelésnél nincs.</td></tr>
-        <tr><td><code>glsLabelStatus</code> + <code>glsParcelId</code></td><td>manual · (régi: created · failed)</td><td>GLS (eCsomag, kézi)</td><td>2026-10-17 óta a GLS csak külföldi (EU) házhoz rendelést visz, API nélkül. Fizetéskor <b>manual</b> = kézzel kell feladni az ecsomag.gls-hungary.com-on; a rendelés részleteiben a „GLS — eCsomag feladás” blokk soronként másolható adatokat ad. A régebbi <b>created</b> / <b>failed</b> a MyGLS-es időszakból maradt.</td></tr>
-        <tr><td><code>fulfillment</code> (feladás)</td><td>Nyomtatásra vár · Kinyomtatva · Feladva · Címke hiba · eCsomagba felvinni · eCsomagban felvive</td><td>Saját (kézi)</td><td>Csak fizetett rendelésnél. Foxpost: a címke fizetéskor API-n jön létre (XS), utána a rendelés részleteiben pipálod, hogy kinyomtattad, majd hogy leadtad. GLS: egy pipa, ha az eCsomag felületén felvitted. Visszavonható; minden váltás az admin naplóba kerül.</td></tr>
+        <tr><td><code>glsLabelStatus</code> + <code>glsParcelId</code></td><td>manual · (régi: created · failed)</td><td>GLS (export, kézi)</td><td>2026-10-17 óta a GLS csak külföldi (EU) házhoz rendelést visz, API nélkül. Fizetéskor <b>manual</b> = kézzel kell feladni a GLS felületén (2026-11-02 óta a Lotte Kft. díjaival); a rendelés részleteiben a „GLS — export feladás” blokk soronként másolható adatokat ad. A régebbi <b>created</b> / <b>failed</b> a MyGLS-es időszakból maradt.</td></tr>
+        <tr><td><code>fulfillment</code> (feladás)</td><td>Nyomtatásra vár · Kinyomtatva · Feladva · Címke hiba · GLS-be felvinni · GLS-ben felvive</td><td>Saját (kézi)</td><td>Csak fizetett rendelésnél. Foxpost: a címke fizetéskor API-n jön létre (XS), utána a rendelés részleteiben pipálod, hogy kinyomtattad, majd hogy leadtad. GLS: egy pipa, ha a GLS felületén felvitted. Visszavonható; minden váltás az admin naplóba kerül.</td></tr>
         <tr><td><code>carrierCancelStatus</code></td><td>manual_required · done_manually · not_applicable</td><td>Szállító</td><td>Visszatérítés után: ha volt címke, a szállítónál kézzel kell lemondani, majd itt jelölni. API-integráció később.</td></tr>
         <tr><td><code>confirmationEmailStatus</code></td><td>sent · failed · skipped</td><td>Resend</td><td>A CardPrime saját visszaigazoló e-mailje fizetéskor.</td></tr>
         <tr><td><code>adminLog</code></td><td>lista</td><td>—</td><td>Minden admin művelet: idő, művelet, operátor neve, indok, eredmény.</td></tr>

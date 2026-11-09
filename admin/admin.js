@@ -14,7 +14,8 @@
   var OPERATOR_KEY = 'cpAdminOperator';
 
   var $ = function (sel) { return document.querySelector(sel); };
-  var state = { token: null, challenge: null, order: null, action: null };
+  var state = { token: null, challenge: null, order: null, action: null, growth: null, growthLoading: false,
+    weekly: null, weeklyLoading: false };
 
   // ---------- segédek ----------
   function esc(value) {
@@ -75,6 +76,8 @@
   }
   function logout() {
     state.token = null;
+    state.growth = null;
+    state.weekly = null;
     try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) { /* nincs teendő */ }
     showLogin();
   }
@@ -166,7 +169,7 @@
   }
 
   // ---------- nézetek ----------
-  var VIEWS = ['overview', 'orders', 'collection', 'statuses'];
+  var VIEWS = ['overview', 'growth', 'orders', 'collection', 'weekly', 'statuses'];
   function showLogin() {
     $('#tabs').hidden = true;
     $('#logout').hidden = true;
@@ -185,8 +188,10 @@
     });
     VIEWS.forEach(function (v) { $('#view-' + v).hidden = v !== view; });
     if (view === 'overview') loadStats();
+    if (view === 'growth' && !state.growth) loadGrowth();
     if (view === 'orders') loadOrders();
     if (view === 'collection') loadCollection();
+    if (view === 'weekly' && !state.weekly) loadWeekly();
   }
 
   function loadStats() {
@@ -267,17 +272,331 @@
     return parts.length ? parts.join(' · ') : 'csatorna szerint';
   }
 
+  // ---------- növekedés ----------
+  // A 10-es Lambda-kvóta miatt (2026-10-14) fülváltásra nem kér újra adatot, csak az első
+  // megnyitáskor és Frissítésre, és amíg egy kérés fut, másikat nem indít.
+  function loadGrowth() {
+    if (state.growthLoading) return;
+    state.growthLoading = true;
+    var btn = $('#growth-refresh');
+    busy(btn, true);
+    $('#growth-kpis').innerHTML = '<p class="muted">Betöltés…</p>';
+    api('growthStats').then(function (g) {
+      state.growth = g;
+      renderGrowth();
+    }).catch(function (e) {
+      $('#growth-kpis').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
+    }).then(function () {
+      state.growthLoading = false;
+      busy(btn, false);
+    });
+  }
+  function renderGrowth() {
+    var g = state.growth;
+    var hint = function (field, money) {
+      var f = money ? formatHuf : formatNum;
+      return 'előző 7 nap: ' + f(g.prev7[field]) + ' · 30 nap: ' + f(g.last30[field]);
+    };
+    var total = g.usersTotal == null ? 'összesen: nem sikerült lekérdezni' : 'összesen: ' + formatNum(g.usersTotal) +
+      (g.usersWithoutDate ? ' · dátum nélkül: ' + formatNum(g.usersWithoutDate) : '');
+    var kpis = [
+      ['Napi aktív (ma eddig)', formatNum(g.days[0].activeUsers), 'tegnap: ' + formatNum(g.days[1].activeUsers) +
+        ' · átlag 7 nap: ' + formatAvg(g.activeAvg7) + ' · 30 nap: ' + formatAvg(g.activeAvg30), true],
+      ['Új felhasználók (7 nap)', formatNum(g.last7.newUsers), hint('newUsers') + ' · ' + total],
+      ['Beolvasási kísérlet (7 nap)', formatNum(g.last7.scanAttempts), hint('scanAttempts')],
+      ['Gyűjteménybe vett kártya (7 nap)', formatNum(g.last7.claims), hint('claims')],
+      ['Elfogadott licit (7 nap)', formatNum(g.last7.bidsAccepted), hint('bidsAccepted')],
+      ['Fizetett rendelés (7 nap)', formatNum(g.last7.ordersPaid), hint('ordersPaid')],
+      ['Bevétel (7 nap)', formatHuf(g.last7.revenueCents), hint('revenueCents', true) + ' · aukcióval együtt'],
+      ['Félbehagyott fizetés (30 nap)', pct(g.last30.abandonedPct), formatNum(g.last30.ordersExpired) + ' lejárt / ' +
+        formatNum(g.last30.ordersCreated) + ' indított tasak-rendelés']
+    ];
+    $('#growth-kpis').innerHTML = kpis.map(kpiHtml).join('');
+    renderGrowthTable();
+    $('#growth-meta').textContent = 'Frissítve: ' + formatDate(g.generatedAt);
+  }
+  // Az időszakváltó a már letöltött adatból dolgozik, nem hív Lambdát.
+  function renderGrowthTable() {
+    if (!state.growth) return;
+    var rows = state.growth.days.slice(0, Number($('#growth-range').value)).map(function (d) {
+      return '<tr><td>' + esc(d.day) + '</td><td class="num">' + formatNum(d.activeUsers) + '</td><td class="num">' + formatNum(d.newUsers) +
+        '</td><td class="num">' + formatNum(d.scanAttempts) + '</td><td class="num">' + formatNum(d.scansAuthenticated) +
+        '</td><td class="num">' + formatNum(d.claims) + '</td><td class="num">' + formatNum(d.bidsAccepted) +
+        '</td><td class="num">' + formatNum(d.ordersCreated) + '</td><td class="num">' + formatNum(d.ordersPaid) +
+        '</td><td class="num">' + formatNum(d.ordersExpired) + '</td><td class="num">' + formatHuf(d.revenueCents) + '</td></tr>';
+    }).join('');
+    $('#growth-table').innerHTML = '<thead><tr><th>Nap (UTC)</th><th class="num">Aktív</th><th class="num">Új felhasználó</th><th class="num">Beolvasás</th>' +
+      '<th class="num">Sikeres</th><th class="num">Gyűjteménybe</th><th class="num">Licit</th><th class="num">Indított rendelés</th>' +
+      '<th class="num">Fizetett</th><th class="num">Lejárt</th><th class="num">Bevétel</th></tr></thead><tbody>' + rows + '</tbody>';
+  }
+
+  // ---------- heti questek (2026-11-09) ----------
+  // A user semmilyen összesítést nem lát, ez a csapat nézete (backend: admin_handler
+  // _weekly_quest_stats). A szövegek az app magyar i18n-jéből vannak átmásolva
+  // (demo_app src/i18n/hu/weekly.ts): ha ott változik egy cím vagy kérdés, itt is kell.
+  var WEEKLY_KINDS = { duel: 'Design-párbaj', top3: 'Top 3 választás', survey: 'Kérdőív' };
+  var WEEKLY_TITLES = {
+    w1_duel: 'Inszert-párbaj', w1_top3: 'Egy kártya, hét arc', w1_survey: 'Első benyomások',
+    w2_duel: 'Parallel-párbaj', w2_top3: 'A legjobb parallel', w2_survey: 'Gyűjtés és csomagok',
+    w3_duel: 'A fiatalok párbaja', w3_top3: 'Future Wave Top 3', w3_survey: 'Aukciók és nyeremények',
+    w4_duel: 'Döntő párbaj', w4_top3: 'A szezon kártyája', w4_survey: 'Szezonzáró'
+  };
+  var WEEKLY_WHY = { colors: 'Színek', photo: 'Játékosfotó', layout: 'Elrendezés', typography: 'Betűk', vibe: 'Összhatás' };
+  // Skálánál a két vég felirata, választásnál az opciók a szerver sorrendjében.
+  var WEEKLY_QUESTIONS = {
+    look: { prompt: 'Mennyire tetszik a CardPrime-kártyák kinézete?', scale: ['Egyáltalán nem', 'Imádom'] },
+    heard_from: { prompt: 'Honnan hallottál a CardPrime-ról?', options: ['Egy baráttól', 'Közösségi médiából', 'Meccsen', 'Boltban', 'Máshonnan'] },
+    app_ease: { prompt: 'Mennyire könnyű használni az appot?', scale: ['Nagyon nehéz', 'Nagyon könnyű'] },
+    scan_ease: { prompt: 'Mennyire könnyű beolvasni egy kártyát?', scale: ['Nagyon nehéz', 'Nagyon könnyű'] },
+    collect_why: { prompt: 'Miért gyűjtöd a CardPrime-kártyákat?', options: ['A csapatom miatt', 'A kedvenc játékosaim miatt', 'A designok miatt', 'A nyereményekért', 'Csak a játék kedvéért'] },
+    packs_bought: { prompt: 'Hány csomagot bontottál eddig?', options: ['Még egyet sem', 'Egyet', 'Kettőt-hármat', 'Négyet vagy többet'] },
+    price_fair: { prompt: 'Mennyire korrekt egy csomag ára?', scale: ['Túl drága', 'Nagyon megéri'] },
+    auction_joined: { prompt: 'Részt vettél már CardPrime-aukción?', options: ['Igen, licitáltam', 'Néztem egyet', 'Még nem'] },
+    auction_interest: { prompt: 'Mennyire érdekelnek a kártyaaukciók?', scale: ['Egyáltalán nem', 'Nagyon'] },
+    buy_more: { prompt: 'Mitől bontanál több csomagot?', options: ['Több játékostól', 'Ritkább kártyáktól', 'Több aláírt laptól', 'Alacsonyabb ártól', 'Csapatos szettektől'] },
+    prize_wish: { prompt: 'Melyik nyereményt szeretnéd a legjobban?', options: ['Közös edzés a csapattal', 'Meccsjegyek', 'Dedikált ajándéktárgy', 'Egy ritka kártya'] },
+    season_rating: { prompt: 'Összességében milyen volt ez a szezon?', scale: ['Gyenge', 'Kiváló'] },
+    recommend: { prompt: 'Mennyire valószínű, hogy ajánlanád a CardPrime-ot egy barátodnak?', scale: ['Nem valószínű', 'Nagyon valószínű'] },
+    next_season: { prompt: 'Játszol a következő szezonban is?', options: ['Igen, biztosan', 'Talán', 'Valószínűleg nem'] },
+    next_feature: { prompt: 'Mit építsünk legközelebb?', options: ['Kártyacsere', 'Több aukció', 'Statok és kvíz', 'Csapatkihívások', 'Digitális kártyák'] },
+    wish: { prompt: 'Van még valami, amit elmondanál nekünk?' }
+  };
+  var WEEKLY_STATES = { locked: ['Még nem nyílt meg', 's-expired'], open: ['Nyitva', 's-paid'], closed: ['Lezárva', 's-refunded'] };
+
+  // Ugyanaz a kímélet, mint a Növekedésnél: csak első megnyitáskor és Frissítésre.
+  function loadWeekly() {
+    if (state.weeklyLoading) return;
+    state.weeklyLoading = true;
+    var btn = $('#weekly-refresh');
+    busy(btn, true);
+    $('#weekly-kpis').innerHTML = '<p class="muted">Betöltés…</p>';
+    api('weeklyQuestStats').then(function (w) {
+      state.weekly = w;
+      renderWeekly();
+    }).catch(function (e) {
+      $('#weekly-kpis').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
+    }).then(function () {
+      state.weeklyLoading = false;
+      busy(btn, false);
+    });
+  }
+
+  function pctOf(part, whole) {
+    return whole ? Math.round(part / whole * 100) : 0;
+  }
+  // A CSP (style-src 'self') a style="" attribútumot tiltja, ezért a sávok szélessége
+  // data-w-ben megy, és a beszúrás után JS-ből (CSSOM) kerül a helyére.
+  function barHtml(value, max, cls) {
+    return '<span class="wbar"><span class="wbar__fill' + (cls ? ' ' + cls : '') + '" data-w="' + pctOf(value, max) + '"></span></span>';
+  }
+  function applyBars(root) {
+    root.querySelectorAll('[data-w]').forEach(function (el) { el.style.width = el.dataset.w + '%'; });
+    root.querySelectorAll('img').forEach(function (img) {
+      img.addEventListener('error', function () { img.hidden = true; });
+    });
+  }
+  function designName(id) {
+    var d = (state.weekly.designs || {})[id] || {};
+    return (d.playerName || id) + (d.variant ? ' — ' + d.variant : '');
+  }
+  function designHtml(id) {
+    var d = (state.weekly.designs || {})[id] || {};
+    return '<span class="wdesign">' + (d.imageUrl ? '<img src="' + esc(d.imageUrl) + '" alt="" loading="lazy">' : '') +
+      '<span><b>' + esc(d.playerName || id) + '</b><br><span class="muted">' + esc(d.variant || '') + ' · ' + esc(id) + '</span></span></span>';
+  }
+
+  function renderWeekly() {
+    var w = state.weekly;
+    var s = w.season;
+    if (!s) {
+      $('#weekly-season').textContent = 'Nincs beállított szezon (WEEKLY_SEASON_START üres).';
+      ['#weekly-kpis', '#weekly-completion', '#weekly-daily', '#weekly-quests'].forEach(function (sel) { $(sel).innerHTML = ''; });
+      $('#weekly-week').innerHTML = '';
+      $('#weekly-meta').textContent = 'Frissítve: ' + formatDate(w.generatedAt);
+      return;
+    }
+    $('#weekly-season').textContent = 'Szezon ' + s.seasonId + ' · ' + s.weeks + ' hét' +
+      (s.startsAt ? ' · ' + formatDate(s.startsAt) + ' – ' + formatDate(s.endsAt) : '');
+
+    var t = w.totals;
+    var per = t.questsPerRespondent || {};
+    var avg = t.respondents ? Object.keys(per).reduce(function (sum, k) { return sum + Number(k) * per[k]; }, 0) / t.respondents : null;
+    $('#weekly-kpis').innerHTML = [
+      ['Beküldött válasz', formatNum(t.answers), 'mind a ' + t.quests + ' quest együtt, törölt fiókokkal', true],
+      ['Válaszadó', formatNum(t.respondents), 'legalább egy questre válaszolt (meglévő fiók)'],
+      ['Mindet teljesítette', formatNum(t.completedAll), pctOf(t.completedAll, t.respondents) + '% a válaszadókból · +' +
+        t.bonusPoints + ' bónusz fejenként'],
+      ['Quest / válaszadó', formatAvg(avg), 'átlag, ' + t.quests + '-ből']
+    ].map(kpiHtml).join('');
+
+    var maxPer = Math.max.apply(null, Object.keys(per).map(function (k) { return per[k]; }).concat([1]));
+    var crows = Object.keys(per).sort(function (a, b) { return Number(a) - Number(b); }).map(function (k) {
+      return '<tr><td>' + esc(k) + ' / ' + t.quests + (Number(k) === t.quests ? ' <span class="muted">(bónusz)</span>' : '') +
+        '</td><td class="num">' + formatNum(per[k]) + '</td><td class="wcol">' + barHtml(per[k], maxPer) + '</td></tr>';
+    }).join('');
+    $('#weekly-completion').innerHTML = '<thead><tr><th>Teljesített quest</th><th class="num">Válaszadó</th><th></th></tr></thead><tbody>' +
+      (t.respondents ? crows : '<tr><td colspan="3" class="muted">Még senki nem válaszolt.</td></tr>') + '</tbody>';
+    applyBars($('#weekly-completion'));
+
+    var drows = w.daily.slice().reverse().map(function (d) {
+      return '<tr><td>' + esc(d.date) + '</td><td class="num">' + formatNum(d.duel) + '</td><td class="num">' + formatNum(d.top3) +
+        '</td><td class="num">' + formatNum(d.survey) + '</td><td class="num"><b>' + formatNum(d.duel + d.top3 + d.survey) + '</b></td></tr>';
+    }).join('');
+    $('#weekly-daily').innerHTML = '<thead><tr><th>Nap (UTC)</th><th class="num">Párbaj</th><th class="num">Top 3</th>' +
+      '<th class="num">Kérdőív</th><th class="num">Összesen</th></tr></thead><tbody>' +
+      (drows || '<tr><td colspan="5" class="muted">Még nincs válasz.</td></tr>') + '</tbody>';
+
+    // Hétválasztó: alapból a legutóbb megnyílt hét.
+    var sel = $('#weekly-week');
+    var keep = sel.value;
+    var current = 1;
+    w.quests.forEach(function (q) { if (q.state !== 'locked' && q.week > current) current = q.week; });
+    var opts = ['<option value="all">Minden hét</option>'];
+    for (var i = 1; i <= s.weeks; i++) opts.push('<option value="' + i + '">' + i + '. hét</option>');
+    sel.innerHTML = opts.join('');
+    sel.value = keep && sel.querySelector('option[value="' + keep + '"]') ? keep : String(current);
+    renderWeeklyQuests();
+    $('#weekly-meta').textContent = 'Frissítve: ' + formatDate(w.generatedAt);
+  }
+
+  // A hétváltó a már letöltött adatból dolgozik, nem hív Lambdát.
+  function renderWeeklyQuests() {
+    if (!state.weekly || !state.weekly.season) return;
+    var week = $('#weekly-week').value;
+    var html = state.weekly.quests.filter(function (q) {
+      return week === 'all' || String(q.week) === week;
+    }).map(function (q) {
+      var st = WEEKLY_STATES[q.state];
+      var body = q.kind === 'duel' ? duelHtml(q) : q.kind === 'top3' ? top3Html(q) : surveyHtml(q);
+      return '<article class="card wquest"><div class="wquest__head"><div><div class="wquest__kind">' + esc(WEEKLY_KINDS[q.kind]) +
+        ' · ' + q.week + '. hét · ' + esc(q.questId) + '</div><h3>' + esc(WEEKLY_TITLES[q.questId] || q.questId) + '</h3></div>' +
+        (st ? '<span class="badge ' + st[1] + '">' + esc(st[0]) + '</span>' : '') + '</div>' +
+        '<p class="muted">' + formatNum(q.respondents) + ' válasz' +
+        (q.storedAnswers !== q.respondents ? ' (ebből ' + formatNum(q.storedAnswers) + ' meglévő fióktól)' : '') +
+        ' · +' + q.points + ' pont' + (q.opensAt ? ' · nyílt: ' + formatDate(q.opensAt) : '') + '</p>' + body + '</article>';
+    }).join('');
+    var root = $('#weekly-quests');
+    root.innerHTML = html;
+    applyBars(root);
+  }
+
+  function whyText(counts) {
+    var parts = Object.keys(WEEKLY_WHY).filter(function (r) { return counts && counts[r]; }).map(function (r) {
+      return WEEKLY_WHY[r] + ' ' + counts[r];
+    });
+    return parts.length ? parts.join(' · ') : '—';
+  }
+  function duelHtml(q) {
+    var legend = '<p class="wlegend"><span class="wswatch wswatch--a"></span>A design <span class="wswatch wswatch--b"></span>B design</p>';
+    return legend + q.pairs.map(function (p, i) {
+      var voted = p.votesA + p.votesB;
+      var pa = pctOf(p.votesA, voted);
+      var pb = voted ? 100 - pa : 0;
+      var tip = 'A: ' + p.votesA + ' · B: ' + p.votesB + ' · kihagyta: ' + p.skipped;
+      return '<div class="wpair"><div class="wpair__title">' + (i + 1) + '. pár</div>' +
+        '<div class="wpair__sides"><div>' + designHtml(p.a) + '<div class="wpair__num">A · <b>' + formatNum(p.votesA) + '</b> szavazat' +
+        (voted ? ' · ' + pa + '%' : '') + '</div><div class="muted wsmall">Miért: ' + esc(whyText(p.whyBySide && p.whyBySide.a)) + '</div></div>' +
+        '<div>' + designHtml(p.b) + '<div class="wpair__num">B · <b>' + formatNum(p.votesB) + '</b> szavazat' +
+        (voted ? ' · ' + pb + '%' : '') + '</div><div class="muted wsmall">Miért: ' + esc(whyText(p.whyBySide && p.whyBySide.b)) + '</div></div></div>' +
+        '<div class="wsplit" title="' + esc(tip) + '" role="img" aria-label="' + esc(tip) + '">' +
+        (voted ? '<span class="wsplit__a" data-w="' + pa + '"></span><span class="wsplit__b" data-w="' + pb + '"></span>' : '') + '</div>' +
+        '<div class="muted wsmall">Nem tudott dönteni: ' + formatNum(p.skipped) + ' · „Miért” összesen (névtelen összesítő): ' + esc(whyText(p.why)) + '</div></div>';
+    }).join('');
+  }
+  function top3Html(q) {
+    var max = Math.max.apply(null, q.options.map(function (o) { return o.score; }).concat([1]));
+    var rows = q.options.map(function (o, i) {
+      return '<tr><td class="num">' + (i + 1) + '.</td><td>' + designHtml(o.cardTypeId) + '</td><td class="num"><b>' + formatNum(o.score) +
+        '</b></td><td class="wcol" title="' + esc(designName(o.cardTypeId) + ': ' + o.score + ' pont') + '">' + barHtml(o.score, max) +
+        '</td><td class="num">' + formatNum(o.first) + '</td><td class="num">' + o.places.map(formatNum).join(' / ') + '</td></tr>';
+    }).join('');
+    return '<div class="table-wrap"><table class="table"><thead><tr><th class="num">#</th><th>Design</th><th class="num">Pont</th><th></th>' +
+      '<th class="num">Első hely</th><th class="num">1. / 2. / 3.</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="muted wsmall">Pont: 1. hely 3, 2. hely 2, 3. hely 1. Az „1. / 2. / 3.” oszlop a meglévő fiókok válaszaiból számol.</p>';
+  }
+  function surveyHtml(q) {
+    return q.questions.map(function (item, i) {
+      var label = WEEKLY_QUESTIONS[item.id] || { prompt: item.id };
+      var head = '<div class="wq__prompt">' + (i + 1) + '. ' + esc(label.prompt) + (item.required ? '' : ' <span class="muted">(nem kötelező)</span>') + '</div>';
+      if (item.type === 'text') {
+        var texts = item.texts || [];
+        return '<div class="wq">' + head + (texts.length
+          ? '<ul class="wtexts">' + texts.map(function (x) {
+            return '<li><span class="muted wsmall">' + formatDate(x.at) + '</span><br>' + esc(x.text) + '</li>';
+          }).join('') + '</ul>'
+          : '<p class="muted">Még nincs szöveges válasz.</p>') + '</div>';
+      }
+      var keys = Object.keys(item.distribution).sort(function (a, b) { return Number(a) - Number(b); });
+      var max = Math.max.apply(null, keys.map(function (k) { return item.distribution[k]; }).concat([1]));
+      var rows = keys.map(function (k, j) {
+        var name = item.type === 'scale'
+          ? k + (j === 0 && label.scale ? ' — ' + label.scale[0] : j === keys.length - 1 && label.scale ? ' — ' + label.scale[1] : '')
+          : (label.options && label.options[Number(k)]) || ('#' + k);
+        var n = item.distribution[k];
+        return '<tr><td>' + esc(name) + '</td><td class="num">' + formatNum(n) + '</td><td class="num">' + pctOf(n, item.answered) +
+          '%</td><td class="wcol" title="' + esc(name + ': ' + n) + '">' + barHtml(n, max) + '</td></tr>';
+      }).join('');
+      return '<div class="wq">' + head + '<p class="muted wsmall">' + formatNum(item.answered) + ' válasz' +
+        (item.type === 'scale' ? ' · átlag: ' + (item.average == null ? '—' : formatAvg(item.average)) + ' / 5' : '') + '</p>' +
+        '<div class="table-wrap"><table class="table table--tight"><tbody>' + rows + '</tbody></table></div></div>';
+    }).join('');
+  }
+
+  // CSV: minden válasz soronként (válaszadó-álnév, quest, mező, érték). UTF-8 BOM-mal, hogy az
+  // Excel ékezethelyesen nyissa; a Blob típusában is kimondva a kódolás.
+  function exportWeeklyCsv() {
+    var btn = $('#weekly-export');
+    busy(btn, true);
+    api('weeklyQuestStats', { export: true }).then(function (w) {
+      if (!w.season) { toast('Nincs beállított szezon.'); return; }
+      state.weekly = w;
+      renderWeekly();
+      var cols = ['respondent', 'seasonId', 'week', 'questId', 'kind', 'submittedAt', 'field', 'value', 'label', 'design', 'designName', 'detail'];
+      var lines = [cols.join(';')].concat((w.export || []).map(function (r) {
+        var label = '';
+        var qd = WEEKLY_QUESTIONS[r.field];
+        if (r.kind === 'survey' && qd && qd.options) label = qd.options[Number(r.value)] || '';
+        else if (r.kind === 'duel') label = r.value === 'skip' ? 'kihagyta' : r.value.toUpperCase() + ' design';
+        else if (r.kind === 'top3') label = r.value + '. hely';
+        var row = Object.assign({}, r, {
+          label: label,
+          designName: r.design ? designName(r.design) : '',
+          detail: r.kind === 'duel' && r.detail ? r.detail.split(' ').map(function (x) { return WEEKLY_WHY[x] || x; }).join(', ') : r.detail
+        });
+        return cols.map(function (c) { return csvCell(row[c]); }).join(';');
+      }));
+      var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'heti-questek-' + w.season.seasonId + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      toast((w.export || []).length + ' sor letöltve.');
+    }).catch(function (e) {
+      toast(e.message);
+    }).then(function () { busy(btn, false); });
+  }
+  // Pontosvessző az elválasztó (a magyar Excel ezt várja); idézőjel, ha kell. A '=+-@'
+  // kezdetű cellát aposztróffal semlegesítjük, hogy a szabad szöveg ne fusson képletként.
+  function csvCell(v) {
+    var s = v == null ? '' : String(v);
+    if (/^[=+\-@]/.test(s)) s = "'" + s;
+    return /[";\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
   // ---------- szállító + feladási folyamat (2026-10-17) ----------
   // A backend (admin_handler _carrier / _fulfillment) adja: carrier = foxpost | gls | null,
   // fulfillment csak fizetett rendelésnél. Foxpost: címke API-n → kinyomtatva → feladva
-  // (kézi jelölés); GLS: eCsomagba felvinni → felvive (kézi pipa).
+  // (kézi jelölés); GLS: GLS-be felvinni → felvive (kézi pipa).
   var FULFILLMENT = {
     label_ready: { text: 'Nyomtatásra vár', cls: 's-pending_payment' },
     label_failed: { text: 'Címke hiba', cls: 's-failed' },
     printed: { text: 'Kinyomtatva', cls: 's-refunded' },
     handed_over: { text: 'Feladva', cls: 's-paid' },
-    gls_todo: { text: 'eCsomagba felvinni', cls: 's-pending_payment' },
-    gls_entered: { text: 'eCsomagban felvive', cls: 's-paid' }
+    gls_todo: { text: 'GLS-be felvinni', cls: 's-pending_payment' },
+    gls_entered: { text: 'GLS-ben felvive', cls: 's-paid' }
   };
   function fulfillmentBadge(value) {
     var f = FULFILLMENT[value];
@@ -301,7 +620,7 @@
     var f = o.fulfillment;
     var boxes;
     if (o.carrier === 'gls') {
-      boxes = checkbox('entered', 'Felvittem az eCsomag felületén (feladás kész)', f === 'gls_entered', false);
+      boxes = checkbox('entered', 'Felvittem a GLS felületén (feladás kész)', f === 'gls_entered', false);
     } else {
       var noLabel = f === 'label_failed';
       boxes =
@@ -568,21 +887,21 @@
     return [a.postalCode, a.city, [a.line1, a.houseNumber].filter(Boolean).join(' '), a.line2, a.country].filter(Boolean).join(', ');
   }
 
-  // ---------- GLS eCsomag (kézi feladás, 2026-10-17) ----------
+  // ---------- GLS export (kézi feladás, 2026-10-17; Lotte Kft. díjak 2026-11-02) ----------
   // A GLS-nek nincs API-ja a mi esetünkben: a külföldi (EU) házhoz rendeléseket kézzel kell
-  // felvinni az ecsomag.gls-hungary.com felületére. A díjak az eCsomag nyilvános 2026-os
-  // export árai (bruttó, automatából / CsomagPontból feladva) — ugyanazok, mint a backend
-  // shipping_fees.py-ban, ott XS-sel számolunk.
-  var ECSOMAG_URL = 'https://ecsomag.gls-hungary.com/';
-  var ECSOMAG_ZONES = {
-    I: { xs: 6490, s: 10190, countries: { AT: 'Ausztria', CZ: 'Csehország', HR: 'Horvátország', RO: 'Románia', SI: 'Szlovénia', SK: 'Szlovákia' } },
-    II: { xs: 7790, s: 11890, countries: { BE: 'Belgium', BG: 'Bulgária', DE: 'Németország', LU: 'Luxemburg', NL: 'Hollandia', PL: 'Lengyelország' } },
-    III: { xs: 9390, s: 13790, countries: { DK: 'Dánia', FR: 'Franciaország', IT: 'Olaszország' } },
-    IV: { xs: 12390, s: 20690, countries: { EE: 'Észtország', ES: 'Spanyolország', FI: 'Finnország', LT: 'Litvánia', LV: 'Lettország', PT: 'Portugália', SE: 'Svédország' } }
+  // felvinni a GLS felületére. A zónák és a díjak a Lotte Kft. (GLS szerződött partner)
+  // 2026-10-27-i export ajánlatából jönnek, 0–2 kg, pótdíjakkal, bruttó — ugyanazok, mint
+  // a backend shipping_fees.py-ban. Ez a fájl nyilvános: a nettó beszerzési ár NEM kerül ide.
+  var GLS_ZONES = {
+    SK: { label: 'Kedvezményes zóna', fee: 4770, countries: { SK: 'Szlovákia' } },
+    1: { label: '1. zóna', fee: 8780, countries: { AT: 'Ausztria', CZ: 'Csehország', HR: 'Horvátország', RO: 'Románia', SI: 'Szlovénia' } },
+    2: { label: '2. zóna', fee: 12280, countries: { BE: 'Belgium', DE: 'Németország', LU: 'Luxemburg', NL: 'Hollandia', PL: 'Lengyelország' } },
+    3: { label: '3. zóna', fee: 13000, countries: { DK: 'Dánia', FR: 'Franciaország', IT: 'Olaszország' } },
+    4: { label: '4. zóna', fee: 26910, countries: { FI: 'Finnország', SE: 'Svédország' } }
   };
-  function ecsomagZone(country) {
-    for (var z in ECSOMAG_ZONES) {
-      if (ECSOMAG_ZONES[z].countries[country]) return { zone: z, name: ECSOMAG_ZONES[z].countries[country], fee: ECSOMAG_ZONES[z] };
+  function glsZone(country) {
+    for (var z in GLS_ZONES) {
+      if (GLS_ZONES[z].countries[country]) return { name: GLS_ZONES[z].countries[country], zone: GLS_ZONES[z] };
     }
     return null;
   }
@@ -593,11 +912,11 @@
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ft';
   }
 
-  function renderEcsomag(o) {
+  function renderGlsExport(o) {
     var a = o.deliveryAddress || o.shippingAddress || {};
-    var z = ecsomagZone(a.country);
+    var z = glsZone(a.country);
     var countryText = z ? z.name + ' (' + a.country + ')' : (a.countryName || a.country || '');
-    // Az eCsomag űrlap sorrendjében; minden sor külön másolható.
+    // A feladáshoz kellő adatok; minden sor külön másolható.
     var fields = [
       ['Címzett neve', o.customerName],
       ['Telefon', o.customerPhone],
@@ -623,21 +942,20 @@
     var warn = '';
     if (o.shippingMethod === 'gls_locker') {
       warn = '<p class="ecsomag-warn">Régi GLS csomagpontos rendelés (' + esc(o.glsPointName || '') + ' ' + esc(o.glsPointId || '') +
-        ') — az eCsomag ezt nem kezeli, egyeztess a vevővel.</p>';
+        ') — ilyet már nem kínálunk, egyeztess a vevővel.</p>';
     } else if (!z) {
-      warn = '<p class="ecsomag-warn">Ebbe az országba (' + esc(a.country || '?') + ') az eCsomag nem szállít — egyeztess a vevővel, vagy sztornózd.</p>';
+      warn = '<p class="ecsomag-warn">Ebbe az országba (' + esc(a.country || '?') + ') a GLS-ajánlatban nincs díj — egyeztess a vevővel, vagy sztornózd.</p>';
     }
     var cost = z
       ? kv([
-        ['Zóna', z.zone + '. zóna'],
-        ['Méret', 'XS, ha a leghosszabb + legrövidebb oldal ≤ 35 cm (1 doboz 12,5×9×7 cm = 19,5 cm). S: ≤ 50 cm.'],
-        ['eCsomag díj', 'XS: ' + forintText(z.fee.xs) + ' · S: ' + forintText(z.fee.s) + ' (automatából / CsomagPontból feladva; futárral +500 Ft)'],
+        ['Zóna', z.zone.label],
+        ['Díjlista szerint', forintText(z.zone.fee) + ' bruttó (0–2 kg, Euro Business, pótdíjakkal; 681 Ft/l gázolajjal számolva)'],
         ['A vevő fizetett', formatHuf(o.shippingFeeCents), true]
       ])
       : '';
 
-    return '<div class="section ecsomag"><h3>GLS — eCsomag feladás</h3>' +
-      '<p class="muted">Feladás: <a href="' + ECSOMAG_URL + '" target="_blank" rel="noopener">ecsomag.gls-hungary.com</a> → export csomag. ' +
+    return '<div class="section ecsomag"><h3>GLS — export feladás</h3>' +
+      '<p class="muted">Feladás kézzel, a GLS felületén. ' +
       'Állapot: ' + badge(o.glsLabelStatus) + '</p>' + warn +
       '<dl class="kv">' + rows + '</dl>' +
       '<div class="ecsomag-tools"><button type="button" class="btn btn--ghost copy-btn" data-copy="' + esc(all) + '">Összes adat másolása</button></div>' +
@@ -701,14 +1019,14 @@
         ['Tételek', items || '—', true]
       ].filter(Boolean)) + '</div>' +
       renderFulfillment(o) +
-      (isGlsOrder(o) ? renderEcsomag(o) : '') +
+      (isGlsOrder(o) ? renderGlsExport(o) : '') +
       '<div class="section"><h3>Szolgáltatók</h3>' + kv([
         ['Stripe fizetés', o.stripePaymentIntentId],
         ['Stripe visszatérítés', o.stripeRefundId],
         ['Számla (Számlázz.hu)', badge(o.invoiceStatus) + ' ' + esc(o.invoiceNumber || ''), true],
         ['Sztornó számla', badge(o.stornoInvoiceStatus) + ' ' + esc(o.stornoInvoiceNumber || ''), true],
         ['Foxpost címke', badge(o.foxpostLabelStatus) + ' ' + esc(o.foxpostTrackingNumber || ''), true],
-        ['GLS (eCsomag, kézi)', badge(o.glsLabelStatus) + ' ' + esc(o.glsParcelId || ''), true],
+        ['GLS (export, kézi)', badge(o.glsLabelStatus) + ' ' + esc(o.glsParcelId || ''), true],
         ['Szállító lemondás', badge(o.carrierCancelStatus), true],
         ['Visszaigazoló e-mail', badge(o.confirmationEmailStatus), true]
       ]) + '</div>' +
@@ -824,6 +1142,11 @@
     if (t) switchView(t.dataset.view);
   });
   $('#stats-refresh').addEventListener('click', loadStats);
+  $('#growth-refresh').addEventListener('click', loadGrowth);
+  $('#growth-range').addEventListener('change', renderGrowthTable);
+  $('#weekly-refresh').addEventListener('click', loadWeekly);
+  $('#weekly-export').addEventListener('click', exportWeeklyCsv);
+  $('#weekly-week').addEventListener('change', renderWeeklyQuests);
   $('#collection-refresh').addEventListener('click', loadCollection);
   $('#card-filters').addEventListener('submit', function (ev) { ev.preventDefault(); loadCards(); });
   $('#order-filters').addEventListener('submit', function (ev) { ev.preventDefault(); loadOrders(); });
