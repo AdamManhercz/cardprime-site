@@ -405,9 +405,38 @@
       '<span><b>' + esc(d.playerName || id) + '</b><br><span class="muted">' + esc(d.variant || '') + ' · ' + esc(id) + '</span></span></span>';
   }
 
+  // Képellenőrzés (2026-11-10): a kézi weeklyQuestCheck helyett. Melyik betervezett designnak
+  // nincs még képe (a telefonon üres keret lenne), vagy nincs is a katalógusban.
+  function renderWeeklyCheck(c) {
+    var el = $('#weekly-check');
+    if (!c) { el.innerHTML = ''; return; }
+    var rows = (c.missingDesigns || []).map(function (m) { return [m, 'Nincs a katalógusban']; })
+      .concat((c.missingArtwork || []).map(function (m) { return [m, 'Nincs kép feltöltve']; }));
+    if (c.missingArtwork === null) {
+      el.innerHTML = '<p class="wcheck wcheck--warn">A képek listázása nem sikerült, ezért most nem tudni, melyik design képe hiányzik. Próbáld a Frissítéssel.</p>';
+      return;
+    }
+    if (!rows.length) {
+      el.innerHTML = '<p class="wcheck wcheck--ok">Képek rendben: mind a ' + c.designs + ' betervezett design képe fent van.</p>';
+      return;
+    }
+    rows.sort(function (a, b) { return (a[0].week || 0) - (b[0].week || 0); });
+    var d = (state.weekly.designs || {});
+    el.innerHTML = '<p class="wcheck wcheck--warn">' + rows.length + ' betervezett design (' + c.designs + '-ből) nem jelenne meg rendesen: ' +
+      'a telefonon üres keret lenne a helyén. Töltsd fel a képüket, majd Frissítés.</p>' +
+      '<div class="table-wrap"><table class="table table--tight"><thead><tr><th>Hét</th><th>Design</th><th>Hiba</th></tr></thead><tbody>' +
+      rows.map(function (r) {
+        var x = d[r[0].cardTypeId] || {};
+        var name = x.playerName ? '<b>' + esc(x.playerName) + '</b> <span class="muted">' +
+          esc((x.variant ? x.variant + ' · ' : '') + r[0].cardTypeId) + '</span>' : '<b>' + esc(r[0].cardTypeId) + '</b>';
+        return '<tr><td>' + esc(r[0].week || '–') + '.</td><td>' + name + '</td><td>' + esc(r[1]) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+
   function renderWeekly() {
     var w = state.weekly;
     var s = w.season;
+    renderWeeklyCheck(w.check);
     if (!s) {
       $('#weekly-season').textContent = 'Nincs beállított szezon (WEEKLY_SEASON_START üres).';
       ['#weekly-kpis', '#weekly-completion', '#weekly-daily', '#weekly-quests'].forEach(function (sel) { $(sel).innerHTML = ''; });
@@ -1144,8 +1173,7 @@
   $('#stats-refresh').addEventListener('click', loadStats);
   $('#growth-refresh').addEventListener('click', loadGrowth);
   $('#growth-range').addEventListener('change', renderGrowthTable);
-  $('#weekly-refresh').addEventListener('click', loadWeekly);
-  $('#weekly-export').addEventListener('click', exportWeeklyCsv);
+  $('#weekly-refresh').addEventListener('click', loadWeekly);  $('#weekly-export').addEventListener('click', exportWeeklyCsv);
   $('#weekly-week').addEventListener('change', renderWeeklyQuests);
   $('#collection-refresh').addEventListener('click', loadCollection);
   $('#card-filters').addEventListener('submit', function (ev) { ev.preventDefault(); loadCards(); });
