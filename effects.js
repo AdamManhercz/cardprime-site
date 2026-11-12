@@ -32,19 +32,18 @@
   // ---------- megállók: a lépéses görgetés, az oldalsín és a fényfoltok közös térképe ----------
   // A csúcs-aktuson belüli pozíciók ugyanazok, mint a gyűjtőlista ugrásai a főoldalon.
   // fx-sync alatt közelebb állnak a söprések széleihez, hogy a váltás a teljes tweent kitöltse.
+  // a sín itt ér végig, és az insertsor a képernyő közepén áll (a főoldal PAN[1]-e)
+  var INS = 0.78;
   var STOPS = [
     { label: 'Intro',        at: function () { return 0; },                                  a: [6,182,212],   b: [124,58,237] },
     { label: 'Prelude',      at: function () { return absTop(quiet) + innerHeight * 0.2; },  a: [124,58,237],  b: [6,182,212] },
     { label: 'Base',         at: function () { return inAct(peakAct, PK[0]); },              a: [6,182,212],   b: [124,58,237] },
-    { label: 'Refractor',    at: function () { return inAct(peakAct, PK[1]); },              a: [236,72,153],  b: [34,211,238] },
+    { label: 'Silver',       at: function () { return inAct(peakAct, PK[1]); },              a: [196,204,218], b: [84,96,120] },
     { label: 'Numbered',     at: function () { return inAct(peakAct, PK[2]); },              a: [233,170,60],  b: [217,119,6] },
     { label: 'Autograph',    at: function () { return inAct(peakAct, PK[3]); },              a: [210,218,255], b: [96,130,250] },
     // a sín eleje: itt még áll a "Beyond the base set." felvezetés, mielőtt a sín elindul
     { label: 'Beyond',       at: function () { return inAct(series, 0); },                   a: [124,58,237],  b: [6,182,212] },
-    { label: 'Illustrated',  at: function () { return inAct(series, 0.29); },                a: [167,139,250], b: [249,115,22] },
-    { label: 'Inserts',      at: function () { return inAct(series, 0.59); },                a: [34,211,238],  b: [239,68,68] },
-    // a sín 0.78-nál ér végig; fx-sync alatt ott állunk meg (a zárószöveg a jobb szélnél), nem üres görgetés után
-    { label: 'Clubs',        at: function () { return inAct(series, sync ? 0.78 : 0.88); },              a: [6,182,212],   b: [167,139,250] },
+    { label: 'Inserts',      at: function () { return inAct(series, INS); },                 a: [34,211,238],  b: [239,68,68] },
     // előbb az előlap áll, a következő lépés törli át a hátoldalra (reveal: 0.22..0.8)
     { label: 'Front',        at: function () { return inAct(fb, 0.04); },                    a: [6,182,212],   b: [124,58,237] },
     { label: 'Back',         at: function () { return inAct(fb, 0.9); },                     a: [6,182,212],   b: [100,116,139] },
@@ -100,7 +99,7 @@
       parent.insertBefore(el, before);
       return el;
     };
-    var giants = ['Base', 'Refractor', 'Numbered', 'Autograph'].map(function (w) {
+    var giants = ['Base', 'Silver', 'Numbered', 'Autograph'].map(function (w) {
       return giantEl(w, peak, peak.querySelector('.peak__copy'));
     });
     var fbStage = fb.querySelector('[data-sc-stage]');
@@ -284,7 +283,12 @@
     // natív görgetés (görgetősáv, fókusz, keresés) után a legközelebbi megállóból lépünk tovább
     addEventListener('scroll', function () { if (!tweening) idx = nearest(scrollY); }, { passive: true });
 
-    var deltas = [], lastWheel = 0, fresh = true;
+    // GAP: ennyi szünet után számít új mozdulatnak (lassan tekert görgő kattanásai között is eltelhet 200 ms)
+    // LOCK: lépés után ennyi ideig nem indul újabb, a mozdulat maradéka nem viszi tovább az oldalt
+    // FLOOR: a gyorsulásnak ekkora átlagos deltát is el kell érnie; a lecsengő tehetetlenség apró zaja ez alatt marad,
+    // egy új (akár gyengébb) touchpad-simítás fölötte van
+    var GAP = 350, LOCK = 500, FLOOR = 12;
+    var deltas = [], lastWheel = 0, lastStep = 0, fresh = true;
     var avg = function (n) {
       var s = deltas.slice(-n), sum = 0;
       for (var i = 0; i < s.length; i++) sum += s[i];
@@ -294,12 +298,13 @@
       if (e.ctrlKey || document.body.classList.contains('menu-open')) return;
       e.preventDefault();
       var now = performance.now();
-      if (now - lastWheel > 200) { deltas = []; fresh = true; }
+      if (now - lastWheel > GAP) { deltas = []; fresh = true; }
       lastWheel = now;
       var d = e.deltaY * (e.deltaMode === 1 ? 16 : 1);
       if (Math.abs(d) < 1) return;
       deltas.push(Math.abs(d));
       if (deltas.length > 150) deltas.shift();
+      if (now - lastStep < LOCK) return;
       // fx-sync: új mozdulat (szünet utáni első esemény) a futó tweent is azonnal átveszi
       if (tweening && !(sync && fresh)) return;
       // gyorsuló mozdulat = új szándék; a lecsengő trackpad-tehetetlenség nem lép.
@@ -307,8 +312,8 @@
       // különben az egyenletes (nem csengő) tehetetlenség a tween végén magától továbbvinné
       var go = !sync ? avg(10) >= avg(70)
         : fresh ? avg(10) >= avg(70)
-        : deltas.length > 12 && avg(5) > avg(40) * 1.6;
-      if (go) { fresh = false; goTo(idx + (d > 0 ? 1 : -1)); }
+        : deltas.length > 12 && avg(5) > avg(40) * 1.6 && avg(5) >= FLOOR;
+      if (go) { fresh = false; lastStep = now; goTo(idx + (d > 0 ? 1 : -1)); }
     }, { passive: false });
 
     var touchY = null, touchFired = false;
@@ -347,7 +352,7 @@
     prail.className = 'lab-prail';
     prail.setAttribute('aria-label', 'Parallels');
     var PSTOP = [2, 3, 4, 5]; // a STOPS-beli Base..Autograph megállók
-    var pBtns = ['Base', 'Refractor', 'Numbered', 'Autograph'].map(function (w, i) {
+    var pBtns = ['Base', 'Silver', 'Numbered', 'Autograph'].map(function (w, i) {
       var b = document.createElement('button');
       b.type = 'button';
       b.innerHTML = '<span></span><i aria-hidden="true"></i>';
