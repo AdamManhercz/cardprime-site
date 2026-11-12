@@ -59,7 +59,7 @@ html.fx-stepped { scroll-behavior: auto; overscroll-behavior: none; }
 /* ---------- fx-glow: az óriás szó színes betűhatárt és átúszó, színes megvilágítást kap ----------
    A kitöltést a háttér adja (background-clip: text), így a fény csak a betűkön belül látszik. */
 .lab-giant[data-tone="base"]      { --g1: 6 182 212;   --g2: 167 139 250; }
-.lab-giant[data-tone="refractor"] { --g1: 236 72 153;  --g2: 34 211 238; }
+.lab-giant[data-tone="silver"]    { --g1: 196 204 218; --g2: 84 96 120; }
 .lab-giant[data-tone="numbered"]  { --g1: 233 196 106; --g2: 217 119 6; }
 .lab-giant[data-tone="autograph"] { --g1: 214 222 255; --g2: 96 130 250; }
 .lab-giant[data-tone="back"]      { --g1: 6 182 212;   --g2: 100 116 139; }
@@ -87,18 +87,9 @@ body.menu-open .lab-prail { opacity: 0; pointer-events: none; }
 .lab-prail button[aria-current="true"] i { width: 34px; background: var(--sc-accent); }
 .lab-prail button:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 3px; }
 
-/* ---------- fx-tidy: a sín zárószövege ne lógjon a jobb szélbe, és ne törjön szét ---------- */
-@media (min-width: 761px) {
-  /* margó, nem padding: a sín teljes szélessége nő, így a vége beljebb áll meg */
-  .fx-tidy .rail__end { width: min(460px, 74vw); margin-right: clamp(48px, 16vw, 260px); }
-  .fx-tidy .rail__end .sc-display { white-space: nowrap; }
-}
-
 /* ---------- fx-sync: semmi nem úszik tovább megérkezés után; a blokkok a lépéssel együtt érkeznek ---------- */
 .fx-sync [data-sc-in], .fx-sync [data-sc-stagger] > * { opacity: 1; transform: none; transition: none; }
 .fx-sync .peak__glow { transition: none; }
-/* a sín a zárószövegnél áll meg, a jobb szélnél (a sín saját belső margójával), nem tolja középre */
-.fx-sync.fx-tidy .rail__end { margin-right: 0; }
 
 /* ---------- fx-curtain: minden fő felület úgy fut rá az előzőre, mint a quiet a herora ----------
    A következő szekció fölötte, telített háttérrel, lágy felső éllel; az előzőt a JS tartja és hátraléptetzi. */
