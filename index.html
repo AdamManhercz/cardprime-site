@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="fx-intro fx-blur fx-glass fx-giant fx-atmos fx-shadow fx-sway fx-glow fx-stepped fx-prail fx-tidy fx-sync fx-curtain fx-unify fx-turn fx-center fx-nostripe">
+<html lang="en" class="fx-intro fx-blur fx-glass fx-giant fx-atmos fx-shadow fx-sway fx-glow fx-stepped fx-prail fx-tidy fx-sync fx-curtain fx-unify fx-turn fx-ispin fx-center fx-nostripe">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -243,14 +243,15 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .hero__eyebrow { margin-bottom: var(--sc-3); }
     .hero .sc-copy { top: 96px; bottom: auto; transform: none; }
     .hero .sc-display--xl { font-size: var(--sc-t-2xl); }
-    .p-back { right: auto; left: -6%; top: 52%; }
-    .p-back .slab { --w: 130px; }
-    .p-main { right: 14%; top: 46%; }
-    .p-main .slab { --w: 200px; }
-    .p-side { right: -16%; top: 56%; }
-    .p-side .slab { --w: 130px; }
-    .p-fore { right: -24%; top: 78%; }
-    .p-fore .slab { --w: 300px; }
+    /* telefonon kevesebb homály, a kártyák kicsit nagyobbak és beljebb vannak */
+    .p-back { right: auto; left: -4%; top: 52%; }
+    .p-back .slab { --w: 165px; filter: none; }
+    .p-main { right: 12%; top: 46%; }
+    .p-main .slab { --w: 245px; }
+    .p-side { right: -8%; top: 56%; }
+    .p-side .slab { --w: 165px; filter: none; }
+    .p-fore { right: -12%; top: 79%; }
+    .p-fore .slab { --w: 330px; filter: blur(.6px); }
     .hero__floor { inset: 80% -10% -10% -10%; }
     .peak { grid-template-columns: 1fr; grid-template-rows: auto 1fr; padding-top: 84px; align-items: start; }
     .peak__copy { height: 190px; }
@@ -274,6 +275,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .dock ol { gap: 6px; }
     .dock button { width: 26px; height: 26px; }
     .foot { padding-bottom: 88px; }
+  }
+
+  /* telefonon egyszerre egy insert: a lapok egymás fölött, középen; az effects.js (fx-ispin)
+     lépésenként a következőre pörgeti őket */
+  @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+    .fx-ispin .pair { display: grid; width: min(330px, 100vw - 32px); }
+    .fx-ispin .pair > .slab { grid-area: 1 / 1; place-self: center; --w: 236px; }
+    .fx-ispin .pair > .slab--land { --w: min(330px, 100vw - 32px); }
+    .fx-ispin .pair > .slab + .slab { visibility: hidden; }
+    .fx-ispin .item__meta { max-width: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -609,7 +620,11 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   var panAct = document.getElementById('series');
   var rail = document.getElementById('rail');
   var railItem = rail.querySelector('.item');
-  var PAN = [0.03, 0.78];
+  // telefonon (fx-ispin) a sín hamarabb ér végig, utána az insertek egyenként pörögnek (effects.js INS_PHONE)
+  var PAN = [0.03, 0.78], PAN_PHONE_END = 0.40;
+  var phoneMq = matchMedia('(max-width: 760px)');
+  var spinMode = document.documentElement.classList.contains('fx-ispin');
+  function panEnd() { return spinMode && phoneMq.matches ? PAN_PHONE_END : PAN[1]; }
   var rp = -1, railLast = '';
   function railFrame() {
     var raw = parseFloat(panAct.style.getPropertyValue('--sc-p')) || 0;
@@ -624,7 +639,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     var over = w <= innerWidth
       ? railItem.offsetLeft + w / 2 - innerWidth / 2
       : railItem.offsetLeft + w + pad - innerWidth;
-    var q = clamp((rp - PAN[0]) / (PAN[1] - PAN[0]));
+    var q = clamp((rp - PAN[0]) / (panEnd() - PAN[0]));
     var css = over > 0 ? 'translate3d(' + (-over * q).toFixed(1) + 'px,0,0)' : 'none';
     if (css !== railLast) { railLast = css; rail.style.transform = css; }
     requestAnimationFrame(railFrame);
@@ -705,13 +720,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         var el = n <= 4 ? act : document.querySelector('[data-check="' + n + '"]');
         y = el.getBoundingClientRect().top + scrollY - (n === 5 ? 0 : 40);
         // a sín vége: itt áll középen az insertsor (PAN[1], effects.js INS)
-        if (n === 5 && !reduce) { var pan = document.getElementById('series'); y = pan.getBoundingClientRect().top + scrollY + (pan.offsetHeight - innerHeight) * PAN[1]; }
+        if (n === 5 && !reduce) { var pan = document.getElementById('series'); y = pan.getBoundingClientRect().top + scrollY + (pan.offsetHeight - innerHeight) * panEnd(); }
       }
       scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
     });
   });
 })();
 </script>
-<script src="effects.js?v=6"></script>
+<script src="effects.js?v=7"></script>
 </body>
 </html>

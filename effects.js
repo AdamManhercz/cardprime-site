@@ -34,7 +34,13 @@
   // fx-sync alatt közelebb állnak a söprések széleihez, hogy a váltás a teljes tweent kitöltse.
   // a sín itt ér végig, és az insertsor a képernyő közepén áll (a főoldal PAN[1]-e)
   var INS = 0.78;
-  var STOPS = [
+  // fx-ispin: telefonon a sín hamarabb ér végig, utána a három insert egyenként fordul át (lent);
+  // mindegyik lapnak saját megállója van, a forgások a megállók közti tweent töltik ki
+  var spin = has('fx-ispin') && !reduce;
+  var INS_PHONE = [0.40, 0.62, 0.86];
+  var SPIN = [[0.42, 0.60], [0.64, 0.84]];
+  function spinOn() { return spin && phone.matches; }
+  var ALL = [
     { label: 'Intro',        at: function () { return 0; },                                  a: [6,182,212],   b: [124,58,237] },
     { label: 'Prelude',      at: function () { return absTop(quiet) + innerHeight * 0.2; },  a: [124,58,237],  b: [6,182,212] },
     { label: 'Base',         at: function () { return inAct(peakAct, PK[0]); },              a: [6,182,212],   b: [124,58,237] },
@@ -43,7 +49,9 @@
     { label: 'Autograph',    at: function () { return inAct(peakAct, PK[3]); },              a: [210,218,255], b: [96,130,250] },
     // a sín eleje: itt még áll a "Beyond the base set." felvezetés, mielőtt a sín elindul
     { label: 'Beyond',       at: function () { return inAct(series, 0); },                   a: [124,58,237],  b: [6,182,212] },
-    { label: 'Inserts',      at: function () { return inAct(series, INS); },                 a: [34,211,238],  b: [239,68,68] },
+    { label: 'Inserts',      at: function () { return inAct(series, spinOn() ? INS_PHONE[0] : INS); }, a: [34,211,238], b: [239,68,68] },
+    { label: 'Inserts 2',    at: function () { return inAct(series, INS_PHONE[1]); },        a: [34,211,238],  b: [124,58,237], phone: true },
+    { label: 'Inserts 3',    at: function () { return inAct(series, INS_PHONE[2]); },        a: [34,211,238],  b: [6,182,212],  phone: true },
     // előbb az előlap áll, a következő lépés törli át a hátoldalra (reveal: 0.22..0.8)
     { label: 'Front',        at: function () { return inAct(fb, 0.04); },                    a: [6,182,212],   b: [124,58,237] },
     { label: 'Back',         at: function () { return inAct(fb, 0.9); },                     a: [6,182,212],   b: [100,116,139] },
@@ -51,8 +59,10 @@
     { label: 'Get the app',  at: function () { return maxY(); },                             a: [6,182,212],   b: [233,196,106] }
   ];
   function inAct(act, f) { return absTop(act) + (act.offsetHeight - innerHeight) * f; }
-  var ys = [];
+  var STOPS = ALL, ys = [];
   function measure() {
+    var ph = spinOn();
+    STOPS = ALL.filter(function (s) { return !s.phone || ph; });
     var m = maxY();
     ys = STOPS.map(function (s) { return Math.round(Math.max(0, Math.min(m, s.at()))); });
   }
@@ -226,6 +236,37 @@
         // nyugalomban (t = 0 és t = 1) a lapon kívül áll
         turn.style.setProperty('--glare', (t < 0.5 ? -40 + 280 * t : 100 - 280 * (t - 0.5)).toFixed(1));
       }
+    });
+  }
+
+  // ---------- fx-ispin: telefonon egyszerre egy insert, lépésenként a következőre pördül ----------
+  // A lapok egymás fölött állnak (index.html). f: hányadik lapnál tart a sor, a törtrész a forgás;
+  // a kimenő lap 0 -> -90°, a bejövő 90° -> 0°, így egy irányba pörög tovább. Közben kicsit kiemelkedik, mint az fx-turn.
+  if (spin) {
+    var iCards = series.querySelectorAll('.pair > .slab');
+    var spinLast = [];
+    tasks.push(function () {
+      var on = phone.matches;
+      if (!on && !spinLast.length) return;
+      var r = series.getBoundingClientRect();
+      if (on && (r.bottom < 0 || r.top > innerHeight)) return;
+      var p = pOf(series), f = 0;
+      for (var i = 0; i < SPIN.length; i++) f += ease(clamp((p - SPIN[i][0]) / (SPIN[i][1] - SPIN[i][0])));
+      var lift = Math.sin(Math.PI * (f % 1));
+      for (var k = 0; k < iCards.length; k++) {
+        // 'visible' kifejezetten: az index.html CSS-e alapból rejti a 2. és 3. lapot
+        var rel = f - k, css = '', vis = '';
+        if (on) {
+          vis = 'visible';
+          if (Math.abs(rel) >= 0.5) vis = 'hidden';
+          else css = 'perspective(1600px) translateZ(' + (60 * lift).toFixed(1) + 'px) rotateX(' + (-6 * lift).toFixed(2) +
+                     'deg) rotateY(' + (-180 * rel).toFixed(2) + 'deg)';
+        }
+        var key = css + '|' + vis;
+        if (key !== spinLast[k]) { spinLast[k] = key; iCards[k].style.transform = css; iCards[k].style.visibility = vis; }
+      }
+      // asztali nézetre váltva egyszer visszaáll a stílus, utána a feladat nem dolgozik
+      if (!on) spinLast = [];
     });
   }
 
