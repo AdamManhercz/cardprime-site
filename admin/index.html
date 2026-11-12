@@ -24,6 +24,7 @@
     <button type="button" class="tab" data-view="orders" aria-selected="false">Rendelések</button>
     <button type="button" class="tab" data-view="collection" aria-selected="false">Gyűjtemény</button>
     <button type="button" class="tab" data-view="weekly" aria-selected="false">Heti questek</button>
+    <button type="button" class="tab" data-view="requests" aria-selected="false">Kérelmek</button>
     <button type="button" class="tab" data-view="statuses" aria-selected="false">Státuszok</button>
   </nav>
   <button type="button" class="btn btn--ghost" id="logout" hidden>Kilépés</button>
@@ -191,6 +192,27 @@
     <div id="weekly-quests"></div>
     <p class="muted">A számok a névtelen összesítőből jönnek, ezért az azóta törölt fiókok válaszait is tartalmazzák. A napi bontás, a teljesítés, a „miért” a választott oldal szerint, a Top 3 helyezései, a szöveges válaszok és a CSV a még meglévő válaszokból készül, így ezek kisebbek lehetnek. A CSV-ben a válaszadó csak egy szezononkénti álnév (R-…): össze lehet kötni egy ember válaszait, de nem derül ki, ki az.</p>
     <p class="muted" id="weekly-meta"></p>
+  </section>
+
+  <!-- kártyakérelmek és cserék (2026-11-12): minden kérelem kimenetele, sikeres és sikertelen
+       egyaránt — a cardprime-v2-card-request-log táblából, amelyen nincs user-azonosító,
+       SKU vagy elérhetőség. Csak megnyitáskor és Frissítésre kér adatot. -->
+  <section class="view" id="view-requests" hidden>
+    <div class="head">
+      <h2>Kérelmek és cserék</h2>
+      <div class="filters">
+        <button type="button" class="btn btn--ghost" id="requests-refresh">Frissítés</button>
+      </div>
+    </div>
+    <div class="kpis" id="requests-kpis"></div>
+    <h3>Kimenetel</h3>
+    <div class="table-wrap"><table class="table" id="requests-outcomes"></table></div>
+    <h3>Lezárás oka</h3>
+    <div class="table-wrap"><table class="table" id="requests-reasons"></table></div>
+    <h3>Napi bontás (utolsó 30 nap)</h3>
+    <div class="table-wrap"><table class="table" id="requests-daily"></table></div>
+    <p class="muted">A napló 2026-11-12-től számol. A lejárt kérelmet a rendszer nem jelöli külön: ami a határidején túl még nyitott, az itt lejártként szerepel. Sikertelen átadás: a tulajdonos telefonján a Face ID vagy a kód nem volt megerősíthető a véglegesítésnél.</p>
+    <p class="muted" id="requests-meta"></p>
   </section>
 
   <!-- státusz-referencia — a teljes változat: docs/order-statuses.md -->

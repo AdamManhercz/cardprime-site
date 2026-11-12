@@ -169,7 +169,7 @@
   }
 
   // ---------- nézetek ----------
-  var VIEWS = ['overview', 'growth', 'orders', 'collection', 'weekly', 'statuses'];
+  var VIEWS = ['overview', 'growth', 'orders', 'collection', 'weekly', 'requests', 'statuses'];
   function showLogin() {
     $('#tabs').hidden = true;
     $('#logout').hidden = true;
@@ -192,6 +192,7 @@
     if (view === 'orders') loadOrders();
     if (view === 'collection') loadCollection();
     if (view === 'weekly' && !state.weekly) loadWeekly();
+    if (view === 'requests' && !state.requests) loadRequests();
   }
 
   function loadStats() {
@@ -816,6 +817,86 @@
     });
   }
 
+  // ---------- kártyakérelmek és cserék ----------
+  // Minden kérelem kimenetele a naplótáblából (cardRequestStats). Csak megnyitáskor és
+  // Frissítésre kér adatot, mint a Heti questek.
+  var REQUEST_OUTCOMES = {
+    completed: ['Átadva', 's-paid'],
+    declined: ['Elutasította a tulajdonos', 's-failed'],
+    stopped: ['Elfogadás visszavonva', 's-failed'],
+    cancelled: ['Visszavonta a kérelmező', 's-cancelled'],
+    closed: ['Lezárva (rendszer)', 's-refunded'],
+    failed: ['Sikertelen átadás (Face ID / kód)', 's-failed'],
+    expired: ['Lejárt', ''],
+    pending: ['Nyitott — válaszra vár', 's-pending_payment'],
+    accepted: ['Nyitott — elfogadva', 's-pending_payment']
+  };
+  var REQUEST_REASONS = {
+    unavailable: 'Egy kártya már nem elérhető (lusta ellenőrzés)',
+    card_removed: 'A kártyát kivették a gyűjteményből',
+    card_moved: 'A kártya más kérelemmel gazdát cserélt',
+    blocked: 'Letiltás',
+    unknown: 'Ismeretlen'
+  };
+
+  function loadRequests() {
+    if (state.requestsLoading) return;
+    state.requestsLoading = true;
+    var btn = $('#requests-refresh');
+    busy(btn, true);
+    $('#requests-kpis').innerHTML = '<p class="muted">Betöltés…</p>';
+    api('cardRequestStats').then(function (r) {
+      state.requests = r;
+      renderRequests();
+    }).catch(function (e) {
+      $('#requests-kpis').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
+    }).then(function () {
+      state.requestsLoading = false;
+      busy(btn, false);
+    });
+  }
+
+  function renderRequests() {
+    var r = state.requests;
+    var swap = r.modes.swap || {};
+    var req = r.modes.request || {};
+    $('#requests-kpis').innerHTML = [
+      ['Összes kérelem', formatNum(r.total), 'kérelem: ' + formatNum(req.total || 0) + ' · csere: ' + formatNum(swap.total || 0), true],
+      ['Sikeres átadás', formatNum(r.outcomes.completed), (r.completionRate == null ? '—' : r.completionRate + '%') + ' a lezártakból'],
+      ['Elfogadási arány', r.acceptRate == null ? '—' : r.acceptRate + '%', formatNum(r.acceptedEver) + ' kérelmet fogadtak el valaha'],
+      ['Nyitott most', formatNum(r.open), 'válaszra vár: ' + formatNum(r.outcomes.pending) + ' · elfogadva: ' + formatNum(r.outcomes.accepted)],
+      ['Átadásig (medián)', r.medianHoursToComplete == null ? '—' : formatAvg(r.medianHoursToComplete) + ' óra', 'létrehozástól a véglegesítésig'],
+      ['Sikertelen azonosítás', formatNum(r.authFailures), 'Face ID / kód bukott el a véglegesítésnél'],
+      ['Módosítás', formatNum(r.edits), formatNum(r.acceptResets) + '-szer kellett emiatt újra elfogadni'],
+      ['Felajánlott kártya / csere', formatAvg(r.avgOffered), 'átlag, cserénként']
+    ].map(kpiHtml).join('');
+
+    var max = Math.max.apply(null, Object.keys(REQUEST_OUTCOMES).map(function (k) { return r.outcomes[k] || 0; }).concat([1]));
+    $('#requests-outcomes').innerHTML = '<thead><tr><th>Kimenetel</th><th class="num">Kérelem</th><th class="num">Csere</th>' +
+      '<th class="num">Összesen</th><th></th></tr></thead><tbody>' +
+      Object.keys(REQUEST_OUTCOMES).map(function (k) {
+        var o = REQUEST_OUTCOMES[k];
+        return '<tr><td><span class="badge ' + o[1] + '">' + esc(o[0]) + '</span></td><td class="num">' + formatNum(req[k] || 0) +
+          '</td><td class="num">' + formatNum(swap[k] || 0) + '</td><td class="num"><b>' + formatNum(r.outcomes[k] || 0) +
+          '</b></td><td class="wcol">' + barHtml(r.outcomes[k] || 0, max) + '</td></tr>';
+      }).join('') + '</tbody>';
+    applyBars($('#requests-outcomes'));
+
+    var reasons = Object.keys(r.closeReasons || {});
+    $('#requests-reasons').innerHTML = '<thead><tr><th>Ok</th><th class="num">Lezárt kérelem</th></tr></thead><tbody>' +
+      (reasons.length ? reasons.sort(function (a, b) { return r.closeReasons[b] - r.closeReasons[a]; }).map(function (k) {
+        return '<tr><td>' + esc(REQUEST_REASONS[k] || k) + '</td><td class="num">' + formatNum(r.closeReasons[k]) + '</td></tr>';
+      }).join('') : '<tr><td colspan="2" class="muted">Még nem zárt le kérelmet a rendszer.</td></tr>') + '</tbody>';
+
+    $('#requests-daily').innerHTML = '<thead><tr><th>Nap (UTC)</th><th class="num">Új kérelem</th><th class="num">Átadva</th>' +
+      '<th class="num">Sikertelen átadás</th></tr></thead><tbody>' +
+      r.days.slice().reverse().map(function (d) {
+        return '<tr><td>' + esc(d.day) + '</td><td class="num">' + formatNum(d.created) + '</td><td class="num">' + formatNum(d.completed) +
+          '</td><td class="num">' + formatNum(d.failed) + '</td></tr>';
+      }).join('') + '</tbody>';
+    $('#requests-meta').textContent = 'Frissítve: ' + formatDate(r.generatedAt);
+  }
+
   // ---------- kártya-előzmény ----------
   // Egy nyomtatott példány teljes története: tulajdonosi események (cardprime-v2-ownership-
   // events) és minden beolvasási kísérlet (cardprime-v2-scan-events), időkorlát nélkül
@@ -824,7 +905,9 @@
     claimed: ['Gyűjteménybe vette (első beolvasó)', 's-paid'],
     removed: ['Kivette a gyűjteményből', 's-pending_payment'],
     restored: ['Visszatette a gyűjteményébe', 's-paid'],
-    released: ['Fiók törölve', 's-refunded']
+    released: ['Fiók törölve', 's-refunded'],
+    // Kártyakérelem vagy csere véglegesítése (2026-11-12): a userId az ÚJ tulajdonos.
+    transferred: ['Átadva (kérelem / csere)', 's-paid']
   };
   var SCAN_RESULTS = {
     authenticated: ['Sikeres', 's-paid'],
@@ -1173,6 +1256,7 @@
   $('#stats-refresh').addEventListener('click', loadStats);
   $('#growth-refresh').addEventListener('click', loadGrowth);
   $('#growth-range').addEventListener('change', renderGrowthTable);
+  $('#requests-refresh').addEventListener('click', loadRequests);
   $('#weekly-refresh').addEventListener('click', loadWeekly);  $('#weekly-export').addEventListener('click', exportWeeklyCsv);
   $('#weekly-week').addEventListener('change', renderWeeklyQuests);
   $('#collection-refresh').addEventListener('click', loadCollection);
