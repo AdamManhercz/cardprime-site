@@ -928,7 +928,14 @@
     3: { label: '3. zóna', fee: 13000, countries: { DK: 'Dánia', FR: 'Franciaország', IT: 'Olaszország' } },
     4: { label: '4. zóna', fee: 26910, countries: { FI: 'Finnország', SE: 'Svédország' } }
   };
+  // Belföldi GLS (2026-11-11): házhoz és csomagpont (ParcelShop / automata), a Lotte Kft.
+  // belföldi díjaival, ugyanúgy kézzel feladva. Egyezik a backend shipping_fees.py-val.
+  var GLS_DOMESTIC = {
+    home: { label: 'Belföld — házhoz', fee: 3030 },
+    pickup: { label: 'Belföld — csomagpont / automata', fee: 2780 }
+  };
   function glsZone(country) {
+    if (country === 'HU') return { name: 'Magyarország', zone: GLS_DOMESTIC.home };
     for (var z in GLS_ZONES) {
       if (GLS_ZONES[z].countries[country]) return { name: GLS_ZONES[z].countries[country], zone: GLS_ZONES[z] };
     }
@@ -943,10 +950,19 @@
 
   function renderGlsExport(o) {
     var a = o.deliveryAddress || o.shippingAddress || {};
-    var z = glsZone(a.country);
-    var countryText = z ? z.name + ' (' + a.country + ')' : (a.countryName || a.country || '');
+    var pickup = o.shippingMethod === 'gls_locker';
+    // Csomagpontos rendelés címe a pont maga: nincs zóna, a belföldi csomagpont-díj él.
+    var z = pickup ? { name: 'Magyarország', zone: GLS_DOMESTIC.pickup } : glsZone(a.country);
+    var countryText = z ? z.name + ' (' + (pickup ? 'HU' : a.country) + ')' : (a.countryName || a.country || '');
     // A feladáshoz kellő adatok; minden sor külön másolható.
-    var fields = [
+    var fields = pickup ? [
+      ['Címzett neve', o.customerName],
+      ['Telefon', o.customerPhone],
+      ['E-mail', o.customerEmail],
+      ['GLS csomagpont', o.glsPointName],
+      ['Csomagpont azonosító', o.glsPointId],
+      ['Hivatkozás (rendelésszám)', o.orderNumber || o.orderId]
+    ] : [
       ['Címzett neve', o.customerName],
       ['Telefon', o.customerPhone],
       ['E-mail', o.customerEmail],
@@ -969,21 +985,19 @@
     }).join('');
 
     var warn = '';
-    if (o.shippingMethod === 'gls_locker') {
-      warn = '<p class="ecsomag-warn">Régi GLS csomagpontos rendelés (' + esc(o.glsPointName || '') + ' ' + esc(o.glsPointId || '') +
-        ') — ilyet már nem kínálunk, egyeztess a vevővel.</p>';
-    } else if (!z) {
+    if (!z) {
       warn = '<p class="ecsomag-warn">Ebbe az országba (' + esc(a.country || '?') + ') a GLS-ajánlatban nincs díj — egyeztess a vevővel, vagy sztornózd.</p>';
     }
+    var domestic = z && (pickup || a.country === 'HU');
     var cost = z
       ? kv([
         ['Zóna', z.zone.label],
-        ['Díjlista szerint', forintText(z.zone.fee) + ' bruttó (0–2 kg, Euro Business, pótdíjakkal; 681 Ft/l gázolajjal számolva)'],
+        ['Díjlista szerint', forintText(z.zone.fee) + ' bruttó (0–2 kg, ' + (domestic ? 'belföld' : 'Euro Business') + ', pótdíjakkal; 681 Ft/l gázolajjal számolva)'],
         ['A vevő fizetett', formatHuf(o.shippingFeeCents), true]
       ])
       : '';
 
-    return '<div class="section ecsomag"><h3>GLS — export feladás</h3>' +
+    return '<div class="section ecsomag"><h3>GLS — ' + (domestic ? 'belföldi' : 'export') + ' feladás</h3>' +
       '<p class="muted">Feladás kézzel, a GLS felületén. ' +
       'Állapot: ' + badge(o.glsLabelStatus) + '</p>' + warn +
       '<dl class="kv">' + rows + '</dl>' +
