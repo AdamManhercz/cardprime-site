@@ -263,10 +263,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .entry h2 { font-size: var(--sc-t-xl); margin: var(--sc-2) 0; }
     .peak__card { align-self: center; }
     /* a lap a szöveg alatti sáv (84px + 190px után) közepén áll; a magassága ~1.573 × szélesség */
-    .peak { --pw: clamp(220px, (100svh - 274px) * .5, 270px); }
+    .peak { --pw: clamp(240px, min(84vw, (100svh - 274px) * .6), 340px); }
     .peak__card { --w: var(--pw); }
     /* az óriási szó a lap teteje mögül emelkedik ki, hogy látsszon */
-    .peak .lab-giant { top: calc(137px + 50% - var(--pw) * .787 - .62em); bottom: auto; font-size: 32vw; }
+    .peak .lab-giant { top: max(266px, calc(137px + 50% - var(--pw) * .787 - .5em)); bottom: auto; font-size: 32vw; }
     .peak__glow--teal, .peak__glow--gold, .peak__glow--white { background-position: 50% 70%; }
     /* telefonon két sor: felül a fekvő lap teljes szélességben, alatta a két álló; a szöveg normál folyásban alattuk */
     .item { display: grid; gap: var(--sc-5); }
