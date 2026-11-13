@@ -126,13 +126,29 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         </div>
         <p><strong>In the app</strong>, we do <strong>not</strong> collect precise/continuous location, contacts, photos outside the card-entry flow, or any advertising identifiers. The app contains no analytics, advertising or crash-reporting SDKs (no Firebase, Sentry, Amplitude, Mixpanel, or similar).</p>
         <p id="cookies"><strong>On our website (cardprime.io): cookies and measurement.</strong></p>
-        <p>Our website &mdash; not the app &mdash; uses cookies to measure traffic and our advertising, but <strong>only with your consent</strong>. On your first visit a cookie window asks you to choose, per category (necessary, preferences, analytics, marketing). Until you choose, and for every category you decline, no analytics or advertising tag runs.</p>
+        <p>Our website &mdash; not the app &mdash; uses Google and Meta tools to measure traffic and our advertising. <strong>No cookie is set before you choose</strong>, and analytics and marketing cookies are set only with your consent.</p>
         <ul>
-          <li><strong>Your choice</strong> is stored in a cookie in your own browser: for 180 days if you accept, 30 days if you decline. You can change or withdraw it at any time with the <a href="#cookie-settings">Cookie settings</a> link at the bottom of every page.</li>
-          <li><strong>Analytics</strong> (Google Analytics 4, provided by Google Ireland Limited): which pages you visit, scrolling, clicks on outbound links, searches on the site, file downloads and form interactions, together with your device and browser details and IP address. We use it to understand how the website is used. Google's analytics cookies are kept for up to 2 years.</li>
-          <li><strong>Marketing</strong> (Meta Pixel, provided by Meta Platforms Ireland Limited): the pages you visit, together with your device and browser details and IP address, sent to Meta so we can measure our Facebook and Instagram ads and show them to relevant audiences. For collecting and transmitting this data, CardPrime and Meta are joint controllers; Meta's own use of it is governed by Meta's privacy policy. Meta's cookies are kept for up to 90 days.</li>
-          <li>If you buy on the website, the order confirmation page's address contains your order number, which is visible to these tags if you have consented to them.</li>
+          <li><strong>Cookie window.</strong> On your first visit a cookie window asks you to choose: accept all, continue without accepting, or choose per category under Settings &mdash; Necessary (always active), Preferences (not used at present), Statistics and Marketing. Until you choose, the website cannot be used, except for this privacy policy page. Your choice and a random consent ID are stored only in your own browser. You can see your consent ID, and change or withdraw your choice, at any time with the <a href="#cookie-settings">Cookie settings</a> link at the bottom of every page. After a withdrawal the page reloads and the tags stop running; cookies already set can be deleted in your browser. We ask again after 180 days if you accepted everything, after 30 days otherwise, or when the content of the cookie window changes.</li>
+          <li><strong>Google Tag Manager</strong> (Google Ireland Limited) loads on every page, also before you choose, and runs only the measurement tags your choice allows. When your browser downloads it, Google receives your IP address and the address of the page.</li>
+          <li><strong>Google Analytics 4 without cookies.</strong> Before you choose, and after you decline, Google Analytics sends Google a cookieless signal for each page view ("consent mode"). According to Google, it may contain the time, your browser type, the address of the previous page, your consent status, whether the link contained an ad-click ID, and a random number that is new on every page load. We use it to estimate the number of visits.</li>
+          <li><strong>Google Analytics 4 with cookies</strong>, after you accept Statistics: pages viewed, scrolling, outbound links, file downloads, videos and form interactions; your device, browser, language, approximate location and where your visit came from; and a random visitor ID. We use it to measure how the website is used.</li>
+          <li><strong>Google signals</strong> (part of Google Analytics), after you accept Marketing: if you are signed in to a Google account, Google links this measurement with your account's data, for cross-device measurement, demographics and advertising audiences.</li>
+          <li><strong>Meta Pixel</strong> (Meta Platforms Ireland Limited), after you accept Marketing: page views, automatically collected button clicks and page metadata, your browser and device, IP address and a browser ID, which Meta can match with your Facebook or Instagram account. We use it to measure and optimize our Meta ads and to build audiences. We do not send Meta your email address or phone number. A helper script for it is loaded from the <strong>jsDelivr</strong> content delivery network, which receives your IP address when your browser downloads it. For collecting and transmitting this data, CardPrime and Meta are joint controllers; Meta's own use of it is governed by Meta's privacy policy.</li>
+          <li>For visitors from the EU, Google Analytics does not log or store the IP address; Google uses it only to determine approximate location.</li>
+          <li>If you buy on the website, the order confirmation page's address contains your order number, which these tags can see if you have consented to them.</li>
         </ul>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cookie</th><th>Provider</th><th>Purpose</th><th>Category</th><th>Expiry</th></tr></thead>
+            <tbody>
+              <tr><td>cw_consent</td><td>CardPrime</td><td>Stores your cookie choice and consent ID</td><td>Necessary</td><td>180 days if you accept everything, otherwise 30 days</td></tr>
+              <tr><td>_ga</td><td>Google</td><td>Distinguishes visitors</td><td>Statistics</td><td>2 years (at most 400 days in Chrome)</td></tr>
+              <tr><td>_ga_DC56QFJWRQ</td><td>Google</td><td>Keeps the state of the visit</td><td>Statistics</td><td>2 years (at most 400 days in Chrome)</td></tr>
+              <tr><td>_fbp</td><td>Meta</td><td>Identifies the browser for ad measurement</td><td>Marketing</td><td>90 days</td></tr>
+              <tr><td>_fbc</td><td>Meta</td><td>Stores the Meta ad-click ID, only if you arrived from a Meta ad</td><td>Marketing</td><td>90 days</td></tr>
+            </tbody>
+          </table>
+        </div>
         <p><strong>What's required vs. optional:</strong> email, password and a display name are required to create an account — without them we cannot provide the service. The display name does not have to be your real name; a nickname or pseudonym is fine, and you can change it at any time in Settings → Edit Profile (see Section 3, which explains where it is shown). Approximate location is only requested at the moment you save a card; declining the permission prompt does not block adding the card, but the geo-velocity fraud check will have less information to work with for that entry.</p>
       </section>
 
@@ -154,21 +170,21 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <section id="legal-basis">
         <h2><span class="no">4.</span>Legal basis for processing</h2>
         <p><strong>Performance of a contract</strong> — account creation, authentication, and collection management are necessary to provide the service you request.</p>
-        <p><strong>Consent</strong> — publishing a card to the public catalog happens only when you turn on that card's visibility switch. You can withdraw this at any time by turning the switch off, with no effect on anything else. Analytics and marketing cookies on our website are also used only with your consent, which you can withdraw at any time through the "Cookie settings" link (see Section 2).</p>
-        <p><strong>Legitimate interest</strong> — approximate location capture when you add a card and the resulting fraud/geo-velocity checks; automated screening of photos submitted to the public catalog; and processing of reports and blocks. These protect the integrity of the card catalog and the safety of other users, and are limited to the minimum needed for that purpose. We are also legally required to operate a notice-and-action mechanism for illegal content under the EU Digital Services Act.</p>
+        <p><strong>Consent</strong> — publishing a card to the public catalog happens only when you turn on that card's visibility switch. You can withdraw this at any time by turning the switch off, with no effect on anything else. On our website, Google Analytics with cookies, Google signals and the Meta Pixel are also used only with your consent, which you can withdraw at any time through the "Cookie settings" link (see Section 2). The cookie that stores your choice is strictly necessary for the cookie window to work.</p>
+        <p><strong>Legitimate interest</strong> — approximate location capture when you add a card and the resulting fraud/geo-velocity checks; automated screening of photos submitted to the public catalog; and processing of reports and blocks. These protect the integrity of the card catalog and the safety of other users, and are limited to the minimum needed for that purpose. On our website, loading Google Tag Manager and the cookieless Google Analytics signals described in Section 2 serve our interest in delivering the website and estimating the number of visits. We are also legally required to operate a notice-and-action mechanism for illegal content under the EU Digital Services Act.</p>
       </section>
 
       <section id="sharing">
         <h2><span class="no">5.</span>Who we share data with</h2>
         <p>Your data is processed only by our infrastructure provider, <strong>Amazon Web Services (AWS)</strong>, in the following services: Cognito (authentication), DynamoDB (database), S3 (card images), Lambda/API Gateway (application logic), Rekognition (automated image screening, only for photos you submit to the public catalog), and SES (system email). AWS acts as our <strong>data processor</strong> and processes this data only on our instructions, under the AWS Data Processing Addendum that forms part of the AWS Service Terms and meets the requirements of Article 28 GDPR.</p>
-        <p>Our website is hosted by <strong>Cloudflare</strong>, which processes the technical data of each visit (such as IP address) to deliver the pages. If you consent to website cookies, <strong>Google</strong> (analytics) and <strong>Meta</strong> (advertising) receive the data described in Section 2. None of this applies to the app.</p>
+        <p>Our website is hosted by <strong>Cloudflare</strong>, which processes the technical data of each visit (such as IP address) to deliver the pages. <strong>Google</strong> receives the website data described in Section 2, more of it if you accept Statistics or Marketing; <strong>Meta</strong> and <strong>jsDelivr</strong> receive data only if you accept Marketing. None of this applies to the app.</p>
         <p>We do not sell or rent your data, and apart from the website measurement you consent to, we do not share it with advertisers, data brokers, or any other third party.</p>
       </section>
 
       <section id="transfers">
         <h2><span class="no">6.</span>International data transfers</h2>
         <p>All data is stored and processed within the European Union, in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region. The single exception is the automated image screening described in Section 3: because AWS does not offer that service in Stockholm, photos you submit to the public catalog are screened in AWS's <strong>eu-central-1 (Frankfurt, Germany)</strong> region. Both regions are inside the EU — we do not transfer your personal data outside the EU/EEA. The screening call is a one-off check with no storage: the image is not retained by that service.</p>
-        <p><strong>Website measurement.</strong> If you consent to analytics or marketing cookies on our website, Google and Meta may transfer that data to the United States. Both are certified under the EU–US Data Privacy Framework, on the basis of the European Commission's adequacy decision. App data is not affected.</p>
+        <p><strong>Website measurement.</strong> Google and Meta may transfer the data they receive from our website to the United States (Google LLC, Meta Platforms, Inc.). Both are certified under the EU–US Data Privacy Framework, on the basis of the European Commission's adequacy decision. App data is not affected.</p>
       </section>
 
       <section id="retention">
@@ -182,8 +198,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
               <tr><td>Login timestamps</td><td>Until you delete your account</td></tr>
               <tr><td>Approximate location captured on card add</td><td>Stored with that card record; deleted with it</td></tr>
               <tr><td>Content reports and block records</td><td>Until you delete your account, or until you unblock the collector</td></tr>
-              <tr><td>Website cookie choice</td><td>180 days if you accept, 30 days if you decline (in your browser)</td></tr>
-              <tr><td>Website analytics and marketing cookies</td><td>Up to 2 years (Google) and up to 90 days (Meta), only with your consent; you can delete them in your browser at any time</td></tr>
+              <tr><td>Website cookies</td><td>As listed in the cookie table in Section 2</td></tr>
+              <tr><td>Google Analytics data from the website</td><td>At most 14 months</td></tr>
+              <tr><td>Google signals data</td><td>Up to 26 months, or less if the Google Analytics retention is shorter</td></tr>
+              <tr><td>Meta Pixel data</td><td>Under Meta's own retention rules</td></tr>
             </tbody>
           </table>
         </div>
