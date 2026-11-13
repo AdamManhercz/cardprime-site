@@ -110,10 +110,11 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   .p-back .slab { --w: clamp(170px, 15vw, 240px); transform: rotate(-9deg); filter: blur(.5px) brightness(.88); }
   /* a fő és az oldalsó kártya a hátsó (right: 34%) széléhez kötve: a szélességük felül le van vágva,
      ezért %-os pozícióval széles monitoron szétcsúsznának — így a rés minden szélességen azonos */
-  .hero__planes { --w-main: clamp(240px, 21vw, 330px); --w-side: clamp(180px, 15vw, 250px); }
-  .p-main  { right: calc(34% - var(--w-main) + 42px); top: 15%; }
+  .hero__planes { --w-main: clamp(240px, 21vw, 330px); --w-side: clamp(180px, 15vw, 250px); --main-right: calc(34% - var(--w-main) + 18px); }
+  /* a 18px / 32px a forgatás miatt eltér: így Nagy–Manhercz és Manhercz–Vigvári átfedése látványra egyforma */
+  .p-main  { right: var(--main-right); top: 15%; }
   .p-main .slab { --w: var(--w-main); transform: rotate(6deg); }
-  .p-side  { right: calc(34% - var(--w-main) + 42px - var(--w-side) + 32px); top: 30%; }
+  .p-side  { right: calc(var(--main-right) - var(--w-side) + 32px); top: 30%; }
   .p-side .slab { --w: var(--w-side); transform: rotate(14deg); filter: brightness(.92); }
   .p-fore  { right: 4%; top: 72%; }
   .p-fore .slab { --w: clamp(340px, 34vw, 520px); transform: rotate(-12deg); filter: blur(5px) brightness(.9); }
