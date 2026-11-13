@@ -3,14 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- Google Tag Manager. Consent Mode V2: alapból minden "denied", amíg a sütibanner nem frissíti. -->
+<!-- Google Tag Manager. A Consent Mode V2 alapállapotát (minden "denied") és a sütiablakot a GTM-konténer állítja be, ide ne kerüljön consent default. -->
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-  ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
-  analytics_storage: 'denied', wait_for_update: 500
-});
 dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
@@ -166,7 +162,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <footer class="foot">
   <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
   <nav aria-label="Footer">
-    <a href="../shop/">Shop</a><a href="../points/">Points</a><a href="../refund-policy/">Refund &amp; Shipping</a><a href="../privacy/">Privacy Policy</a><a href="../terms/" aria-current="page">Terms of Service</a><a href="../support/">Support</a>
+    <a href="../shop/">Shop</a><a href="../points/">Points</a><a href="../refund-policy/">Refund &amp; Shipping</a><a href="../privacy/">Privacy Policy</a><a href="../terms/" aria-current="page">Terms of Service</a><a href="../support/">Support</a><a href="#cookie-settings">Cookie settings</a>
   </nav>
 </footer>
 
