@@ -108,10 +108,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   .hero__planes > div { position: absolute; will-change: transform; }
   .p-back  { right: 34%; top: 24%; }
   .p-back .slab { --w: clamp(170px, 15vw, 240px); transform: rotate(-9deg); filter: blur(.5px) brightness(.88); }
-  .p-main  { right: 16%; top: 15%; }
-  .p-main .slab { --w: clamp(240px, 21vw, 330px); transform: rotate(6deg); }
-  .p-side  { right: 3%; top: 30%; }
-  .p-side .slab { --w: clamp(180px, 15vw, 250px); transform: rotate(14deg); filter: brightness(.92); }
+  /* a fő és az oldalsó kártya a hátsó (right: 34%) széléhez kötve: a szélességük felül le van vágva,
+     ezért %-os pozícióval széles monitoron szétcsúsznának — így a rés minden szélességen azonos */
+  .hero__planes { --w-main: clamp(240px, 21vw, 330px); --w-side: clamp(180px, 15vw, 250px); }
+  .p-main  { right: calc(34% - var(--w-main) + 42px); top: 15%; }
+  .p-main .slab { --w: var(--w-main); transform: rotate(6deg); }
+  .p-side  { right: calc(34% - var(--w-main) + 42px - var(--w-side) + 32px); top: 30%; }
+  .p-side .slab { --w: var(--w-side); transform: rotate(14deg); filter: brightness(.92); }
   .p-fore  { right: 4%; top: 72%; }
   .p-fore .slab { --w: clamp(340px, 34vw, 520px); transform: rotate(-12deg); filter: blur(5px) brightness(.9); }
   .p-mist  { inset: 54% -10% auto -10%; height: 40%;
