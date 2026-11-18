@@ -337,7 +337,7 @@
   // (demo_app src/i18n/hu/weekly.ts): ha ott változik egy cím vagy kérdés, itt is kell.
   var WEEKLY_KINDS = { duel: 'Design-párbaj', top3: 'Top 3 választás', survey: 'Kérdőív' };
   var WEEKLY_TITLES = {
-    w1_duel: 'Inszert-párbaj', w1_top3: 'Egy kártya, hét arc', w1_survey: 'Első benyomások',
+    w1_duel: 'Insert-párbaj', w1_top3: 'Egy kártya, hét arc', w1_survey: 'Első benyomások',
     w2_duel: 'Parallel-párbaj', w2_top3: 'A legjobb parallel', w2_survey: 'Gyűjtés és csomagok',
     w3_duel: 'A fiatalok párbaja', w3_top3: 'Future Wave Top 3', w3_survey: 'Aukciók és nyeremények',
     w4_duel: 'Döntő párbaj', w4_top3: 'A szezon kártyája', w4_survey: 'Szezonzáró'
