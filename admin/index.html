@@ -88,6 +88,7 @@
           <option value="">Minden szállító</option>
           <option value="foxpost">Foxpost</option>
           <option value="gls">GLS (export, kézi)</option>
+          <option value="store">Személyes átvétel (King of Hoops)</option>
           <option value="none">Nincs (aukció)</option>
         </select>
         <select name="fulfillment" aria-label="Feladási állapot szűrő">
@@ -98,6 +99,9 @@
           <option value="label_failed">Foxpost: címke hiba</option>
           <option value="gls_todo">GLS: GLS-be felvinni</option>
           <option value="gls_entered">GLS: felvive</option>
+          <option value="store_todo">Átvétel: átadni az üzletnek</option>
+          <option value="store_ready">Átvétel: átvehető</option>
+          <option value="store_collected">Átvétel: átvéve</option>
         </select>
         <input name="q" type="search" placeholder="Rendelésszám, e-mail, név" aria-label="Keresés">
         <button class="btn" type="submit">Szűrés</button>
@@ -239,7 +243,7 @@
         <tr><td><code>stripePaymentIntentId</code> / <code>stripeRefundId</code></td><td>pi_… / re_…</td><td>Stripe</td><td>A fizetés és a visszatérítés azonosítója a Stripe Dashboardban.</td></tr>
         <tr><td><code>foxpostLabelStatus</code> + <code>foxpostTrackingNumber</code></td><td>created · failed</td><td>Foxpost</td><td>Címke létrehozása fizetéskor. Aukciós rendelésnél nincs.</td></tr>
         <tr><td><code>glsLabelStatus</code> + <code>glsParcelId</code></td><td>manual · (régi: created · failed)</td><td>GLS (export, kézi)</td><td>2026-10-17 óta a GLS csak külföldi (EU) házhoz rendelést visz, API nélkül. Fizetéskor <b>manual</b> = kézzel kell feladni a GLS felületén (2026-11-02 óta a Lotte Kft. díjaival); a rendelés részleteiben a „GLS — export feladás” blokk soronként másolható adatokat ad. A régebbi <b>created</b> / <b>failed</b> a MyGLS-es időszakból maradt.</td></tr>
-        <tr><td><code>fulfillment</code> (feladás)</td><td>Nyomtatásra vár · Kinyomtatva · Feladva · Címke hiba · GLS-be felvinni · GLS-ben felvive</td><td>Saját (kézi)</td><td>Csak fizetett rendelésnél. Foxpost: a címke fizetéskor API-n jön létre (XS), utána a rendelés részleteiben pipálod, hogy kinyomtattad, majd hogy leadtad. GLS: egy pipa, ha a GLS felületén felvitted. Visszavonható; minden váltás az admin naplóba kerül.</td></tr>
+        <tr><td><code>fulfillment</code> (feladás)</td><td>Nyomtatásra vár · Kinyomtatva · Feladva · Címke hiba · GLS-be felvinni · GLS-ben felvive · Átadni az üzletnek · Átvehető · Átvéve</td><td>Saját (kézi)</td><td>Csak fizetett rendelésnél. Foxpost: a címke fizetéskor API-n jön létre (XS), utána a rendelés részleteiben pipálod, hogy kinyomtattad, majd hogy leadtad. GLS: egy pipa, ha a GLS felületén felvitted. Személyes átvétel (King of Hoops): az „Átvehető” pipa e-mailt küld a vevőnek (kivéve és újra bepipálva újraküldi), az „Átvéve” lezárja. Visszavonható; minden váltás az admin naplóba kerül.</td></tr>
         <tr><td><code>carrierCancelStatus</code></td><td>manual_required · done_manually · not_applicable</td><td>Szállító</td><td>Visszatérítés után: ha volt címke, a szállítónál kézzel kell lemondani, majd itt jelölni. API-integráció később.</td></tr>
         <tr><td><code>confirmationEmailStatus</code></td><td>sent · failed · skipped</td><td>Resend</td><td>A CardPrime saját visszaigazoló e-mailje fizetéskor.</td></tr>
         <tr><td><code>adminLog</code></td><td>lista</td><td>—</td><td>Minden admin művelet: idő, művelet, operátor neve, indok, eredmény.</td></tr>
