@@ -626,7 +626,11 @@
     printed: { text: 'Kinyomtatva', cls: 's-refunded' },
     handed_over: { text: 'Feladva', cls: 's-paid' },
     gls_todo: { text: 'GLS-be felvinni', cls: 's-pending_payment' },
-    gls_entered: { text: 'GLS-ben felvive', cls: 's-paid' }
+    gls_entered: { text: 'GLS-ben felvive', cls: 's-paid' },
+    // Személyes átvétel a King of Hoops üzletben (2026-11-21).
+    store_todo: { text: 'Átadni az üzletnek', cls: 's-pending_payment' },
+    store_ready: { text: 'Átvehető (vevő értesítve)', cls: 's-refunded' },
+    store_collected: { text: 'Átvéve', cls: 's-paid' }
   };
   function fulfillmentBadge(value) {
     var f = FULFILLMENT[value];
@@ -634,6 +638,7 @@
   }
   function carrierText(o) {
     if (!o.carrier) return '<span class="muted">—</span>';
+    if (o.carrier === 'store') return '<b>King of Hoops</b><br><span class="muted">személyes átvétel</span>';
     var mode = o.shippingMethod === 'home_delivery' ? 'házhoz' : (o.carrier === 'gls' ? 'csomagpont' : 'automata');
     return '<b>' + (o.carrier === 'gls' ? 'GLS' : 'Foxpost') + '</b><br><span class="muted">' + mode + '</span>';
   }
@@ -641,6 +646,11 @@
   // A pipák állapotából a következő tárolt lépés (fulfillmentStep); null = visszavonás.
   function nextStep(o, step, checked) {
     if (o.carrier === 'gls') return checked ? 'entered' : null;
+    // Átvétel: az „Átvehető” pipa e-mailt küld a vevőnek; az „Átvéve” visszavonása → ready.
+    if (o.carrier === 'store') {
+      if (step === 'ready') return checked ? 'ready' : null;
+      return checked ? 'collected' : 'ready';
+    }
     if (step === 'printed') return checked ? 'printed' : null;
     return checked ? 'handed_over' : 'printed';
   }
@@ -651,6 +661,16 @@
     var boxes;
     if (o.carrier === 'gls') {
       boxes = checkbox('entered', 'Felvittem a GLS felületén (feladás kész)', f === 'gls_entered', false);
+    } else if (o.carrier === 'store') {
+      // Személyes átvétel (2026-11-21): nincs címke, nincs szállító. Az „Átvehető” bepipálása
+      // e-mailt küld a vevőnek; elveszett levélnél vedd ki, majd pipáld újra — újraküldi.
+      boxes =
+        '<p class="muted">Átvétel: King of Hoops, Apáczai Csere János u. 17, 1051 Budapest. ' +
+        'Ha a csomag az üzletben van, pipáld be az „Átvehető” sort — a vevő e-mailt kap.</p>' +
+        checkbox('ready', 'Átvehető — e-mail a vevőnek', f === 'store_ready' || f === 'store_collected', f === 'store_collected') +
+        checkbox('collected', 'Átvéve (a vevő elvitte)', f === 'store_collected', f === 'store_todo') +
+        (o.pickupEmailStatus ? '<p class="muted">Átvételi e-mail: ' + badge(o.pickupEmailStatus) +
+          (o.pickupEmailAt ? ' · ' + formatDate(o.pickupEmailAt) : '') + '</p>' : '');
     } else {
       var noLabel = f === 'label_failed';
       boxes =
@@ -660,7 +680,9 @@
         checkbox('printed', 'Kinyomtatva', f === 'printed' || f === 'handed_over', noLabel) +
         checkbox('handed_over', 'Feladva (automatában / csomagponton leadva)', f === 'handed_over', noLabel);
     }
-    return '<div class="section fulfillment"><h3>Feladás — ' + (o.carrier === 'gls' ? 'GLS (kézi)' : 'Foxpost') + ' ' +
+    var title = o.carrier === 'gls' ? 'Feladás — GLS (kézi)'
+      : o.carrier === 'store' ? 'Átvétel — King of Hoops' : 'Feladás — Foxpost';
+    return '<div class="section fulfillment"><h3>' + title + ' ' +
       fulfillmentBadge(f) + '</h3>' + boxes +
       (o.fulfillmentAt ? '<p class="muted">Utoljára módosítva: ' + formatDate(o.fulfillmentAt) + '</p>' : '') + '</div>';
   }
@@ -685,7 +707,12 @@
     api('setFulfillment', { orderId: o.orderId, step: nextStep(o, input.dataset.step, input.checked), operator: operator })
       .then(function (data) {
         renderOrder(data.order);
-        toast('Feladási állapot: ' + (FULFILLMENT[data.order.fulfillment] || {}).text);
+        var mailNote = '';
+        if (data.order.carrier === 'store' && input.dataset.step === 'ready' && input.checked) {
+          mailNote = data.order.pickupEmailStatus === 'sent'
+            ? ' — e-mail elküldve' : ' — az e-mail NEM ment ki (' + (data.order.pickupEmailStatus || '?') + ')';
+        }
+        toast('Állapot: ' + (FULFILLMENT[data.order.fulfillment] || {}).text + mailNote);
         if (!$('#view-orders').hidden) loadOrders();
       }).catch(function (e) {
         toast(e.message);
@@ -1140,6 +1167,8 @@
         ['Szállítás', o.shippingMethod +
           // Házhozszállításnál a választott szállító; régi rendelésnél nincs → Foxpost.
           (o.shippingMethod === 'home_delivery' ? ' — ' + (o.homeCarrier === 'gls' ? 'GLS' : 'Foxpost') : '') +
+          // Személyes átvétel (2026-11-21): a cím csak számlázási cím.
+          (o.shippingMethod === 'store_pickup' ? ' — King of Hoops, Budapest' : '') +
           (o.foxpostLockerName ? ' — ' + o.foxpostLockerName : '') +
           (o.glsPointName ? ' — ' + o.glsPointName + (o.glsPointId ? ' (' + o.glsPointId + ')' : '') : '')],
         ['Tételek', items || '—', true]
