@@ -762,6 +762,32 @@
     return esc([c.tier, c.variant].filter(Boolean).join(' · '));
   }
 
+  // Az SDK-hibák okai (v2_handler.SDK_FAIL_REASONS, 2026-11-18). 'unreported' = régi app,
+  // ami még nem küld okot; a 2026-11-18 előtti napoknál nincs bontás.
+  var SDK_FAIL_REASONS = {
+    counterfeit: 'hamisnak ítélte',
+    no_match: 'nincs egyező kód',
+    repeat_scanning: 'ismételt beolvasás',
+    code_range_error: 'kód a tartományon kívül',
+    project_error: 'SDK projektbeállítás',
+    parse_error: 'nem értelmezhető',
+    unknown: 'ismeretlen (SDK)',
+    ok: 'ok státusz, eredmény nélkül',
+    no_sku: 'hiteles, de nincs SKU',
+    error: 'az SDK hibát dobott',
+    other: 'egyéb',
+    unreported: 'régi app, nem küld okot'
+  };
+  function failReasonsHtml(reasons, total) {
+    var keys = Object.keys(reasons || {}).sort(function (a, b) { return reasons[b] - reasons[a]; });
+    var known = keys.reduce(function (s, k) { return s + reasons[k]; }, 0);
+    var parts = keys.map(function (k) {
+      return esc(SDK_FAIL_REASONS[k] || k) + ': <b>' + formatNum(reasons[k]) + '</b>';
+    });
+    if ((total || 0) > known) parts.push('<span class="muted">bontás nélkül (2026-11-18 előtt): ' + formatNum(total - known) + '</span>');
+    return parts.length ? parts.join(' · ') : '<span class="muted">nincs</span>';
+  }
+
   function loadCollection() {
     $('#scan-kpis').innerHTML = '<p class="muted">Betöltés…</p>';
     api('collectionStats').then(function (c) {
@@ -774,16 +800,23 @@
         ['Ismeretlen kód', formatNum(t.notFound), pct(t.notFoundPct) + ' a kísérletekből — olvasható, de nem a mi kártyánk'],
         ['SDK nem tudta hitelesíteni', formatNum(t.sdkFailed), pct(t.sdkFailedPct) + ' a kísérletekből']
       ];
-      $('#scan-kpis').innerHTML = scanKpis.map(kpiHtml).join('');
+      $('#scan-kpis').innerHTML = scanKpis.map(kpiHtml).join('') +
+        '<div class="kpi" style="grid-column:1/-1"><div class="kpi__label">SDK-hibák oka (összesen)</div><div class="kpi__hint">' +
+        failReasonsHtml(t.sdkFailReasons, t.sdkFailed) + '</div></div>';
       var drows = (scans.days || []).slice(0, 30).map(function (d) {
+        var reasons = d.sdkFailed ? failReasonsHtml(d.sdkFailReasons, d.sdkFailed) : '';
+        if (d.lastSdkError) {
+          reasons += '<br><span class="muted">Utolsó hibaszöveg (' + formatDate(d.lastSdkErrorAt) + '):</span> <code>' + esc(d.lastSdkError) + '</code>';
+        }
         return '<tr><td>' + esc(d.day) + '</td><td class="num">' + formatNum(d.attempts) +
           '</td><td class="num">' + formatNum(d.authenticated) + ' (' + pct(d.successPct) + ')' +
           '</td><td class="num">' + formatNum(d.notFound) + ' (' + pct(d.notFoundPct) + ')' +
-          '</td><td class="num">' + formatNum(d.sdkFailed) + ' (' + pct(d.sdkFailedPct) + ')</td></tr>';
+          '</td><td class="num">' + formatNum(d.sdkFailed) + ' (' + pct(d.sdkFailedPct) + ')' +
+          '</td><td>' + reasons + '</td></tr>';
       }).join('');
       $('#scan-days').innerHTML = '<thead><tr><th>Nap (UTC)</th><th class="num">Kísérlet</th><th class="num">Sikeres</th><th class="num">Ismeretlen kód</th>' +
-        '<th class="num">SDK hiba</th></tr></thead><tbody>' +
-        (drows || '<tr><td colspan="5" class="muted">Még nem volt beolvasás.</td></tr>') + '</tbody>';
+        '<th class="num">SDK hiba</th><th>SDK-hiba oka</th></tr></thead><tbody>' +
+        (drows || '<tr><td colspan="6" class="muted">Még nem volt beolvasás.</td></tr>') + '</tbody>';
 
       var u = c.users || {};
       var colKpis = [
