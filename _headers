@@ -14,6 +14,18 @@
   Cache-Control: no-store
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://cardprime-sku-images.s3.eu-north-1.amazonaws.com; connect-src https://cognito-idp.eu-north-1.amazonaws.com https://q8gld60qn0.execute-api.eu-north-1.amazonaws.com; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
 
+# Pult (helyszíni eladás, 2026-11-23): ugyanaz a zárt admin-beállítás, ugyanaz a backend.
+# connect-src 'self': a saját /pult/irsz.json (irányítószám -> település, utcák) miatt.
+/pult
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/pult/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://cognito-idp.eu-north-1.amazonaws.com https://q8gld60qn0.execute-api.eu-north-1.amazonaws.com; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+
 # Saját betűk: a fájlok nem változnak, egy év cache. Ha a fonts.css változik, a
 # hivatkozó oldalakon a ?v= számot is emelni kell.
 /fonts/*
