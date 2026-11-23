@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>CardPrime Pult</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="stylesheet" href="/fonts/fonts.css?v=1">
+<link rel="stylesheet" href="/admin/admin.css">
+<link rel="stylesheet" href="/pult/pult.css">
+</head>
+<body>
+
+<header class="bar">
+  <span class="brand">
+    <img src="/assets/CardPrime-AppIcon-rounded-512.png" alt="">
+    <img src="/assets/CardPrime-wordmark-transparent.png" alt="CardPrime">
+    <span class="tag">Pult</span>
+  </span>
+  <button type="button" class="btn btn--ghost" id="logout" hidden>Kilépés</button>
+</header>
+
+<main>
+  <!-- belépés: külön pult fiók (pult_admin), NEM az admin fiók -->
+  <section class="view login" id="view-login">
+    <form class="card login__card" id="login-form" autocomplete="on">
+      <span class="stripe"></span>
+      <h1>Pult belépés</h1>
+      <p class="muted">A pult fiókkal (pult_admin).</p>
+      <label>Felhasználónév<input name="username" autocomplete="username" required></label>
+      <label>Jelszó<input name="password" type="password" autocomplete="current-password" required></label>
+      <div id="new-password-row" hidden>
+        <p class="muted">Első belépés: adj meg egy új, végleges jelszót (min. 14 karakter, benne kisbetű, szám és speciális karakter).</p>
+        <label>Új jelszó<input name="newPassword" type="password" autocomplete="new-password"></label>
+      </div>
+      <button class="btn" type="submit">Belépés</button>
+      <p class="error" id="login-error" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- eladás -->
+  <section class="view" id="view-sale" hidden>
+    <form id="sale-form" class="pos" novalidate>
+      <div class="pos__main">
+        <div class="card">
+          <div class="head"><h2>1. Termékek</h2>
+            <span class="head__right"><span class="muted" id="stock-line"></span>
+              <button type="button" class="btn btn--ghost" id="refresh-products">Frissítés</button></span></div>
+          <div class="products" id="products"><p class="muted">Betöltés…</p></div>
+        </div>
+
+        <div class="card">
+          <h2>2. Vevő adatai</h2>
+          <p class="muted hint">A számlához kötelező. / Required for the invoice.</p>
+          <div class="grid">
+            <label class="span-2">Név / Name<input name="name" autocomplete="off" maxlength="200" required></label>
+            <label class="span-2">E-mail (ide megy a számla) / E-mail for the invoice
+              <input name="email" type="email" inputmode="email" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="200" required></label>
+            <label>Ország / Country<select name="country" id="country"></select></label>
+            <label>Irányítószám / Postal code<input name="postalCode" id="postal-code" inputmode="numeric" autocomplete="off" maxlength="12" required aria-describedby="postal-hint"></label>
+            <p class="muted addr-hint span-2" id="postal-hint" aria-live="polite"></p>
+            <label class="span-2">Település / City<input name="city" id="city" list="city-options" autocomplete="off" maxlength="200" required></label>
+            <datalist id="city-options"></datalist>
+            <div class="combo">
+              <label for="street">Közterület / Street</label>
+              <input name="street" id="street" autocomplete="off" maxlength="200" required
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="street-list" aria-describedby="street-hint">
+              <ul class="combo__list" id="street-list" role="listbox" aria-label="Közterület javaslatok" hidden></ul>
+              <p class="muted addr-hint" id="street-hint"></p>
+            </div>
+            <label>Házszám (emelet, ajtó) / House number<input name="houseNumber" id="house-number" autocomplete="off" maxlength="60" required></label>
+          </div>
+        </div>
+      </div>
+
+      <aside class="pos__side">
+        <div class="card summary">
+          <h2>3. Fizetés</h2>
+          <label>Eladó neve<input name="seller" id="seller" autocomplete="off" maxlength="60" required></label>
+          <ul class="lines" id="lines"><li class="muted">Még nincs termék.</li></ul>
+          <div class="total"><span>Összesen</span><strong id="total">0 Ft</strong></div>
+
+          <fieldset class="pay" aria-label="Fizetési mód">
+            <label class="pay__opt"><input type="radio" name="paymentMethod" value="cash"><span>Készpénz</span></label>
+            <label class="pay__opt"><input type="radio" name="paymentMethod" value="card"><span>Bankkártya</span></label>
+          </fieldset>
+
+          <div class="consents">
+            <label class="check"><input type="checkbox" name="terms" required>
+              <span>Elfogadom az <a href="/terms/" target="_blank" rel="noopener">ÁSZF-et</a>. / I accept the Terms.</span></label>
+            <label class="check"><input type="checkbox" name="privacy" required>
+              <span>Elolvastam az <a href="/privacy/" target="_blank" rel="noopener">Adatkezelési tájékoztatót</a>. / I have read the Privacy Policy.</span></label>
+          </div>
+
+          <label class="check paid"><input type="checkbox" name="paid" required>
+            <span id="paid-text">A fizetés megtörtént.</span></label>
+
+          <button class="btn btn--big" type="submit" id="submit" disabled>Számla kiállítása és küldése</button>
+          <p class="error" id="sale-error" role="alert"></p>
+        </div>
+      </aside>
+    </form>
+
+    <!-- eredmény -->
+    <div class="card result" id="result" hidden tabindex="-1">
+      <span class="stripe"></span>
+      <h2 id="result-title"></h2>
+      <dl class="kv" id="result-kv"></dl>
+      <p class="muted" id="result-note"></p>
+      <div class="row">
+        <button type="button" class="btn btn--warn" id="retry-invoice" hidden>Számla újrapróbálása</button>
+        <button type="button" class="btn btn--big" id="new-sale">Új eladás</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/pult/pult.js"></script>
+</body>
+</html>

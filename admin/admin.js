@@ -66,9 +66,14 @@
   function loadToken() {
     try {
       var t = sessionStorage.getItem(TOKEN_KEY);
-      if (t && jwtPayload(t).exp * 1000 > Date.now() + 60000) return t;
+      if (t && !isPultToken(t) && jwtPayload(t).exp * 1000 > Date.now() + 60000) return t;
     } catch (e) { /* sérült vagy tiltott tároló: újra belépés */ }
     return null;
+  }
+  // A pult fiók (pult csoport) itt nem használható — a backend is elutasítja, ez csak a jobb hibaüzenet.
+  function isPultToken(t) {
+    var groups = jwtPayload(t)['cognito:groups'] || [];
+    return groups.indexOf('pult') !== -1;
   }
   function saveToken(t) {
     state.token = t;
@@ -145,6 +150,9 @@
       state.challenge = null;
       form.reset();
       $('#new-password-row').hidden = true;
+      if (isPultToken(data.AuthenticationResult.IdToken)) {
+        throw new Error('Ez a pult fiók — azzal a cardprime.io/pult/ oldalon lehet belépni, az adminba nem.');
+      }
       saveToken(data.AuthenticationResult.IdToken);
       showApp();
     }).catch(function (e) {
@@ -169,7 +177,7 @@
   }
 
   // ---------- nézetek ----------
-  var VIEWS = ['overview', 'growth', 'orders', 'collection', 'weekly', 'requests', 'statuses'];
+  var VIEWS = ['overview', 'growth', 'orders', 'pult', 'collection', 'weekly', 'requests', 'statuses'];
   function showLogin() {
     $('#tabs').hidden = true;
     $('#logout').hidden = true;
@@ -190,6 +198,7 @@
     if (view === 'overview') loadStats();
     if (view === 'growth' && !state.growth) loadGrowth();
     if (view === 'orders') loadOrders();
+    if (view === 'pult') loadPult();
     if (view === 'collection') loadCollection();
     if (view === 'weekly' && !state.weekly) loadWeekly();
     if (view === 'requests' && !state.requests) loadRequests();
@@ -746,6 +755,92 @@
     }).catch(function (e) {
       $('#orders-table').innerHTML = '<tbody><tr><td class="error">' + esc(e.message) + '</td></tr></tbody>';
     });
+  }
+
+  // ---------- pultos eladások ----------
+  // posSales: minden pultos (channel 'pos') eladás, legújabb elöl. Napra a helyi idő szerint bontunk.
+  function dayKey(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function timeText(iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? esc(iso) : d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
+  }
+  function loadPult() {
+    var btn = $('#pult-refresh');
+    busy(btn, true);
+    $('#pult-kpis').innerHTML = '<p class="muted">Betöltés…</p>';
+    api('posSales').then(function (data) {
+      state.pult = data.sales || [];
+      var days = [];
+      state.pult.forEach(function (s) { var k = dayKey(s.createdAt); if (k && days.indexOf(k) === -1) days.push(k); });
+      var sel = $('#pult-day');
+      var keep = sel.value;
+      sel.innerHTML = days.length
+        ? days.map(function (d) { return '<option value="' + d + '">' + d + '</option>'; }).join('') +
+          '<option value="all">Minden nap</option>'
+        : '<option value="">—</option>';
+      if (keep && (keep === 'all' || days.indexOf(keep) !== -1)) sel.value = keep;
+      renderPult();
+    }).catch(function (e) {
+      $('#pult-kpis').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
+    }).then(function () { busy(btn, false); });
+  }
+  function renderPult() {
+    var day = $('#pult-day').value;
+    var sales = (state.pult || []).filter(function (s) { return day === 'all' || dayKey(s.createdAt) === day; });
+    var paid = sales.filter(function (s) { return s.status === 'paid'; });
+    var sum = function (list) { return list.reduce(function (a, s) { return a + Number(s.totalCents || 0); }, 0); };
+    var cash = paid.filter(function (s) { return s.paymentMethod === 'cash'; });
+    var card = paid.filter(function (s) { return s.paymentMethod === 'card'; });
+    var noInvoice = paid.filter(function (s) { return s.invoiceStatus !== 'issued'; });
+    $('#pult-kpis').innerHTML = [
+      ['Készpénz', formatHuf(sum(cash)), cash.length + ' eladás · ennyi legyen a kasszában', ''],
+      ['Bankkártya', formatHuf(sum(card)), card.length + ' eladás · vesd össze a terminállal', ''],
+      ['Összesen', formatHuf(sum(paid)), paid.length + ' fizetett eladás', ' kpi--accent'],
+      ['Számla nélkül', String(noInvoice.length), noInvoice.length ? 'kézzel pótolni / újrapróbálni' : 'minden rendben', '']
+    ].map(function (k) {
+      return '<div class="kpi' + k[3] + '"><div class="kpi__label">' + esc(k[0]) + '</div>' +
+        '<div class="kpi__value">' + esc(k[1]) + '</div><div class="kpi__hint">' + esc(k[2]) + '</div></div>';
+    }).join('');
+
+    // eladónként (csak fizetett)
+    var bySeller = {};
+    paid.forEach(function (s) {
+      var name = s.soldBy || '—';
+      var b = bySeller[name] || (bySeller[name] = { n: 0, cash: 0, card: 0 });
+      b.n += 1;
+      b[s.paymentMethod === 'cash' ? 'cash' : 'card'] += Number(s.totalCents || 0);
+    });
+    var names = Object.keys(bySeller).sort();
+    $('#pult-sellers').innerHTML = names.length
+      ? '<thead><tr><th>Eladó</th><th class="num">Eladás</th><th class="num">Készpénz</th><th class="num">Bankkártya</th><th class="num">Összesen</th></tr></thead><tbody>' +
+        names.map(function (n) {
+          var b = bySeller[n];
+          return '<tr><td>' + esc(n) + '</td><td class="num">' + b.n + '</td><td class="num">' + formatHuf(b.cash) +
+            '</td><td class="num">' + formatHuf(b.card) + '</td><td class="num"><b>' + formatHuf(b.cash + b.card) + '</b></td></tr>';
+        }).join('') + '</tbody>'
+      : '<tbody><tr><td class="muted">Nincs fizetett pultos eladás.</td></tr></tbody>';
+
+    var showDate = day === 'all';
+    $('#pult-table').innerHTML = sales.length
+      ? '<thead><tr><th>Idő</th><th>Eladó</th><th>Vevő</th><th>Tételek</th><th class="num">Összeg</th><th>Fizetés</th><th>Állapot</th><th>Számla</th></tr></thead><tbody>' +
+        sales.map(function (s) {
+          var items = (s.items || []).map(function (i) { return i.quantity + ' × ' + (i.packName || i.packId); }).join(', ');
+          return '<tr tabindex="0" data-id="' + esc(s.orderId) + '">' +
+            '<td>' + (showDate ? formatDate(s.createdAt) : timeText(s.createdAt)) + '<br><span class="muted">' + esc(s.orderNumber || '') + '</span></td>' +
+            '<td>' + esc(s.soldBy || '—') + '</td>' +
+            '<td>' + esc(s.customerName || '') + '<br><span class="muted">' + esc(s.customerEmail || '') + '</span></td>' +
+            '<td>' + esc(items) + '</td>' +
+            '<td class="num">' + formatHuf(s.totalCents) + '</td>' +
+            '<td>' + (s.paymentMethod === 'cash' ? 'Készpénz' : 'Bankkártya') + '</td>' +
+            '<td>' + badge(s.status) + '</td>' +
+            '<td>' + badge(s.invoiceStatus) + (s.invoiceNumber ? '<br><span class="muted">' + esc(s.invoiceNumber) + '</span>' : '') +
+            (s.stornoInvoiceStatus ? '<br><span class="muted">sztornó: ' + esc(s.stornoInvoiceStatus) + '</span>' : '') + '</td></tr>';
+        }).join('') + '</tbody>'
+      : '<tbody><tr><td class="muted">Ezen a napon nincs pultos eladás.</td></tr></tbody>';
   }
 
   // ---------- V2 gyűjtemény ----------
@@ -1333,6 +1428,16 @@
   $('#growth-refresh').addEventListener('click', loadGrowth);
   $('#growth-range').addEventListener('change', renderGrowthTable);
   $('#requests-refresh').addEventListener('click', loadRequests);
+  $('#pult-refresh').addEventListener('click', loadPult);
+  $('#pult-day').addEventListener('change', renderPult);
+  $('#pult-table').addEventListener('click', function (ev) {
+    var tr = ev.target.closest('tr[data-id]');
+    if (tr) openOrder(tr.dataset.id);
+  });
+  $('#pult-table').addEventListener('keydown', function (ev) {
+    var tr = ev.target.closest('tr[data-id]');
+    if (tr && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); openOrder(tr.dataset.id); }
+  });
   $('#weekly-refresh').addEventListener('click', loadWeekly);  $('#weekly-export').addEventListener('click', exportWeeklyCsv);
   $('#weekly-week').addEventListener('change', renderWeeklyQuests);
   $('#collection-refresh').addEventListener('click', loadCollection);

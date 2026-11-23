@@ -22,6 +22,7 @@
     <button type="button" class="tab" data-view="overview" aria-selected="true">Áttekintés</button>
     <button type="button" class="tab" data-view="growth" aria-selected="false">Növekedés</button>
     <button type="button" class="tab" data-view="orders" aria-selected="false">Rendelések</button>
+    <button type="button" class="tab" data-view="pult" aria-selected="false">Pult</button>
     <button type="button" class="tab" data-view="collection" aria-selected="false">Gyűjtemény</button>
     <button type="button" class="tab" data-view="weekly" aria-selected="false">Heti questek</button>
     <button type="button" class="tab" data-view="requests" aria-selected="false">Kérelmek</button>
@@ -196,6 +197,25 @@
     <div id="weekly-quests"></div>
     <p class="muted">A számok a névtelen összesítőből jönnek, ezért az azóta törölt fiókok válaszait is tartalmazzák. A napi bontás, a teljesítés, a „miért” a választott oldal szerint, a Top 3 helyezései, a szöveges válaszok és a CSV a még meglévő válaszokból készül, így ezek kisebbek lehetnek. A CSV-ben a válaszadó csak egy szezononkénti álnév (R-…): össze lehet kötni egy ember válaszait, de nem derül ki, ki az.</p>
     <p class="muted" id="weekly-meta"></p>
+  </section>
+
+  <!-- pultos (rendezvényes) eladások (2026-11-23): a cardprime.io/pult/ oldalon, a külön
+       pult fiókkal rögzített eladások napra bontva, eladóval. Csak olvas (posSales); egy
+       sorra kattintva a szokásos rendelésablak nyílik (sztornó, számla). -->
+  <section class="view" id="view-pult" hidden>
+    <div class="head">
+      <h2>Pultos eladások</h2>
+      <div class="filters">
+        <select id="pult-day" aria-label="Nap kiválasztása"></select>
+        <button type="button" class="btn btn--ghost" id="pult-refresh">Frissítés</button>
+      </div>
+    </div>
+    <div class="kpis" id="pult-kpis"></div>
+    <h3>Eladónként</h3>
+    <div class="table-wrap"><table class="table" id="pult-sellers"></table></div>
+    <h3>Eladások</h3>
+    <div class="table-wrap"><table class="table" id="pult-table"></table></div>
+    <p class="muted">Az összegek csak a fizetett (nem sztornózott) eladásokat számolják. „Számla nélkül”: fizetett eladás, amiről nem készült számla — a pulton újrapróbálható, vagy itt a rendelésablakban kezelhető.</p>
   </section>
 
   <!-- kártyakérelmek és cserék (2026-11-12): minden kérelem kimenetele, sikeres és sikertelen
