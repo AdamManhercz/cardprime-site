@@ -4,7 +4,7 @@
 
 /* lépésenkénti varázsló: egyszerre egy lépés látszik, a Vissza/Tovább sáv alul mindig kéznél van */
 #view-sale { max-width: 1040px; margin: 0 auto; }
-.steps ol { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.steps ol { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .steps button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 52px;
                 border-radius: 14px; border: 1px solid var(--line); background: var(--sc-surface); color: var(--sc-ink-soft);
                 font: 500 14px/1.2 var(--sc-font-text); cursor: pointer; touch-action: manipulation; text-align: left; }
@@ -77,12 +77,13 @@
 .pay__opt input:checked + span { background: var(--sc-accent); color: var(--sc-accent-ink); border-color: var(--sc-accent); }
 .pay__opt input:focus-visible + span { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
 
-/* elfogadás: nagy, ujjal könnyen pipálható sorok */
-.consents { display: grid; gap: 12px; }
+/* elfogadás a vevő adatai alatt: két, ujjal könnyen pipálható doboz egymás mellett */
+.consents { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; padding-top: 16px;
+            border-top: 1px solid var(--line); }
 .consents label.check, label.check.paid { align-items: flex-start; font-size: 14px; }
 label.check input[type="checkbox"] { width: 24px; height: 24px; flex: none; margin: 0; }
 .consents a { color: var(--sc-accent); }
-label.check.consent { margin: 0; padding: 18px; font-size: 16px; line-height: 1.45; border: 1px solid var(--line);
+label.check.consent { margin: 0; padding: 14px; font-size: 15px; line-height: 1.4; border: 1px solid var(--line);
                       border-radius: 14px; background: var(--sc-surface-2); cursor: pointer; }
 label.check.consent input[type="checkbox"] { width: 28px; height: 28px; }
 label.check.consent .muted { font-size: 14px; }
@@ -108,7 +109,6 @@ label.check.paid { background: rgba(233,196,106,.1); border: 1px solid rgba(233,
 .result--ok h2 { color: var(--ok); }
 .result--warn h2 { color: var(--gold); }
 
-
 @media (max-width: 900px) {
   .steps__t { display: none; }
   .steps button { justify-content: center; }
@@ -116,7 +116,7 @@ label.check.paid { background: rgba(233,196,106,.1); border: 1px solid rgba(233,
 @media (max-width: 640px) {
   .grid { grid-template-columns: 1fr; }
   .span-2 { grid-column: auto; }
-  .review, .pay-row { grid-template-columns: 1fr; }
+  .review, .pay-row, .consents { grid-template-columns: 1fr; }
   .btn--nav { min-width: 0; padding: 11px 14px; }
   .btn--submit { min-width: 0; flex: 1; }
   .wizard__mid strong { font-size: 16px; }
