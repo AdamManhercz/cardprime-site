@@ -46,12 +46,12 @@
     var forint = Math.round(Number(cents) / 100);
     return String(forint).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ft';
   }
-  function toast(msg) {
+  function toast(msg, ms) {
     var el = $('#toast');
     el.textContent = msg;
     el.classList.add('is-on');
     clearTimeout(toast.t);
-    toast.t = setTimeout(function () { el.classList.remove('is-on'); }, 3500);
+    toast.t = setTimeout(function () { el.classList.remove('is-on'); }, ms || 3500);
   }
   function busy(btn, on) {
     btn.disabled = on;
@@ -232,9 +232,9 @@
   }
 
   // ---------- lépések ----------
-  // 1 termékek → 2 vevő → 3 ÁSZF + adatkezelés → 4 összesítő → 5 fizetés + számla.
+  // 1 termékek → 2 vevő adatai + ÁSZF/adatkezelés elfogadása → 3 összesítő → 4 fizetés + számla.
   // Minden lépés egy képernyő; a Vissza/Tovább sáv mindig látszik, nem kell görgetni.
-  var LAST_STEP = 5;
+  var LAST_STEP = 4;
   function stepSection(n) { return document.querySelector('.step[data-step="' + n + '"]'); }
   function goto(n) {
     state.step = n;
@@ -282,13 +282,19 @@
   function firstInvalidField(n) {
     var form = $('#sale-form');
     var fields = stepSection(n).querySelectorAll('input[required], select[required]');
-    for (var i = 0; i < fields.length; i++) {
-      var f = fields[i];
-      if (f.type === 'checkbox' ? !f.checked : !f.value.trim()) return f;
+    // ugyanabban a sorrendben, mint a stepProblem üzenetei: üres mező → hibás e-mail/irsz → pipák
+    if (n === LAST_STEP && !paymentMethod()) return document.querySelector('input[name="paymentMethod"]');
+    var i, f;
+    for (i = 0; i < fields.length; i++) {
+      f = fields[i];
+      if (f.type !== 'checkbox' && !f.value.trim()) return f;
     }
     if (n === 2 && !form.email.checkValidity()) return form.email;
     if (n === 2 && form.country.value === 'HU' && !/^\d{4}$/.test(form.postalCode.value.trim())) return form.postalCode;
-    if (n === 5 && !paymentMethod()) return document.querySelector('input[name="paymentMethod"]');
+    for (i = 0; i < fields.length; i++) {
+      f = fields[i];
+      if (f.type === 'checkbox' && !f.checked) return f;
+    }
     return null;
   }
 
@@ -383,13 +389,10 @@
       if (!form.houseNumber.value.trim()) return 'Írd be a házszámot.';
       if (!form.email.checkValidity()) return 'Az e-mail cím hibás.';
       if (form.country.value === 'HU' && !/^\d{4}$/.test(form.postalCode.value.trim())) return 'A magyar irányítószám 4 számjegy.';
+      if (!form.terms.checked || !form.privacy.checked) return 'A vevőnek el kell fogadnia az ÁSZF-et és az adatkezelési tájékoztatót.';
       return '';
     }
-    if (n === 3) {
-      return form.terms.checked && form.privacy.checked
-        ? '' : 'A vevőnek el kell fogadnia az ÁSZF-et és az adatkezelési tájékoztatót.';
-    }
-    if (n === 5) {
+    if (n === LAST_STEP) {
       if (!paymentMethod()) return 'Válaszd ki a fizetési módot.';
       if (paymentMethod() === 'cash' && total % CASH_STEP_CENTS) return 'Készpénznél a végösszegnek 5 Ft-ra kell végződnie.';
       if (!$('#seller').value.trim()) return 'Írd be az eladó nevét.';
@@ -501,8 +504,16 @@
   }
 
   function showResult(order, duplicate) {
-    state.lastOrder = order;
     var ok = order.invoiceStatus === 'issued';
+    if (ok) {
+      // sikeres számla: azonnal vissza az elejére, a megerősítés egy rövid értesítés
+      newSale();
+      toast((duplicate ? 'Ez az eladás már rögzült, nem lett kettő. ' : '') +
+            'Számla elküldve: ' + order.customerEmail + (order.invoiceNumber ? ' (' + order.invoiceNumber + ')' : ''), 6000);
+      return;
+    }
+    // a számla nem készült el: az eredmény marad, mert az eladónak teendője van vele
+    state.lastOrder = order;
     var box = $('#result');
     box.className = 'card result ' + (ok ? 'result--ok' : 'result--warn');
     $('#result-title').textContent = ok ? 'Kész — a számla elment' : 'Az eladás rögzítve, a számla NEM készült el';
@@ -684,7 +695,9 @@
     $('#logout').addEventListener('click', logout);
     $('#products').addEventListener('click', function (ev) { onStep(ev); resetPaid(); updateSummary(); });
     var form = $('#sale-form');
+    // a számla gombja type="button": nincs valódi form-beküldés, így a böngésző nem menti el a vevő adatait
     form.addEventListener('submit', onSubmit);
+    $('#submit').addEventListener('click', onSubmit);
     form.addEventListener('input', function () { $('#sale-error').textContent = ''; updateSummary(); });
     form.addEventListener('change', function (ev) {
       if (ev.target.name === 'paymentMethod') resetPaid();
