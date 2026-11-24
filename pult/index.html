@@ -40,21 +40,30 @@
     </form>
   </section>
 
-  <!-- eladás -->
+  <!-- eladás: lépésenként (termék → vevő → elfogadás → összesítő → fizetés), görgetés nélkül -->
   <section class="view" id="view-sale" hidden>
-    <form id="sale-form" class="pos" novalidate>
-      <div class="pos__main">
-        <div class="card">
-          <div class="head"><h2>1. Termékek</h2>
-            <span class="head__right"><span class="muted" id="stock-line"></span>
-              <button type="button" class="btn btn--ghost" id="refresh-products">Frissítés</button></span></div>
-          <div class="products" id="products"><p class="muted">Betöltés…</p></div>
-        </div>
+    <nav class="steps" id="steps" aria-label="Eladás lépései">
+      <ol>
+        <li><button type="button" data-goto="1" aria-label="1. lépés: Termékek"><span class="steps__n">1</span><span class="steps__t">Termékek</span></button></li>
+        <li><button type="button" data-goto="2" aria-label="2. lépés: Vevő adatai"><span class="steps__n">2</span><span class="steps__t">Vevő</span></button></li>
+        <li><button type="button" data-goto="3" aria-label="3. lépés: Feltételek elfogadása"><span class="steps__n">3</span><span class="steps__t">Elfogadás</span></button></li>
+        <li><button type="button" data-goto="4" aria-label="4. lépés: Összesítő"><span class="steps__n">4</span><span class="steps__t">Összesítő</span></button></li>
+        <li><button type="button" data-goto="5" aria-label="5. lépés: Fizetés"><span class="steps__n">5</span><span class="steps__t">Fizetés</span></button></li>
+      </ol>
+    </nav>
 
-        <div class="card">
-          <h2>2. Vevő adatai</h2>
-          <p class="muted hint">A számlához kötelező. / Required for the invoice.</p>
-          <div class="grid">
+    <form id="sale-form" class="wizard" novalidate>
+      <section class="card step" data-step="1" aria-labelledby="step1-title">
+        <div class="head"><h2 id="step1-title" tabindex="-1">Termékek és mennyiség</h2>
+          <span class="head__right"><span class="muted" id="stock-line"></span>
+            <button type="button" class="btn btn--ghost" id="refresh-products">Frissítés</button></span></div>
+        <div class="products" id="products"><p class="muted">Betöltés…</p></div>
+      </section>
+
+      <section class="card step" data-step="2" aria-labelledby="step2-title" hidden>
+        <h2 id="step2-title" tabindex="-1">Vevő adatai</h2>
+        <p class="muted hint">A számlához kötelező. / Required for the invoice.</p>
+        <div class="grid">
             <label class="span-2">Név / Name<input name="name" autocomplete="off" maxlength="200" required></label>
             <label class="span-2">E-mail (ide megy a számla) / E-mail for the invoice
               <input name="email" type="email" inputmode="email" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="200" required></label>
@@ -70,37 +79,66 @@
               <ul class="combo__list" id="street-list" role="listbox" aria-label="Közterület javaslatok" hidden></ul>
               <p class="muted addr-hint" id="street-hint"></p>
             </div>
-            <label>Házszám (emelet, ajtó) / House number<input name="houseNumber" id="house-number" autocomplete="off" maxlength="60" required></label>
+          <label>Házszám (emelet, ajtó) / House number<input name="houseNumber" id="house-number" autocomplete="off" maxlength="60" required></label>
+        </div>
+      </section>
+
+      <section class="card step" data-step="3" aria-labelledby="step3-title" hidden>
+        <h2 id="step3-title" tabindex="-1">Feltételek elfogadása / Terms</h2>
+        <p class="muted hint">Add át a tabletet a vevőnek. / Please read and accept.</p>
+        <div class="consents">
+          <label class="check consent"><input type="checkbox" name="terms" required>
+            <span>Elfogadom az <a href="/terms/" target="_blank" rel="noopener">Általános Szerződési Feltételeket (ÁSZF)</a>.<br>
+              <span class="muted">I accept the Terms and Conditions.</span></span></label>
+          <label class="check consent"><input type="checkbox" name="privacy" required>
+            <span>Elolvastam az <a href="/privacy/" target="_blank" rel="noopener">Adatkezelési tájékoztatót</a>.<br>
+              <span class="muted">I have read the Privacy Policy.</span></span></label>
+        </div>
+      </section>
+
+      <section class="card step" data-step="4" aria-labelledby="step4-title" hidden>
+        <h2 id="step4-title" tabindex="-1">Összesítő</h2>
+        <div class="review">
+          <div>
+            <h3>Tételek</h3>
+            <ul class="lines" id="lines"><li class="muted">Még nincs termék.</li></ul>
+            <div class="total"><span>Összesen</span><strong id="total">0 Ft</strong></div>
+          </div>
+          <div>
+            <h3>Vevő</h3>
+            <dl class="kv" id="review-customer"></dl>
           </div>
         </div>
-      </div>
+      </section>
 
-      <aside class="pos__side">
-        <div class="card summary">
-          <h2>3. Fizetés</h2>
+      <section class="card step" data-step="5" aria-labelledby="step5-title" hidden>
+        <h2 id="step5-title" tabindex="-1">Fizetés</h2>
+        <div class="due">
+          <span class="muted">Fizetendő</span>
+          <strong id="total-due">0 Ft</strong>
+          <span class="muted due__note" id="due-note"></span>
+        </div>
+        <fieldset class="pay" aria-label="Fizetési mód">
+          <label class="pay__opt"><input type="radio" name="paymentMethod" value="cash"><span>Készpénz</span></label>
+          <label class="pay__opt"><input type="radio" name="paymentMethod" value="card"><span>Bankkártya</span></label>
+        </fieldset>
+        <div class="pay-row">
           <label>Eladó neve<input name="seller" id="seller" autocomplete="off" maxlength="60" required></label>
-          <ul class="lines" id="lines"><li class="muted">Még nincs termék.</li></ul>
-          <div class="total"><span>Összesen</span><strong id="total">0 Ft</strong></div>
-
-          <fieldset class="pay" aria-label="Fizetési mód">
-            <label class="pay__opt"><input type="radio" name="paymentMethod" value="cash"><span>Készpénz</span></label>
-            <label class="pay__opt"><input type="radio" name="paymentMethod" value="card"><span>Bankkártya</span></label>
-          </fieldset>
-
-          <div class="consents">
-            <label class="check"><input type="checkbox" name="terms" required>
-              <span>Elfogadom az <a href="/terms/" target="_blank" rel="noopener">ÁSZF-et</a>. / I accept the Terms.</span></label>
-            <label class="check"><input type="checkbox" name="privacy" required>
-              <span>Elolvastam az <a href="/privacy/" target="_blank" rel="noopener">Adatkezelési tájékoztatót</a>. / I have read the Privacy Policy.</span></label>
-          </div>
-
           <label class="check paid"><input type="checkbox" name="paid" required>
             <span id="paid-text">A fizetés megtörtént.</span></label>
+        </div>
+      </section>
 
-          <button class="btn btn--big" type="submit" id="submit" disabled>Számla kiállítása és küldése</button>
+      <!-- lépésváltó sáv: mindig látszik, nem kell legörgetni a gombért -->
+      <div class="wizard__nav">
+        <button type="button" class="btn btn--ghost btn--nav" id="back">Vissza</button>
+        <div class="wizard__mid">
+          <span class="muted">Összesen</span> <strong id="nav-total">0 Ft</strong>
           <p class="error" id="sale-error" role="alert"></p>
         </div>
-      </aside>
+        <button type="button" class="btn btn--nav" id="next">Tovább</button>
+        <button type="submit" class="btn btn--nav btn--submit" id="submit" hidden>Számla kiállítása és küldése</button>
+      </div>
     </form>
 
     <!-- eredmény -->
