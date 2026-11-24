@@ -29,6 +29,7 @@
   var $ = function (sel) { return document.querySelector(sel); };
   var state = {
     token: null, challenge: null,
+    step: 1,           // a varázsló aktuális lépése (1–5)
     products: [], poolStock: 0, cart: {},
     requestId: null,   // egy eladás = egy azonosító; újrapróbáláskor UGYANAZ megy újra
     sending: false, lastOrder: null
@@ -227,7 +228,68 @@
     $('#seller').value = loadSeller();
     if (!addr.data) loadAddressData();
     loadProducts();
+    goto(state.step);
+  }
+
+  // ---------- lépések ----------
+  // 1 termékek → 2 vevő → 3 ÁSZF + adatkezelés → 4 összesítő → 5 fizetés + számla.
+  // Minden lépés egy képernyő; a Vissza/Tovább sáv mindig látszik, nem kell görgetni.
+  var LAST_STEP = 5;
+  function stepSection(n) { return document.querySelector('.step[data-step="' + n + '"]'); }
+  function goto(n) {
+    state.step = n;
+    for (var i = 1; i <= LAST_STEP; i++) stepSection(i).hidden = i !== n;
+    $('#sale-error').textContent = '';
+    $('#back').hidden = n === 1;
+    $('#next').hidden = n === LAST_STEP;
+    $('#submit').hidden = n !== LAST_STEP;
+    $('#next').textContent = n === LAST_STEP - 1 ? 'Tovább a fizetéshez' : 'Tovább';
+    refreshStepNav();
     updateSummary();
+    window.scrollTo(0, 0);
+    // a vevő adatainál egyből gépelhet; máshol a címre ugrik a fókusz (képernyőolvasónak is)
+    var target = n === 2 ? firstInvalidField(2) || $('#sale-form').name : $('#step' + n + '-title');
+    if (target) target.focus({ preventScroll: true });
+  }
+  function refreshStepNav() {
+    var buttons = document.querySelectorAll('#steps [data-goto]');
+    Array.prototype.forEach.call(buttons, function (b) {
+      var n = Number(b.dataset.goto);
+      b.classList.toggle('is-done', n < state.step);
+      if (n === state.step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+  }
+  // Előre csak akkor lehet ugrani, ha a közbülső lépések rendben vannak.
+  function jumpTo(n) {
+    if (n <= state.step) { goto(n); return; }
+    for (var j = state.step; j < n; j++) {
+      var problem = stepProblem(j);
+      if (problem) { goto(j); showProblem(j, problem); return; }
+    }
+    goto(n);
+  }
+  function next() {
+    var problem = stepProblem(state.step);
+    if (problem) { showProblem(state.step, problem); return; }
+    if (state.step < LAST_STEP) goto(state.step + 1);
+  }
+  function back() { if (state.step > 1) goto(state.step - 1); }
+  function showProblem(n, problem) {
+    $('#sale-error').textContent = problem;
+    var field = firstInvalidField(n);
+    if (field) field.focus();
+  }
+  function firstInvalidField(n) {
+    var form = $('#sale-form');
+    var fields = stepSection(n).querySelectorAll('input[required], select[required]');
+    for (var i = 0; i < fields.length; i++) {
+      var f = fields[i];
+      if (f.type === 'checkbox' ? !f.checked : !f.value.trim()) return f;
+    }
+    if (n === 2 && !form.email.checkValidity()) return form.email;
+    if (n === 2 && form.country.value === 'HU' && !/^\d{4}$/.test(form.postalCode.value.trim())) return form.postalCode;
+    if (n === 5 && !paymentMethod()) return document.querySelector('input[name="paymentMethod"]');
+    return null;
   }
 
   // ---------- termékek ----------
@@ -310,21 +372,38 @@
     var el = document.querySelector('input[name="paymentMethod"]:checked');
     return el ? el.value : '';
   }
-  function validationProblem() {
+  // Lépésenkénti ellenőrzés: '' = rendben, különben a hibaüzenet.
+  function stepProblem(n) {
     var form = $('#sale-form');
     var total = cartTotal();
-    if (!$('#seller').value.trim()) return 'Írd be az eladó nevét.';
-    if (!total) return 'Válassz terméket.';
-    if (!form.name.value.trim() || !form.email.value.trim() || !form.postalCode.value.trim() ||
-        !form.city.value.trim() || !form.street.value.trim()) return 'Töltsd ki a vevő adatait.';
-    if (!form.houseNumber.value.trim()) return 'Írd be a házszámot.';
-    if (!form.email.checkValidity()) return 'Az e-mail cím hibás.';
-    if (form.country.value === 'HU' && !/^\d{4}$/.test(form.postalCode.value.trim())) return 'A magyar irányítószám 4 számjegy.';
-    if (!paymentMethod()) return 'Válaszd ki a fizetési módot.';
-    if (paymentMethod() === 'cash' && total % CASH_STEP_CENTS) return 'Készpénznél a végösszegnek 5 Ft-ra kell végződnie.';
-    if (!form.terms.checked || !form.privacy.checked) return 'A vevőnek el kell fogadnia az ÁSZF-et és az adatkezelési tájékoztatót.';
-    if (!form.paid.checked) return 'Pipáld be, hogy a fizetés megtörtént.';
+    if (n === 1) return total ? '' : 'Válassz terméket.';
+    if (n === 2) {
+      if (!form.name.value.trim() || !form.email.value.trim() || !form.postalCode.value.trim() ||
+          !form.city.value.trim() || !form.street.value.trim()) return 'Töltsd ki a vevő adatait.';
+      if (!form.houseNumber.value.trim()) return 'Írd be a házszámot.';
+      if (!form.email.checkValidity()) return 'Az e-mail cím hibás.';
+      if (form.country.value === 'HU' && !/^\d{4}$/.test(form.postalCode.value.trim())) return 'A magyar irányítószám 4 számjegy.';
+      return '';
+    }
+    if (n === 3) {
+      return form.terms.checked && form.privacy.checked
+        ? '' : 'A vevőnek el kell fogadnia az ÁSZF-et és az adatkezelési tájékoztatót.';
+    }
+    if (n === 5) {
+      if (!paymentMethod()) return 'Válaszd ki a fizetési módot.';
+      if (paymentMethod() === 'cash' && total % CASH_STEP_CENTS) return 'Készpénznél a végösszegnek 5 Ft-ra kell végződnie.';
+      if (!$('#seller').value.trim()) return 'Írd be az eladó nevét.';
+      if (!form.paid.checked) return 'Pipáld be, hogy a fizetés megtörtént.';
+    }
     return '';
+  }
+  // Az első hibás lépés (a beküldés előtt mindet újraellenőrizzük).
+  function firstProblem() {
+    for (var n = 1; n <= LAST_STEP; n++) {
+      var problem = stepProblem(n);
+      if (problem) return { step: n, text: problem };
+    }
+    return null;
   }
   function updateSummary() {
     var lines = state.products.filter(function (p) { return state.cart[p.packId]; }).map(function (p) {
@@ -334,21 +413,44 @@
     $('#lines').innerHTML = lines.length ? lines.join('') : '<li class="muted">Még nincs termék.</li>';
     var total = cartTotal();
     $('#total').textContent = formatHuf(total);
+    $('#nav-total').textContent = formatHuf(total);
+    $('#total-due').textContent = formatHuf(total);
     var method = paymentMethod();
+    var note = '';
+    if (method === 'cash') note = total % CASH_STEP_CENTS ? 'Ez az összeg készpénzben nem fizethető (5 Ft-ra kell végződnie).' : 'Vedd át készpénzben.';
+    else if (method === 'card') note = 'Üsd be a kártyaterminálba.';
+    else note = 'Mondd be a vevőnek, majd válaszd ki a fizetési módot.';
+    $('#due-note').textContent = note;
     var how = method === 'cash' ? 'készpénzben' : method === 'card' ? 'kártyával, a terminálon' : '';
     $('#paid-text').textContent = 'A fizetés megtörtént' + (how ? ' ' + how : '') + ': ' + formatHuf(total) + '.';
-    var problem = state.sending ? 'busy' : validationProblem();
-    $('#submit').disabled = !!problem;
-    $('#submit').title = problem === 'busy' ? '' : problem;
+    renderReviewCustomer();
+  }
+  function renderReviewCustomer() {
+    var form = $('#sale-form');
+    var country = COUNTRIES.filter(function (c) { return c[0] === form.country.value; })[0];
+    var address = [form.postalCode.value.trim() + ' ' + form.city.value.trim(),
+                   (form.street.value.trim() + ' ' + form.houseNumber.value.trim()).trim(),
+                   country ? country[1] : form.country.value].filter(function (s) { return s.trim(); }).join(', ');
+    var rows = [['Név', form.name.value.trim()], ['E-mail (számla)', form.email.value.trim()], ['Cím', address],
+                ['ÁSZF / adatkezelés', form.terms.checked && form.privacy.checked ? 'Elfogadva' : 'Nincs elfogadva']];
+    $('#review-customer').innerHTML = rows.map(function (r) {
+      return '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1] || '—') + '</dd>';
+    }).join('');
   }
   // Ha az összeg vagy a mód változik, a „fizetés megtörtént” pipát újra kell tenni.
   function resetPaid() { $('#sale-form').paid.checked = false; }
 
   function onSubmit(ev) {
     ev.preventDefault();
-    var problem = validationProblem();
+    if (state.sending) return;
+    if (state.step < LAST_STEP) { next(); return; }
     var errEl = $('#sale-error');
-    if (problem) { errEl.textContent = problem; return; }
+    var problem = firstProblem();
+    if (problem) {
+      if (problem.step !== state.step) goto(problem.step);
+      showProblem(problem.step, problem.text);
+      return;
+    }
     errEl.textContent = '';
     var form = ev.target;
     var seller = $('#seller').value.trim();
@@ -382,14 +484,20 @@
       // 4xx: a backend biztosan nem írt semmit -> a következő próbálkozás új eladás lehet.
       // Hálózati hiba / 5xx: nem tudjuk, megtörtént-e -> ugyanaz az azonosító megy újra.
       if (e.status >= 400 && e.status < 500) state.requestId = null;
+      if (e.status === 409) {
+        // elfogyott közben: vissza a termékekhez, ott látszik, mennyi adható még
+        loadProducts();
+        goto(1);
+      }
       if (e.status !== 401) errEl.textContent = errorText(e);
-      if (e.status === 409) loadProducts();
     }).then(function () {
       state.sending = false;
       btn.textContent = 'Számla kiállítása és küldése';
       busy(btn, false);
+      $('#back').disabled = false;
       updateSummary();
     });
+    $('#back').disabled = true;  // küldés közben ne lehessen visszalépni és módosítani
   }
 
   function showResult(order, duplicate) {
@@ -418,6 +526,7 @@
     $('#result-note').textContent = note;
     $('#retry-invoice').hidden = ok;
     $('#sale-form').hidden = true;
+    $('#steps').hidden = true;
     box.hidden = false;
     box.focus();
   }
@@ -453,9 +562,9 @@
     $('#sale-error').textContent = '';
     $('#result').hidden = true;
     form.hidden = false;
+    $('#steps').hidden = false;
     refreshSteppers();
-    updateSummary();
-    window.scrollTo(0, 0);
+    goto(1);
   }
 
   // ---------- cím-segítség (csak HU) ----------
@@ -576,10 +685,25 @@
     $('#products').addEventListener('click', function (ev) { onStep(ev); resetPaid(); updateSummary(); });
     var form = $('#sale-form');
     form.addEventListener('submit', onSubmit);
-    form.addEventListener('input', updateSummary);
+    form.addEventListener('input', function () { $('#sale-error').textContent = ''; updateSummary(); });
     form.addEventListener('change', function (ev) {
       if (ev.target.name === 'paymentMethod') resetPaid();
+      $('#sale-error').textContent = '';
       updateSummary();
+    });
+    // Enter egy mezőben = Tovább; a számlát CSAK a gomb állítja ki (véletlen Enter ne küldjön eladást).
+    form.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'Enter' || ev.defaultPrevented) return;
+      var t = ev.target;
+      if (t.tagName !== 'INPUT' || t.type === 'checkbox' || t.type === 'radio') return;
+      ev.preventDefault();
+      if (state.step < LAST_STEP) next();
+    });
+    $('#next').addEventListener('click', next);
+    $('#back').addEventListener('click', back);
+    $('#steps').addEventListener('click', function (ev) {
+      var b = ev.target.closest('button[data-goto]');
+      if (b && !state.sending) jumpTo(Number(b.dataset.goto));
     });
     $('#seller').addEventListener('input', function (ev) { saveSeller(ev.target.value.trim()); });
     $('#postal-code').addEventListener('input', onPostalInput);

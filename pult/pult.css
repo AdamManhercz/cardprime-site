@@ -2,9 +2,34 @@
 .head__right { display: flex; align-items: center; gap: 12px; }
 .product__unit { font-size: 13px; color: var(--sc-ink-soft); margin-top: 2px; }
 
-.pos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 20px; align-items: start; }
-.pos__main { display: grid; gap: 20px; }
-.pos__side { position: sticky; top: 84px; }
+/* lépésenkénti varázsló: egyszerre egy lépés látszik, a Vissza/Tovább sáv alul mindig kéznél van */
+#view-sale { max-width: 1040px; margin: 0 auto; }
+.steps ol { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.steps button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 52px;
+                border-radius: 14px; border: 1px solid var(--line); background: var(--sc-surface); color: var(--sc-ink-soft);
+                font: 500 14px/1.2 var(--sc-font-text); cursor: pointer; touch-action: manipulation; text-align: left; }
+.steps button:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
+.steps__n { display: inline-grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 999px;
+            border: 1px solid var(--line); font: 600 14px/1 var(--sc-font-display); }
+.steps button.is-done { color: var(--sc-ink); }
+.steps button.is-done .steps__n { background: var(--sc-surface-2); border-color: var(--sc-accent); color: var(--sc-accent); }
+.steps button[aria-current="step"] { color: var(--sc-ink); border-color: var(--sc-accent); }
+.steps button[aria-current="step"] .steps__n { background: var(--sc-accent); border-color: var(--sc-accent); color: var(--sc-accent-ink); }
+
+.wizard { display: grid; gap: 16px; }
+.step h2 { margin-top: 0; }
+.step h2:focus { outline: none; }
+.step h3 { margin: 0 0 12px; font-size: 15px; color: var(--sc-ink-soft); font-weight: 500; }
+.wizard__nav { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 12px;
+               padding: 12px; border: 1px solid var(--line); border-radius: var(--radius);
+               background: rgba(14,14,18,.94); backdrop-filter: blur(12px); }
+.wizard__mid { flex: 1; min-width: 0; text-align: center; }
+.wizard__mid strong { font: 600 20px/1 var(--sc-font-display); font-variant-numeric: tabular-nums; }
+.wizard__mid .error { margin: 4px 0 0; min-height: 0; font-size: 14px; }
+.wizard__mid .error:empty { display: none; }
+.btn--nav { min-height: 60px; min-width: 150px; font-size: 17px; border-radius: 16px; touch-action: manipulation; }
+.btn--submit { min-width: 240px; }
+
 .hint { margin: -6px 0 14px; font-size: 13px; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
 .span-2 { grid-column: span 2; }
@@ -52,12 +77,29 @@
 .pay__opt input:checked + span { background: var(--sc-accent); color: var(--sc-accent-ink); border-color: var(--sc-accent); }
 .pay__opt input:focus-visible + span { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
 
-.consents { display: grid; gap: 4px; margin-bottom: 6px; }
+/* elfogadás: nagy, ujjal könnyen pipálható sorok */
+.consents { display: grid; gap: 12px; }
 .consents label.check, label.check.paid { align-items: flex-start; font-size: 14px; }
 label.check input[type="checkbox"] { width: 24px; height: 24px; flex: none; margin: 0; }
 .consents a { color: var(--sc-accent); }
+label.check.consent { margin: 0; padding: 18px; font-size: 16px; line-height: 1.45; border: 1px solid var(--line);
+                      border-radius: 14px; background: var(--sc-surface-2); cursor: pointer; }
+label.check.consent input[type="checkbox"] { width: 28px; height: 28px; }
+label.check.consent .muted { font-size: 14px; }
 label.check.paid { background: rgba(233,196,106,.1); border: 1px solid rgba(233,196,106,.35); border-radius: 12px;
-                   padding: 12px; font-weight: 600; }
+                   padding: 12px; font-weight: 600; margin: 0; }
+
+/* összesítő */
+.review { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.review .lines { font-size: 15px; }
+.review .kv { grid-template-columns: minmax(100px, 140px) 1fr; font-size: 15px; }
+
+/* fizetés: a fizetendő összeg nagyban, hogy az eladó be tudja mondani */
+.due { display: grid; justify-items: center; gap: 6px; padding: 8px 0 20px; text-align: center; }
+.due strong { font: 600 clamp(44px, 7vw, 64px)/1 var(--sc-font-display); font-variant-numeric: tabular-nums; }
+.due__note { font-size: 14px; }
+.pay-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 14px; align-items: end; }
+.pay-row label:not(.check) { margin: 0; }
 
 .btn--big { width: 100%; min-height: 60px; font-size: 17px; border-radius: 16px; }
 .result .row .btn--big { width: auto; flex: 1 1 220px; }
@@ -68,10 +110,14 @@ label.check.paid { background: rgba(233,196,106,.1); border: 1px solid rgba(233,
 
 
 @media (max-width: 900px) {
-  .pos { grid-template-columns: 1fr; }
-  .pos__side { position: static; }
+  .steps__t { display: none; }
+  .steps button { justify-content: center; }
 }
 @media (max-width: 640px) {
   .grid { grid-template-columns: 1fr; }
   .span-2 { grid-column: auto; }
+  .review, .pay-row { grid-template-columns: 1fr; }
+  .btn--nav { min-width: 0; padding: 11px 14px; }
+  .btn--submit { min-width: 0; flex: 1; }
+  .wizard__mid strong { font-size: 16px; }
 }
