@@ -8,7 +8,8 @@
 
     function setOpen(open) {
       toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      var hu = document.documentElement.lang === 'hu';
+      toggle.setAttribute('aria-label', open ? (hu ? 'Menü bezárása' : 'Close menu') : (hu ? 'Menü megnyitása' : 'Open menu'));
       menu.classList.toggle('is-open', open);
       document.body.classList.toggle('menu-open', open);
       if (open) {

@@ -75,6 +75,21 @@ body { background: var(--sc-canvas); color: var(--sc-ink); }
 .menu__list span { color: var(--sc-ink-soft); font-size: var(--sc-t-xs); line-height: 1.5; max-width: 60ch; }
 .menu__foot { max-width: 1200px; width: 100%; margin: var(--sc-8) auto 0; color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
 .menu__foot a { color: var(--sc-ink); }
+
+/* ---------- nyelvkapcsoló (HU | EN), lang.js menti a választást ----------
+   A sávban széles képernyőn látszik; keskenyen ott nem fér el, ezért ott a menüpanelben van. */
+.lang-switch { display: inline-flex; padding: 3px; border-radius: 999px; border: 1px solid var(--line);
+               background: rgba(14,14,18,.72); backdrop-filter: blur(10px); }
+.lang-switch a { min-width: 36px; padding: 10px 9px; border-radius: 999px; text-align: center; text-decoration: none;
+                 font: 600 12px/1 var(--sc-font-text); letter-spacing: .08em; color: var(--sc-ink-soft); transition: color .2s, background .2s; }
+.lang-switch a:hover { color: var(--sc-ink); }
+.lang-switch a[aria-current] { background: rgba(245,245,247,.14); color: var(--sc-ink); }
+.lang-switch a:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 2px; }
+.lang-switch--menu { display: none; }
+@media (max-width: 560px) {
+  .lang-switch--bar { display: none; }
+  .lang-switch--menu { display: inline-flex; justify-self: start; margin-top: var(--sc-7); }
+}
 body.menu-open { overflow: hidden; }
 body.menu-open .dock { opacity: 0; pointer-events: none; }
 

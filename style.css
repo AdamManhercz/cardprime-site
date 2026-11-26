@@ -359,3 +359,33 @@ code {
 .site-nav .cart-count[hidden] {
   display: none;
 }
+
+/* --- Nyelvkapcsoló (HU | EN): a menü mellett, ugyanolyan visszafogottan. lang.js menti a választást. --- */
+.site-nav .lang-switch {
+  display: inline-flex;
+  margin-right: auto;
+}
+
+.site-nav .lang-switch a {
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.site-nav .lang-switch a:hover,
+.site-nav .lang-switch a[aria-current] {
+  color: #A78BFA;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.site-nav .lang-switch a:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.6);
+  outline-offset: 2px;
+}

@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="alternate" hreflang="hu" href="https://cardprime.io/checkout/success/">
+<link rel="alternate" hreflang="en" href="https://cardprime.io/en/checkout/success/">
+<link rel="alternate" hreflang="x-default" href="https://cardprime.io/en/checkout/success/">
+<script src="/lang.js?v=1"></script>
 <!-- Google Tag Manager. A Consent Mode V2 alapállapotát (minden "denied") és a sütiablakot a GTM-konténer állítja be, ide ne kerüljön consent default. -->
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -11,13 +15,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
-<title>Order confirmed — CardPrime</title>
-<link rel="stylesheet" href="../../fonts/fonts.css?v=1">
-<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg?v=2">
-<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png?v=2">
-<link rel="apple-touch-icon" href="../../assets/appicon.png?v=3">
-<link rel="stylesheet" href="../../style.css?v=7">
-<link rel="stylesheet" href="../../shop.css?v=4">
+<title>Rendelés visszaigazolva — CardPrime</title>
+<link rel="stylesheet" href="/fonts/fonts.css?v=1">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
+<link rel="stylesheet" href="/style.css?v=8">
+<link rel="stylesheet" href="/shop.css?v=4">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -25,61 +29,62 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <!-- End Google Tag Manager (noscript) -->
 <div class="wrap">
   <nav class="site-nav">
+    <div class="lang-switch lang-switch--nav" role="group" aria-label="Nyelv"><a href="/checkout/success/" hreflang="hu" lang="hu" data-lang="hu" aria-current="true">HU</a><a href="/en/checkout/success/" hreflang="en" lang="en" data-lang="en">EN</a></div>
     <details>
-      <summary>Menu</summary>
+      <summary>Menü</summary>
       <div class="menu">
-        <a href="../../">Home</a>
+        <a href="../../">Főoldal</a>
         <div class="sep"></div>
-        <a href="../../shop/">Shop</a>
-        <a href="../../points/">Points</a>
+        <a href="../../shop/">Webshop</a>
+        <a href="../../points/">Pontok</a>
         <div class="sep"></div>
-        <a href="../../privacy/">Privacy Policy</a>
-        <a href="../../terms/">Terms of Service</a>
-        <a href="../../refund-policy/">Refund &amp; Shipping</a>
-        <a href="../../support/">Support</a>
+        <a href="../../privacy/">Adatkezelési tájékoztató</a>
+        <a href="../../terms/">Felhasználási feltételek</a>
+        <a href="../../refund-policy/">Visszatérítés és szállítás</a>
+        <a href="../../support/">Ügyfélszolgálat</a>
       </div>
     </details>
-    <a class="cart-link" href="../../checkout/" aria-label="Cart">
+    <a class="cart-link" href="../../checkout/" aria-label="Kosár">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       <span class="cart-count" hidden></span>
     </a>
   </nav>
   <a class="home-link" href="../../">
     <header class="site-header">
-      <img class="mark" src="../../assets/appicon.png?v=3" alt="CardPrime">
-      <img class="wordmark" src="../../assets/wordmark.png?v=2" alt="CardPrime">
+      <img class="mark" src="/assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="/assets/wordmark.png?v=2" alt="CardPrime">
     </header>
   </a>
 
-  <h1 id="heading">Thank you for your order</h1>
-  <p class="subtitle" id="subtitle">Confirming your payment&hellip;</p>
+  <h1 id="heading">Köszönjük a rendelésedet</h1>
+  <p class="subtitle" id="subtitle">A fizetésed visszaigazolása folyamatban&hellip;</p>
 
   <div class="card" id="order-card" hidden>
-    <p style="margin:0 0 6px;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:0.6px;text-transform:uppercase;">Order number</p>
+    <p style="margin:0 0 6px;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:0.6px;text-transform:uppercase;">Rendelésszám</p>
     <p class="order-number" id="order-number" style="margin:0;"></p>
   </div>
 
   <div class="notice info" id="notice" hidden></div>
 
-  <h2>What happens next</h2>
-  <p>You will receive a payment receipt from <strong>Stripe</strong> and a VAT invoice by email. Orders are dispatched within <strong>2 business days</strong>, and standard delivery takes a further <strong>2&ndash;5 business days</strong>.</p>
-  <p>If anything looks wrong, write to <a href="mailto:info@cardprime.io">info@cardprime.io</a> and quote your order number. Your rights on returns and refunds are in our <a href="../../refund-policy/">Refund &amp; Shipping Policy</a>.</p>
+  <h2>Mi történik ezután?</h2>
+  <p>E-mailben kapsz egy fizetési nyugtát a <strong>Stripe</strong>-tól és egy áfás számlát. A rendeléseket <strong>2 munkanapon</strong> belül feladjuk, a normál kézbesítés további <strong>2&ndash;5 munkanap</strong>.</p>
+  <p>Ha valami nem stimmel, írj az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címre, és add meg a rendelésszámodat. A visszaküldéssel és a visszatérítéssel kapcsolatos jogaidat a <a href="../../refund-policy/">Visszatérítési és szállítási szabályzat</a> tartalmazza.</p>
 
   <div class="nav-links">
-    <a href="../../shop/">Shop</a>
-    <a href="../../refund-policy/">Refund &amp; Shipping</a>
-    <a href="../../terms/">Terms of Service</a>
-    <a href="../../privacy/">Privacy Policy</a>
-    <a href="../../support/">Support</a>
-    <a href="#cookie-settings">Cookie settings</a>
+    <a href="../../shop/">Webshop</a>
+    <a href="../../refund-policy/">Visszatérítés és szállítás</a>
+    <a href="../../terms/">Felhasználási feltételek</a>
+    <a href="../../privacy/">Adatkezelési tájékoztató</a>
+    <a href="../../support/">Ügyfélszolgálat</a>
+    <a href="#cookie-settings">Süti-beállítások</a>
   </div>
 
   <footer>
     &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
   </footer>
 </div>
-<script src="../../nav.js?v=2"></script>
-<script src="../../shop.js?v=2"></script>
+<script src="/nav.js?v=3"></script>
+<script src="/shop.js?v=3"></script>
 <script>
 (function () {
   'use strict';
@@ -106,8 +111,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   if (!orderId) {
     // Reachable by opening this page directly. Stripe always returns with the parameter,
     // so the honest thing is to say nothing about an order we cannot name.
-    subtitleEl.textContent = 'We could not tell which order this is.';
-    notice('info', 'If you have just paid, your receipt from Stripe carries the details. Write to info@cardprime.io if anything is missing.');
+    subtitleEl.textContent = 'Nem tudtuk megállapítani, melyik rendelésről van szó.';
+    notice('info', 'Ha most fizettél, a Stripe-tól kapott nyugtán minden adat szerepel. Ha valami hiányzik, írj az info@cardprime.io címre.');
     return;
   }
 
@@ -132,8 +137,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     var status = data && data.status;
 
     if (status === 'paid') {
-      subtitleEl.textContent = 'Your payment went through and your order is on its way to being packed.';
-      notice('ok', 'Payment confirmed. A receipt and a VAT invoice are on their way to your email address.');
+      subtitleEl.textContent = 'A fizetés sikerült, a rendelésedet hamarosan csomagoljuk.';
+      notice('ok', 'Fizetés visszaigazolva. A nyugtát és az áfás számlát e-mailben küldjük.');
       // The cart is cleared here and nowhere else — this is the one point at which the
       // order is known to be paid for. Cancelling must leave the basket intact so the
       // retry has something to go back to.
@@ -142,16 +147,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     }
 
     if (status === 'refunded') {
-      headingEl.textContent = 'This order has been refunded';
-      subtitleEl.textContent = 'The payment for this order was returned to your original payment method.';
-      notice('info', 'Refunds are processed by Stripe and usually appear within a few working days.');
+      headingEl.textContent = 'Ezt a rendelést visszatérítettük';
+      subtitleEl.textContent = 'A rendelés árát visszautaltuk az eredeti fizetési módodra.';
+      notice('info', 'A visszatérítést a Stripe intézi, és általában néhány munkanapon belül megjelenik.');
       return true;
     }
 
     if (status === 'expired') {
-      headingEl.textContent = 'This order was not completed';
-      subtitleEl.textContent = 'The payment was never finished, so the order was released and nothing was charged.';
-      notice('info', 'Nothing was taken from your card. You can put the packs back in your cart and try again.');
+      headingEl.textContent = 'Ez a rendelés nem teljesült';
+      subtitleEl.textContent = 'A fizetés nem fejeződött be, ezért a rendelést feloldottuk, és semmit nem terheltünk.';
+      notice('info', 'A kártyádról nem vontunk le semmit. A csomagokat újra a kosárba teheted, és megpróbálhatod ismét.');
       return true;
     }
 
@@ -166,12 +171,12 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         window.setTimeout(poll, INTERVAL_MS);
         return;
       }
-      subtitleEl.textContent = 'Your payment went through. The confirmation is taking a moment to reach us.';
-      notice('info', 'This is normal and needs nothing from you — your receipt from Stripe is the proof of payment, and the VAT invoice follows by email. If it has not arrived within an hour, write to info@cardprime.io.');
+      subtitleEl.textContent = 'A fizetés sikerült. A visszaigazolás még úton van hozzánk.';
+      notice('info', 'Ez normális, nincs teendőd – a Stripe-tól kapott nyugta igazolja a fizetést, az áfás számlát pedig e-mailben küldjük. Ha egy órán belül nem érkezik meg, írj az info@cardprime.io címre.');
     }).catch(function (err) {
       if (err && err.status === 404) {
-        subtitleEl.textContent = 'We could not find that order.';
-        notice('info', 'Check the link from your receipt, or write to info@cardprime.io and we will look it up.');
+        subtitleEl.textContent = 'Nem találjuk ezt a rendelést.';
+        notice('info', 'Ellenőrizd a nyugtádon lévő linket, vagy írj az info@cardprime.io címre, és megkeressük.');
         return;
       }
       attempt += 1;
@@ -179,8 +184,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         window.setTimeout(poll, INTERVAL_MS);
         return;
       }
-      subtitleEl.textContent = 'We could not reach our order system just now.';
-      notice('info', 'Your payment is unaffected — Stripe has your receipt. Write to info@cardprime.io if you would like us to check the order.');
+      subtitleEl.textContent = 'Most nem értük el a rendelési rendszerünket.';
+      notice('info', 'A fizetésedet ez nem érinti – a nyugta a Stripe-nál megvan. Ha szeretnéd, hogy ellenőrizzük a rendelést, írj az info@cardprime.io címre.');
     });
   }
 
