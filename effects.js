@@ -21,7 +21,6 @@
   var tasks = [];
   function loop() { for (var i = 0; i < tasks.length; i++) tasks[i](); requestAnimationFrame(loop); }
 
-  var quiet = document.querySelector('.quiet');
   var peakAct = document.getElementById('parallels');
   var peak = document.getElementById('peak');
   var series = document.getElementById('series');
@@ -42,7 +41,6 @@
   function spinOn() { return spin && phone.matches; }
   var ALL = [
     { label: 'Intro',        at: function () { return 0; },                                  a: [6,182,212],   b: [124,58,237] },
-    { label: 'Prelude',      at: function () { return absTop(quiet) + innerHeight * 0.2; },  a: [124,58,237],  b: [6,182,212] },
     { label: 'Base',         at: function () { return inAct(peakAct, PK[0]); },              a: [6,182,212],   b: [124,58,237] },
     { label: 'Silver',       at: function () { return inAct(peakAct, PK[1]); },              a: [196,204,218], b: [84,96,120] },
     { label: 'Numbered',     at: function () { return inAct(peakAct, PK[2]); },              a: [233,170,60],  b: [217,119,6] },
@@ -277,7 +275,6 @@
   // Ugyanaz a mozgás, mint a főoldal hero-emelése: -9vh, 0.95-ös méret, 0.4-es fényerő a takarás végére.
   if (has('fx-curtain') && !reduce) {
     var OUT = [
-      [quiet.querySelector('.sc-wrap'), quiet],
       [peak, peakAct],
       [series.querySelector('[data-sc-stage]'), series],
       [fb.querySelector('[data-sc-stage]'), fb],

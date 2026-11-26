@@ -6,7 +6,7 @@
 <link rel="alternate" hreflang="hu" href="https://cardprime.io/">
 <link rel="alternate" hreflang="en" href="https://cardprime.io/en/">
 <link rel="alternate" hreflang="x-default" href="https://cardprime.io/en/">
-<script src="/lang.js?v=1"></script>
+<script src="/lang.js?v=2"></script>
 <!-- Google Tag Manager. A Consent Mode V2 alapállapotát (minden "denied") és a sütiablakot a GTM-konténer állítja be, ide ne kerüljön consent default. -->
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -86,7 +86,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
   /* ---------- első festés: a motor geometriája előre ----------
      A pinelt szekciók magasságát (span × 100vh) és a sticky stage-et a scrollcraft
-     csak mountkor állítja be. Addig a hero 0 magas, a .quiet a képernyő tetejére
+     csak mountkor állítja be. Addig a hero 0 magas, a #parallels a képernyő tetejére
      csúszik, majd mountkor minden ~két képernyőnyit ugrik (CLS = 1). Ugyanaz az
      érték itt is: a data-sc-span módosításakor ezt is frissíteni kell. */
   [data-sc-act="pin"], [data-sc-act="pan"] { position: relative; }
@@ -128,19 +128,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   .hero h1 { white-space: nowrap; font-size: clamp(40px, 7.2vw, 128px); }
   .hero .sc-lede { max-width: 30ch; margin-top: var(--sc-5); }
 
-  /* ---------- act 2: quiet statement ----------
-     Függöny: a szekció egy képernyőnyivel visszahúzva ráfut a még rögzített herora,
-     a felső élén lágy átmenettel, így a hero nem "elindul", hanem letakarja a lap. */
-  .quiet { position: relative; z-index: 2; margin-top: -100vh; margin-top: -100svh;
-           min-height: 170vh; min-height: 170svh; padding-block: 0;
-           background: var(--sc-canvas); }
-  /* a mondat a képernyő közepén megáll ~0.7 képernyőnyi görgetésre, mielőtt továbbmegy */
-  .quiet .sc-wrap { position: sticky; top: 0; min-height: 100vh; min-height: 100svh;
-                    align-content: center; }
-  .quiet::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 32vh; pointer-events: none;
-                   background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--sc-canvas) 70%, transparent) 55%, var(--sc-canvas)); }
-  .quiet .sc-wrap { display: grid; gap: var(--sc-6); }
-  .quiet p { max-width: 36ch; }
+  /* ---------- függöny: a parallelek szakasz fut rá a herora ----------
+     Egy képernyőnyivel visszahúzva ráfut a még rögzített herora, a felső élén lágy
+     átmenettel, így a hero nem "elindul", hanem letakarja a lap. */
+  #parallels { position: relative; z-index: 2; margin-top: -100vh; margin-top: -100svh;
+               background: var(--sc-canvas); }
+  #parallels::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 32vh; pointer-events: none;
+                       background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--sc-canvas) 70%, transparent) 55%, var(--sc-canvas)); }
 
   /* ---------- act 3: PEAK ---------- */
   .peak { overflow: hidden; display: grid;
@@ -204,7 +198,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   .fb__back { position: absolute; inset: 0; }
 
   /* ---------- act 6: the app ---------- */
-  .app .sc-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .app { min-height: 100vh; min-height: 100svh; display: grid; align-content: stretch; padding-block: calc(var(--header-h, 72px) + clamp(24px, 4vh, 48px)); }  .app .sc-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: center; }  .app .sc-display--lg { font-size: clamp(2.5rem, 1.6rem + 3.2vw, 4.25rem); }  .app .sc-lede { max-width: 34ch; }  .app .sc-stack > h2 { margin-top: var(--sc-3); }  .app .sc-wrap > .sc-stack { align-self: start; }  #get-the-app::before { content: none !important; }
   .app__steps { list-style: none; margin: 0; padding: 0; display: grid; }
   .app__steps li { display: grid; grid-template-columns: 9rem 1fr; gap: var(--sc-5); padding: var(--sc-6) 0; border-top: 1px solid var(--line); }
   .app__steps li:last-child { border-bottom: 1px solid var(--line); }
@@ -413,16 +407,6 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     </div>
   </section>
 
-  <!-- 2 · ANTICIPATION: authored quiet before the peak. Függönyként fut rá a herora;
-       a sorok a görgetéssel együtt jönnek, nem időzített fade-del. -->
-  <section class="sc-section quiet" data-sc-act="flow" data-sc-drift="#070708">
-    <div class="sc-wrap">
-      <span class="stripe" aria-hidden="true" data-sc-cue="0.19"></span>
-      <h2 class="sc-display sc-display--lg" data-sc-cue="0.21">One player.<br><span class="accent">Many parallels.</span></h2>
-      <p class="sc-body" data-sc-cue="0.24">Same card, four finishes. Watch the light.</p>
-    </div>
-  </section>
-
   <!-- 3 · AWE: PEAK. Largest span. Bespoke light-sweep re-foil (page JS below). -->
   <section id="parallels" data-sc-act="pin" data-sc-span="9" data-sc-drift="#060607">
     <div data-sc-stage class="peak" id="peak">
@@ -433,9 +417,9 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
       <div class="peak__copy">
         <span class="sc-label">The parallels</span>
-        <div class="entry"><span class="entry__no">No. 1 · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">Every card starts here. One player, one design, and room for many versions.</p></div>
-        <div class="entry"><span class="entry__no">No. 2 · Silver</span><h2 class="sc-display sc-display--lg">Silver.</h2><p class="sc-body">The same player, illustrated another way. A new finish, a new look.</p></div>
-        <div class="entry"><span class="entry__no">No. 3 · Numbered</span><h2 class="sc-display sc-display--lg">Numbered.</h2><p class="sc-body">Limit the print run and number every copy. The fewer there are, the more each one is worth.</p></div>
+        <div class="entry"><span class="entry__no">No. 1 · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">Every card starts here. One player, many possibilities.</p></div>
+        <div class="entry"><span class="entry__no">No. 2 · Silver</span><h2 class="sc-display sc-display--lg">Silver.</h2><p class="sc-body">New finish, new look.</p></div>
+        <div class="entry"><span class="entry__no">No. 3 · Numbered</span><h2 class="sc-display sc-display--lg">Numbered.</h2><p class="sc-body">Limited print run, every copy numbered.</p></div>
         <div class="entry"><span class="entry__no">No. 4 · Autograph</span><h2 class="sc-display sc-display--lg">Autograph.</h2><p class="sc-body">Add a signature and the same card becomes one of a kind.</p></div>
       </div>
 
@@ -475,7 +459,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
             <div class="slab slab--land slab--art"><div class="slab__label"><b>Masterminds</b></div><div class="slab__card"><img class="art" src="/assets/cards/jansik-masterminds.jpg?v=20261113" width="1040" height="745" alt="Masterminds insert: Jansik Szilárd with the coach" loading="lazy"></div></div>
             <div class="slab slab--art"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><img class="art" src="/assets/cards/vamos-game-changers.jpg?v=20261113" width="745" height="1040" alt="Vámos Márton, Game Changers insert" loading="lazy"></div></div>
           </div>
-          <div class="item__meta"><div><span class="entry__no">No. 5 · Inserts</span><h3 class="sc-display sc-display--md">Inserts.</h3></div><p class="sc-body">Show them from another side: as illustrated heroes, on the tactics board, in their biggest moments.</p></div>
+          <div class="item__meta"><div><span class="entry__no">No. 5 · Inserts</span><h3 class="sc-display sc-display--md">Inserts.</h3></div><p class="sc-body">Show them from another side: as illustrated heroes or in their biggest moments.</p></div>
         </article>
       </div>
     </div>
@@ -488,7 +472,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <div class="fb__copy" data-sc-in data-sc-stagger="90">
         <span class="entry__no">No. 7 · Front &amp; back</span>
         <h2 class="sc-display sc-display--lg">Front.<br><span class="accent">Back.</span></h2>
-        <p class="sc-body">Turn it over: stats, bio and club identity, laid out as carefully as the front.</p>
+        <p class="sc-body">The back belongs to the club: room for its identity, the stats, and the stories every fan wants to know about the player and the team.</p>
       </div>
       <figure class="fb__fig">
         <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Front</span></div><div class="slab__card"><img class="art" src="/assets/cards/vigvari-base.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
@@ -506,13 +490,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div class="sc-wrap">
       <div class="sc-stack" data-sc-in data-sc-stagger="90">
         <span class="entry__no">No. 8 · Your collection</span>
-        <h2 class="sc-display sc-display--lg">Your collection,<br><span class="accent">verified.</span></h2>
-        <p class="sc-lede">Scan the CardPrime cards you own to build your collection, earn points and climb the leaderboard.</p>
+        <h2 class="sc-display sc-display--lg">No two cards<br><span class="accent">alike.</span></h2>
+        <p class="sc-lede">Every card we print carries anti-counterfeit protection, so each one is genuine, unique and impossible to reproduce.</p>
       </div>
       <ol class="app__steps" data-sc-in data-sc-stagger="110">
         <li><b>Scan</b><p class="sc-body">Point your camera at the card and the app confirms it is genuine.</p></li>
         <li><b>Collect</b><p class="sc-body">Add the copy to your collection. Each printed card belongs to one collector at a time.</p></li>
-        <li><b>Compete</b><p class="sc-body">Earn points, complete quests and climb the leaderboard.</p></li>
+        <li><b>Win</b><p class="sc-body">Earn points, complete quests, climb the leaderboard and <a href="prize-game/">win</a>!</p></li>
       </ol>
     </div>
   </section>
@@ -743,6 +727,6 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   });
 })();
 </script>
-<script src="/effects.js?v=8"></script>
+<script src="/effects.js?v=9"></script>
 </body>
 </html>
