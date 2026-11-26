@@ -6,7 +6,7 @@
 <link rel="alternate" hreflang="hu" href="https://cardprime.io/">
 <link rel="alternate" hreflang="en" href="https://cardprime.io/en/">
 <link rel="alternate" hreflang="x-default" href="https://cardprime.io/en/">
-<script src="/lang.js?v=1"></script>
+<script src="/lang.js?v=2"></script>
 <!-- Google Tag Manager. A Consent Mode V2 alapállapotát (minden "denied") és a sütiablakot a GTM-konténer állítja be, ide ne kerüljön consent default. -->
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -15,8 +15,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
-<title>CardPrime · Gyűjtői minőségű kártyák</title>
-<meta name="description" content="Gyűjtői minőségű sportkártyák minden parallelben, és egy app, amellyel beolvashatod, ellenőrizheted és gyűjteménybe rendezheted minden saját kártyádat.">
+<title>CardPrime · Gyűjtői sportkártyák</title>
+<meta name="description" content="Saját tervezésű, gyűjtői minőségű sportkártyák több parallelben, és egy app, amellyel beolvashatod és gyűjteménybe rendezheted őket.">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
@@ -86,7 +86,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
   /* ---------- első festés: a motor geometriája előre ----------
      A pinelt szekciók magasságát (span × 100vh) és a sticky stage-et a scrollcraft
-     csak mountkor állítja be. Addig a hero 0 magas, a .quiet a képernyő tetejére
+     csak mountkor állítja be. Addig a hero 0 magas, a #parallels a képernyő tetejére
      csúszik, majd mountkor minden ~két képernyőnyit ugrik (CLS = 1). Ugyanaz az
      érték itt is: a data-sc-span módosításakor ezt is frissíteni kell. */
   [data-sc-act="pin"], [data-sc-act="pan"] { position: relative; }
@@ -128,19 +128,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   .hero h1 { white-space: nowrap; font-size: clamp(40px, 7.2vw, 128px); }
   .hero .sc-lede { max-width: 30ch; margin-top: var(--sc-5); }
 
-  /* ---------- act 2: quiet statement ----------
-     Függöny: a szekció egy képernyőnyivel visszahúzva ráfut a még rögzített herora,
-     a felső élén lágy átmenettel, így a hero nem "elindul", hanem letakarja a lap. */
-  .quiet { position: relative; z-index: 2; margin-top: -100vh; margin-top: -100svh;
-           min-height: 170vh; min-height: 170svh; padding-block: 0;
-           background: var(--sc-canvas); }
-  /* a mondat a képernyő közepén megáll ~0.7 képernyőnyi görgetésre, mielőtt továbbmegy */
-  .quiet .sc-wrap { position: sticky; top: 0; min-height: 100vh; min-height: 100svh;
-                    align-content: center; }
-  .quiet::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 32vh; pointer-events: none;
-                   background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--sc-canvas) 70%, transparent) 55%, var(--sc-canvas)); }
-  .quiet .sc-wrap { display: grid; gap: var(--sc-6); }
-  .quiet p { max-width: 36ch; }
+  /* ---------- függöny: a parallelek szakasz fut rá a herora ----------
+     Egy képernyőnyivel visszahúzva ráfut a még rögzített herora, a felső élén lágy
+     átmenettel, így a hero nem "elindul", hanem letakarja a lap. */
+  #parallels { position: relative; z-index: 2; margin-top: -100vh; margin-top: -100svh;
+               background: var(--sc-canvas); }
+  #parallels::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 32vh; pointer-events: none;
+                       background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--sc-canvas) 70%, transparent) 55%, var(--sc-canvas)); }
 
   /* ---------- act 3: PEAK ---------- */
   .peak { overflow: hidden; display: grid;
@@ -204,7 +198,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   .fb__back { position: absolute; inset: 0; }
 
   /* ---------- act 6: the app ---------- */
-  .app .sc-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .app { min-height: 100vh; min-height: 100svh; display: grid; align-content: stretch; padding-block: calc(var(--header-h, 72px) + clamp(24px, 4vh, 48px)); }  .app .sc-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: center; }  .app .sc-display--lg { font-size: clamp(2.5rem, 1.6rem + 3.2vw, 4.25rem); }  .app .sc-lede { max-width: 34ch; }  .app .sc-stack > h2 { margin-top: var(--sc-3); }  .app .sc-wrap > .sc-stack { align-self: start; }  #get-the-app::before { content: none !important; }
   .app__steps { list-style: none; margin: 0; padding: 0; display: grid; }
   .app__steps li { display: grid; grid-template-columns: 9rem 1fr; gap: var(--sc-5); padding: var(--sc-6) 0; border-top: 1px solid var(--line); }
   .app__steps li:last-child { border-bottom: 1px solid var(--line); }
@@ -352,12 +346,12 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       </div>
     </div>
     <div class="menu__group">
-      <span class="menu__head">Jogi információk és segítség</span>
+      <span class="menu__head">Jogi tudnivalók és segítség</span>
       <ul class="menu__list">
-        <li><a href="privacy/"><b>Adatkezelési tájékoztató</b><span>Milyen adatokat gyűjtünk, miért, és hogyan törölheted őket – beleértve a jogodat, hogy bármikor töröld a fiókodat</span></a></li>
-        <li><a href="terms/"><b>Felhasználási feltételek</b><span>A fiókra vonatkozó szabályok, a tiltott tevékenységek és a felelősségi feltételek a CardPrime használatához</span></a></li>
-        <li><a href="refund-policy/"><b>Visszatérítés és szállítás</b><span>Szállítási módok és díjak, a 14 napos elállási jog, valamint a visszatérítés és a visszaküldés menete</span></a></li>
-        <li><a href="support/"><b>Ügyfélszolgálat</b><span>Válaszok a gyakori kérdésekre, és hogyan érsz el minket minden más ügyben</span></a></li>
+        <li><a href="privacy/"><b>Adatkezelési tájékoztató</b><span>Milyen adatokat gyűjtünk és miért, és hogyan törölheted őket – akár a teljes fiókodat is, bármikor</span></a></li>
+        <li><a href="terms/"><b>Felhasználási feltételek</b><span>A fiók használatának szabályai, a tiltott tevékenységek és a felelősség kérdései</span></a></li>
+        <li><a href="refund-policy/"><b>Visszatérítés és szállítás</b><span>Szállítási módok és díjak, 14 napos elállás, visszatérítés és visszaküldés</span></a></li>
+        <li><a href="support/"><b>Ügyfélszolgálat</b><span>Gyakori kérdések, és hogyan érsz el minket bármi másban</span></a></li>
       </ul>
     </div>
   </div>
@@ -367,7 +361,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
 <!-- a gyűjtőlista: a grammatika navigációja. Pipál, ahogy a látogató "begyűjti" a bejegyzéseket. -->
 <nav class="dock" aria-label="Sorozat-ellenőrzőlista">
-  <span class="dock__title"><span class="dock__word">Ellenőrzőlista </span><output id="count">0</output>/7</span>
+  <span class="dock__title"><span class="dock__word">Checklist </span><output id="count">0</output>/7</span>
   <ol>
     <li><button type="button" data-go="1" aria-pressed="false"><span>1 · Base</span></button></li>
     <li><button type="button" data-go="2" aria-pressed="false"><span>2 · Silver</span></button></li>
@@ -405,21 +399,11 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <div class="sc-scrim sc-scrim--lead" aria-hidden="true"></div>
       <!-- a szöveg végig áll, amíg a hero látszik: a függöny takarja le, nem fade -->
       <div class="sc-copy sc-copy--lead">
-        <span class="sc-label hero__eyebrow">Sportkártya-nyomtatás és gyűjteménykezelés</span>
-        <h1 class="sc-display sc-display--xl">Gyűjtői minőség.<br><span class="accent">Kézbe véve.</span></h1>
-        <p class="sc-lede">A CardPrime saját sportkártya-sorozatokat nyomtat, amelyeket lezárt csomagokban árulunk a <a href="shop/">webshopunkban</a>.</p>
+        <span class="sc-label hero__eyebrow">Sportkártyák és gyűjtői app</span>
+        <h1 class="sc-display sc-display--xl">Gyűjtői minőség,<br><span class="accent">a kezedben.</span></h1>
+        <p class="sc-lede">Saját sportkártya-sorozatokat tervezünk és nyomtatunk. Lezárt csomagokban kaphatók a <a href="shop/">webshopunkban</a>.</p>
       </div>
      </div>
-    </div>
-  </section>
-
-  <!-- 2 · ANTICIPATION: authored quiet before the peak. Függönyként fut rá a herora;
-       a sorok a görgetéssel együtt jönnek, nem időzített fade-del. -->
-  <section class="sc-section quiet" data-sc-act="flow" data-sc-drift="#070708">
-    <div class="sc-wrap">
-      <span class="stripe" aria-hidden="true" data-sc-cue="0.19"></span>
-      <h2 class="sc-display sc-display--lg" data-sc-cue="0.21">Egy játékos.<br><span class="accent">Sok parallel.</span></h2>
-      <p class="sc-body" data-sc-cue="0.24">Ugyanaz a kártya, négyféle kidolgozás. Figyeld a fényt.</p>
     </div>
   </section>
 
@@ -433,10 +417,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
       <div class="peak__copy">
         <span class="sc-label">A parallelek</span>
-        <div class="entry"><span class="entry__no">1. · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">Minden kártya innen indul. Egy játékos, egy design, és hely sok változatnak.</p></div>
-        <div class="entry"><span class="entry__no">2. · Silver</span><h2 class="sc-display sc-display--lg">Silver.</h2><p class="sc-body">Ugyanaz a játékos, másképp megrajzolva. Új kidolgozás, új megjelenés.</p></div>
-        <div class="entry"><span class="entry__no">3. · Számozott</span><h2 class="sc-display sc-display--lg">Számozott.</h2><p class="sc-body">Korlátozott példányszám, minden példány sorszámmal. Minél kevesebb van belőle, annál többet ér egy-egy darab.</p></div>
-        <div class="entry"><span class="entry__no">4. · Aláírt</span><h2 class="sc-display sc-display--lg">Aláírt.</h2><p class="sc-body">Egy aláírás, és ugyanaz a kártya egyedivé válik.</p></div>
+        <div class="entry"><span class="entry__no">1. · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">Minden kártya innen indul. Egy játékos, sok lehetőség.</p></div>
+        <div class="entry"><span class="entry__no">2. · Silver</span><h2 class="sc-display sc-display--lg">Silver.</h2><p class="sc-body">Új kidolgozás, új megjelenés.</p></div>
+        <div class="entry"><span class="entry__no">3. · Számozott</span><h2 class="sc-display sc-display--lg">Számozott.</h2><p class="sc-body">Korlátozott példányszám, minden darab sorszámozva.</p></div>
+        <div class="entry"><span class="entry__no">4. · Aláírt</span><h2 class="sc-display sc-display--lg">Aláírt.</h2><p class="sc-body">Egy aláírás, és a kártyából egyedi darab lesz.</p></div>
       </div>
 
       <div class="peak__card">
@@ -466,8 +450,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <div class="rail" id="rail">
         <div class="rail__lead sc-stack">
           <span class="stripe" aria-hidden="true"></span>
-          <h2 class="sc-display sc-display--md">Több, mint<br><span class="accent">az alapsorozat.</span></h2>
-          <p class="sc-body">Az insertek a játékosaid és a csapatod történetét mesélik el.</p>
+          <h2 class="sc-display sc-display--md">Nem csak<br><span class="accent">Base kártyák.</span></h2>
+          <p class="sc-body">Az insertek a játékosok és a csapat történetét mesélik el.</p>
         </div>
         <article class="item" data-check="5">
           <div class="pair">
@@ -475,7 +459,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
             <div class="slab slab--land slab--art"><div class="slab__label"><b>Masterminds</b></div><div class="slab__card"><img class="art" src="/assets/cards/jansik-masterminds.jpg?v=20261113" width="1040" height="745" alt="Masterminds insert: Jansik Szilárd az edzővel" loading="lazy"></div></div>
             <div class="slab slab--art"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><img class="art" src="/assets/cards/vamos-game-changers.jpg?v=20261113" width="745" height="1040" alt="Vámos Márton, Game Changers insert" loading="lazy"></div></div>
           </div>
-          <div class="item__meta"><div><span class="entry__no">5. · Insertek</span><h3 class="sc-display sc-display--md">Insertek.</h3></div><p class="sc-body">Egy másik oldalukról mutatják meg őket: illusztrált hősként, a taktikai táblán, a legnagyobb pillanataikban.</p></div>
+          <div class="item__meta"><div><span class="entry__no">5. · Insertek</span><h3 class="sc-display sc-display--md">Insertek.</h3></div><p class="sc-body">A játékosokat egy másik oldalukról mutatják: illusztrált hősként vagy a legnagyobb pillanataikban.</p></div>
         </article>
       </div>
     </div>
@@ -488,7 +472,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <div class="fb__copy" data-sc-in data-sc-stagger="90">
         <span class="entry__no">7. · Előlap és hátlap</span>
         <h2 class="sc-display sc-display--lg">Előlap.<br><span class="accent">Hátlap.</span></h2>
-        <p class="sc-body">Fordítsd meg: statisztikák, életrajz és klubarculat, ugyanolyan gondosan megtervezve, mint az előlap.</p>
+        <p class="sc-body">A hátlap a klubé: teret ad a klub arculatának, a statisztikáknak, és mindannak a történetnek, amit egy szurkoló tudni szeretne a játékosról és a csapatról.</p>
       </div>
       <figure class="fb__fig">
         <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Előlap</span></div><div class="slab__card"><img class="art" src="/assets/cards/vigvari-base.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
@@ -506,13 +490,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div class="sc-wrap">
       <div class="sc-stack" data-sc-in data-sc-stagger="90">
         <span class="entry__no">8. · A gyűjteményed</span>
-        <h2 class="sc-display sc-display--lg">A gyűjteményed,<br><span class="accent">hitelesítve.</span></h2>
-        <p class="sc-lede">Olvasd be a saját CardPrime kártyáidat: építsd a gyűjteményedet, gyűjts pontokat, és lépj előre a ranglistán.</p>
+        <h2 class="sc-display sc-display--lg">Nincs két<br><span class="accent">egyforma kártya.</span></h2>
+        <p class="sc-lede">Minden kártyánk nyomtatásvédelmi technológiával készül, így mindegyik eredeti, egyedi és megismételhetetlen.</p>
       </div>
       <ol class="app__steps" data-sc-in data-sc-stagger="110">
-        <li><b>Beolvasás</b><p class="sc-body">Irányítsd a kamerát a kártyára, és az app megerősíti, hogy eredeti.</p></li>
-        <li><b>Gyűjtés</b><p class="sc-body">Add hozzá a példányt a gyűjteményedhez. Minden nyomtatott kártya egyszerre egy gyűjtőé lehet.</p></li>
-        <li><b>Verseny</b><p class="sc-body">Gyűjts pontokat, teljesíts questeket, és lépj előre a ranglistán.</p></li>
+        <li><b>Olvasd be</b><p class="sc-body">Tartsd a kamerát a kártya fölé, és az app megmondja, hogy eredeti-e.</p></li>
+        <li><b>Gyűjtsd</b><p class="sc-body">Add hozzá a gyűjteményedhez. Egy kártya egyszerre csak egy gyűjtőé lehet.</p></li>
+        <li><b>Nyerj</b><p class="sc-body">Gyűjts pontokat, teljesítsd a questeket, törj előre a ranglistán, és <a href="prize-game/">nyerj</a>!</p></li>
       </ol>
     </div>
   </section>
@@ -522,9 +506,9 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div data-sc-stage class="close">
       <div class="close__inner">
         <div class="close__ticks" aria-hidden="true" data-sc-cue="0.02"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <h2 class="sc-display sc-display--xl" data-sc-cue="0.04">Kész a sorozat.</h2>
-        <p class="sc-lede" data-sc-cue="0.08">Kezdd el a sajátodat az appban.</p>
-        <a class="btn" href="app/" data-sc-cue="0.06">Az app</a>
+        <h2 class="sc-display sc-display--xl" data-sc-cue="0.04">Teljes a sorozat.</h2>
+        <p class="sc-lede" data-sc-cue="0.08">A saját gyűjteményedet az appban kezdheted el.</p>
+        <a class="btn" href="app/" data-sc-cue="0.06">Az appról</a>
       </div>
       <footer class="foot">
         <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
@@ -743,6 +727,6 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   });
 })();
 </script>
-<script src="/effects.js?v=8"></script>
+<script src="/effects.js?v=9"></script>
 </body>
 </html>

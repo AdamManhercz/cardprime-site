@@ -6,9 +6,9 @@
 // Sorrend:
 //   1. ?lang=hu|en az URL-ben (pl. az app nyelve szerinti link) — erre a látogatásra dönt.
 //   2. A látogató saját választása (HU | EN kapcsoló), localStorage-ban.
-//   3. Ha nincs választás: budapesti időzóna vagy magyar böngészőnyelv → magyar, különben angol.
-//      IP-alapú földrajzi helymeghatározás szándékosan nincs: statikus tárhelyen csak egy külső
-//      szolgáltatás tudná, ami a látogató IP-címét harmadik félnek adná át (adatkezelés + süti-hozzájárulás).
+//   3. Ha nincs választás: angol (a user döntése, 2026-11-26). Magyarra a HU | EN kapcsolóval
+//      lehet váltani, és onnantól a választás megmarad. Korábban budapesti időzóna vagy magyar
+//      böngészőnyelv esetén magyar volt az alap; ezt szándékosan vettük ki.
 // Keresőrobotot nem irányítunk át, különben a magyar oldalak nem kerülnének az indexbe.
 (function () {
   'use strict';
@@ -28,24 +28,14 @@
     if (a) store(a.getAttribute('data-lang'));
   });
 
-  function detect() {
-    var tz = '';
-    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* régi böngésző */ }
-    if (tz === 'Europe/Budapest') return 'hu';
-    var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
-    for (var i = 0; i < langs.length; i++) {
-      if (String(langs[i]).toLowerCase().indexOf('hu') === 0) return 'hu';
-    }
-    return 'en';
-  }
-
   if (/bot|crawl|spider|slurp|lighthouse|facebookexternalhit|preview/i.test(navigator.userAgent || '')) return;
 
   var param = /[?&]lang=(hu|en)\b/.exec(window.location.search);
-  var want = param ? param[1] : (stored() || detect());
+  var want = param ? param[1] : (stored() || 'en');
   if (want === here) return;
 
   var alt = document.querySelector('link[rel="alternate"][hreflang="' + want + '"]');
   if (!alt) return;
-  window.location.replace(alt.href + window.location.search + window.location.hash);
+  var to = new URL(alt.href, window.location.href);
+  window.location.replace(to.pathname + window.location.search + window.location.hash);
 })();
