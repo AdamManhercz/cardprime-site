@@ -339,11 +339,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .hero .sc-lede { margin-top: var(--sc-4); }
     .hero .reflect { -webkit-box-reflect: none; }
     /* a forgatott lap befoglaló magassága: 6° → 1.625 ×, 9° → 1.65 ×, 14° → 1.675 × a szélesség (a tetejéhez mérve) */
-    .p-main { top: calc(var(--lede, 370px) + 22px); }
-    .p-main .slab { --w: clamp(110px, (var(--vh, 100svh) - var(--lede, 370px) - 22px - 16px) / 1.625, 245px); }
+    /* Manhercz vízszintesen középen, Vigvári ugyanannyival követi: mindkettő közelebb kerül Nagyhoz */
+    .hero__planes { --mw: clamp(110px, (var(--vh, 100svh) - var(--lede, 370px) - 22px - 16px) / 1.625, 245px); }
+    .p-main { top: calc(var(--lede, 370px) + 22px); right: auto; left: calc(50% - var(--mw) / 2); }
+    .p-main .slab { --w: var(--mw); }
     .p-back { top: calc(var(--lede, 370px) + 52px); }
     .p-back .slab { --w: clamp(80px, (var(--vh, 100svh) - var(--lede, 370px) - 52px - 16px) / 1.65, 170px); filter: brightness(.82); }
-    .p-side { top: calc(var(--lede, 370px) + 80px); }
+    .p-side { top: calc(var(--lede, 370px) + 80px); right: auto; left: calc(50% + var(--mw) * .08); }
     .p-side .slab { --w: clamp(70px, (var(--vh, 100svh) - var(--lede, 370px) - 80px - 16px) / 1.675, 170px); filter: brightness(.82); }
     .peak { --pw: var(--card-w); }
     .fb__fig .slab { --w: var(--card-w); }
