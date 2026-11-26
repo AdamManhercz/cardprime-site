@@ -16,7 +16,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
 <title>Adatkezelési tájékoztató — CardPrime</title>
-<meta name="description" content="Milyen adatokat gyűjt a CardPrime, miért, és hogyan törölheted őket.">
+<meta name="description" content="Milyen adatokat kezel a CardPrime app, a webáruház és az aukció, miért, kinek adjuk át, meddig őrizzük, és hogyan törölheted őket.">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
@@ -76,7 +76,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <span class="stripe" aria-hidden="true"></span>
       <span class="sc-label">Jogi információk</span>
       <h1 class="sc-display sc-display--lg">Adatkezelési <span class="accent">tájékoztató</span></h1>
-      <p class="updated">Utolsó frissítés: 2026. november 13.</p>
+      <p class="updated">Utolsó frissítés: 2026. november 26.</p>
     </div>
   </header>
 
@@ -84,10 +84,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <nav class="toc" aria-label="Ezen az oldalon">
       <ol>
         <li><a href="#who-we-are">1. Kik vagyunk</a></li>
-        <li><a href="#data">2. Milyen adatokat gyűjtünk</a></li>
-        <li><a href="#public">3. Nyilvánosan megosztott kártyák</a></li>
+        <li><a href="#data">2. Milyen adatokat kezelünk</a></li>
+        <li><a href="#public">3. Mit látnak mások</a></li>
         <li><a href="#legal-basis">4. Jogalap</a></li>
-        <li><a href="#sharing">5. Kivel osztjuk meg az adatokat</a></li>
+        <li><a href="#sharing">5. Kik kapják meg az adatokat</a></li>
         <li><a href="#transfers">6. Nemzetközi adattovábbítás</a></li>
         <li><a href="#retention">7. Meddig őrizzük az adatokat</a></li>
         <li><a href="#rights">8. A jogaid</a></li>
@@ -102,7 +102,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <article class="legal">
       <section id="who-we-are">
         <h2><span class="no">1.</span>Kik vagyunk</h2>
-        <p>A CardPrime-ot a <strong>CardPrime Korlátolt Felelősségű Társaság</strong> („CardPrime”, „mi”) üzemelteti, amely az Európai Unió általános adatvédelmi rendelete (GDPR) szerint a személyes adataidért felelős adatkezelő.</p>
+        <p>A CardPrime mobilappot és a cardprime.io weboldalt (webáruház, aukció, rendezvényes értékesítés) a <strong>CardPrime Korlátolt Felelősségű Társaság</strong> („CardPrime”, „mi”) üzemelteti, amely az Európai Unió általános adatvédelmi rendelete (GDPR) szerint a személyes adataidért felelős adatkezelő.</p>
         <ul>
           <li>Székhely: <strong>2085 Pilisvörösvár, Semmelweis köz 1.</strong></li>
           <li>Cégjegyzékszám: <strong>13-09-248460</strong></li>
@@ -111,26 +111,57 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
           <li>E-mail: <a href="mailto:info@cardprime.io">info@cardprime.io</a></li>
         </ul>
         <p>Adatvédelmi tisztviselőt nem neveztünk ki, mert adatkezelésünk nem éri el a 37. cikk szerinti küszöböket (nincs nagy léptékű vagy rendszeres megfigyelés, és nem kezelünk nagy léptékben különleges kategóriájú adatokat). Adatvédelmi kérdéseidet és a jogaid gyakorlására irányuló kérelmeidet a fenti elérhetőségre küldheted.</p>
+        <p>A tájékoztatóban használt fogalmak (Kártya, Digitális Gyűjtemény, Pont stb.) jelentése az <a href="../terms/">Általános Szerződési Feltételekben</a> (ÁSZF) található.</p>
       </section>
 
       <section id="data">
-        <h2><span class="no">2.</span>Milyen adatokat gyűjtünk</h2>
+        <h2><span class="no">2.</span>Milyen adatokat kezelünk</h2>
+        <p><strong>Fiók.</strong></p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Adat</th><th>Mikor</th><th>Cél</th></tr></thead>
             <tbody>
-              <tr><td>E-mail-cím</td><td>Fiókregisztráció (Cognito)</td><td>Bejelentkezés, a fiók azonosítása</td></tr>
-              <tr><td>Megjelenített név</td><td>Fiókregisztráció (kötelező; becenév is megfelel)</td><td>A profilod személyre szabása, és annak jelzése, hogy te vagy a nyilvános katalógusban közzétett kártyáid tulajdonosa (lásd a 3. pontot)</td></tr>
-              <tr><td>Jelszó</td><td>Fiókregisztráció</td><td>Hitelesítés (az AWS Cognito csak sózott hash formájában tárolja – a CardPrime soha nem látja és nem tárolja a jelszavadat olvasható formában)</td></tr>
-              <tr><td>Az általad hozzáadott kártyák adatai</td><td>Minden kártya hozzáadásakor (fotó + kézzel megadott adatok)</td><td>A gyűjteményed felépítése</td></tr>
-              <tr><td>Hozzávetőleges helyadat (durva, kb. 1,1 km-re kerekítve)</td><td>Csak abban a pillanatban, amikor elmentesz egy hozzáadott kártyát</td><td>Csalásfelderítés – a valószerűtlen helymintázatok megjelölése (például ha ugyanazt a kártyát percek különbséggel két távoli városban adják hozzá)</td></tr>
-              <tr><td>Bejelentkezési időbélyegek</td><td>Minden bejelentkezéskor</td><td>Biztonsági megfigyelés</td></tr>
-              <tr><td>Az általad beküldött tartalombejelentések</td><td>Csak amikor bejelentesz egy kártyát a nyilvános katalógusban</td><td>A bejelentett tartalom átnézése, tartalommoderálási kötelezettségeink teljesítése</td></tr>
-              <tr><td>Az általad letiltott fiókok</td><td>Csak amikor letiltasz egy gyűjtőt</td><td>Annak a gyűjtőnek a kártyái elrejtése előled, és a tieid elrejtése előle</td></tr>
+              <tr><td>E-mail-cím</td><td>Regisztráció (e-mail-címmel, illetve Google- vagy Apple-fiókkal; az Apple álcázott továbbítócímet is adhat)</td><td>Bejelentkezés, a fiók azonosítása, rendszerüzenetek</td></tr>
+              <tr><td>Felhasználónév</td><td>Regisztráció, illetve az első közösségi bejelentkezés</td><td>Megjelenés a ranglistán és a nyilvános gyűjteményben (lásd a 3. pontot)</td></tr>
+              <tr><td>Név</td><td>Csak ha megadod (nem kötelező)</td><td>A profilod</td></tr>
+              <tr><td>Jelszó</td><td>Regisztráció e-mail-címmel</td><td>Hitelesítés (az AWS Cognito csak sózott hash formájában tárolja – mi soha nem látjuk)</td></tr>
+              <tr><td>Google- vagy Apple-fiókazonosító</td><td>Közösségi bejelentkezéskor</td><td>A fiókod összekapcsolása a külső bejelentkezéssel; Apple esetén fióktörléskor a hozzáférés visszavonása</td></tr>
+              <tr><td>Bejelentkezési napló (időpont, platform), utolsó aktivitás napja</td><td>Bejelentkezéskor, használatkor</td><td>Biztonság, visszaélések felderítése</td></tr>
+              <tr><td>Push-értesítési token</td><td>Csak ha engedélyezed az értesítéseket</td><td>Értesítések (aukció, kártyakérelem, rendelés) küldése</td></tr>
             </tbody>
           </table>
         </div>
-        <p><strong>Az appban</strong> <strong>nem</strong> gyűjtünk pontos vagy folyamatos helyadatot, névjegyeket, a kártyarögzítésen kívüli fotókat, sem semmilyen reklámazonosítót. Az app nem tartalmaz analitikai, reklám- vagy hibajelentő SDK-t (nincs benne Firebase, Sentry, Amplitude, Mixpanel vagy hasonló).</p>
+
+        <p><strong>Kártyabeolvasás és gyűjtemény.</strong></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Adat</th><th>Mikor</th><th>Cél</th></tr></thead>
+            <tbody>
+              <tr><td>Beolvasási napló: a felismert kártyakód, időpont, eredmény (sikeres, sikertelen, már foglalt stb.)</td><td>Minden befejezett beolvasási kísérletkor, a sikertelen is (a megszakított beolvasást nem rögzítjük)</td><td>A kártya hitelesítése és hozzárendelése, a kártya előzménye, hamisítás és visszaélés felderítése</td></tr>
+              <tr><td>Hozzávetőleges hely (két tizedesjegyre, kb. 1 km-re kerekítve)</td><td>Beolvasáskor, <strong>csak ha engedélyezted</strong> a helymeghatározást</td><td>Hamisítás és visszaélés felderítése (például ha ugyanazt a kártyát fizikailag valószerűtlen időn belül két távoli helyen olvassák be)</td></tr>
+              <tr><td>Digitális Gyűjtemény: a hozzád rendelt Kártyák, a hozzárendelés és eltávolítás időpontja</td><td>Kártya gyűjteménybe vételekor, eltávolításakor, kártyacserénél</td><td>A gyűjteményed vezetése, a kártya előzménye</td></tr>
+              <tr><td>Pontok, felhasználói szint, ranglistahelyezés, pontelőzmény</td><td>Pontot érő tevékenységkor</td><td>Pontok és ranglista, nyereményjáték (ÁSZF 14. és 16. fejezet)</td></tr>
+              <tr><td>Kedvelések és heti feladatok válaszai (párbaj, Top 3, kérdőív)</td><td>Ha kitöltöd őket</td><td>Pontjóváírás, és összesítve: melyik kártyadizájn tetszik a gyűjtőknek</td></tr>
+              <tr><td>A gyűjtemény láthatósága (nyilvános vagy privát)</td><td>Amikor beállítod</td><td>Annak eldöntése, ki láthatja a gyűjteményedet</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A kamera képét nem tároljuk és nem küldjük el: a kártyakódot a készüléked olvassa ki. A keresés a készülékeden fut, a keresőkifejezéseidet nem kapjuk meg.</p>
+
+        <p><strong>Kártyacsere és kártyaigénylés (ÁSZF 15. fejezet).</strong> Tároljuk a kérelmet (ki, melyik Kártyát kéri, mit ajánl fel érte, az állapotát és időpontjait), valamint az általad megadott kapcsolattartási elérhetőséget, amelyet a másik fél csak a kérelem elfogadása után lát. A Face ID-t vagy a készülékkódot a telefonod ellenőrzi: mi csak azt tudjuk meg, hogy a jóváhagyás sikerült-e, és a sikertelen kísérletek számát. Biometrikus adatot nem kapunk.</p>
+
+        <p><strong>Moderálás.</strong> Az általad tett és a rólad szóló bejelentések, a letiltásaid, a felhasználónév-szűrő találatai, a szabályszegések száma és a fiók esetleges felfüggesztése.</p>
+
+        <p><strong>Vásárlás a webáruházban (appban vagy a weboldalon, regisztráció nélkül is).</strong> Név, e-mail-cím, telefonszám, számlázási cím, szállítási cím vagy a választott csomagautomata/CsomagPont, illetve személyes átvételnél csak a számlázási cím; az ország, a megrendelt termékek, az összegek és a rendelés állapota, valamint a Stripe fizetési azonosítók. A kártyaadataidat a Stripe kezeli, mi nem látjuk és nem tároljuk őket.</p>
+
+        <p><strong>Aukció (ÁSZF 9. fejezet).</strong> Az aukciós jelentkezéskor: név, telefonszám, e-mail-cím, szállítási cím, szállítási mód, valamint egy Stripe-nál elmentett fizetési mód (a kártyaszámot mi nem látjuk, csak a Stripe azonosítóját). A licitjeid összege és időpontja. A többi résztvevő nem lát téged: a licitlistán aukciónként egy véletlenszerű álnév jelenik meg.</p>
+
+        <p><strong>Nyereményjáték.</strong> A nyertesekkel a nyeremény átadásáról egyenként egyeztetünk; ehhez csak az átadáshoz szükséges adatokat kérjük el.</p>
+
+        <p><strong>Rendezvényes értékesítés.</strong> Ha rendezvényen, a pultnál vásárolsz, a számlához megadott nevedet, címedet és (ha kéred az e-számlát) e-mail-címedet, valamint a vásárlás adatait kezeljük.</p>
+
+        <p><strong>Az appban nem</strong> gyűjtünk pontos vagy folyamatos helyadatot, névjegyeket, fotókat a fotótáradból, sem reklámazonosítót. Az app nem tartalmaz analitikai, reklám- vagy hibajelentő SDK-t (nincs benne Firebase, Sentry, Amplitude, Mixpanel vagy hasonló), és az app háttérrendszere nem tárolja az IP-címedet.</p>
+
         <p id="cookies"><strong>A weboldalunkon (cardprime.io): sütik és mérés.</strong></p>
         <p>A weboldalunk &mdash; nem az app &mdash; Google- és Meta-eszközöket használ a forgalom és a hirdetéseink mérésére. <strong>Amíg nem választasz, egyetlen süti sem kerül beállításra</strong>, az analitikai és marketingsütiket pedig csak a hozzájárulásoddal állítjuk be.</p>
         <ul>
@@ -155,55 +186,76 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
             </tbody>
           </table>
         </div>
-        <p><strong>Mi kötelező és mi nem:</strong> a fiók létrehozásához e-mail-cím, jelszó és megjelenített név szükséges – ezek nélkül nem tudjuk nyújtani a szolgáltatást. A megjelenített névnek nem kell a valódi nevednek lennie; becenév vagy álnév is megfelel, és bármikor módosíthatod a Beállítások → Profil szerkesztése menüpontban (a 3. pont elmagyarázza, hol jelenik meg). A hozzávetőleges helyadatot csak abban a pillanatban kérjük, amikor elmentesz egy kártyát; ha elutasítod az engedélykérést, a kártyát ettől még hozzáadhatod, de a geo-sebesség alapú csalásellenőrzés kevesebb információval dolgozik az adott bejegyzésnél.</p>
+        <p><strong>Mi kötelező és mi nem:</strong> a fiókhoz e-mail-cím és felhasználónév (e-mail-címes regisztrációnál jelszó is) szükséges, a rendeléshez és az aukciós jelentkezéshez pedig a fent felsorolt adatok – ezek nélkül nem tudjuk nyújtani a szolgáltatást vagy teljesíteni a rendelést. A név, a helymeghatározás és a push-értesítések nem kötelezőek: a helymeghatározás elutasítása esetén a beolvasás ugyanúgy működik, csak a visszaélés-ellenőrzés dolgozik kevesebb információval.</p>
       </section>
 
       <section id="public">
-        <h2><span class="no">3.</span>A nyilvánosan megosztott kártyáid</h2>
-        <p><strong>Minden hozzáadott kártyád alapértelmezés szerint privát.</strong> Csak a saját fiókodban látható, hacsak az adott kártyánál szándékosan be nem kapcsolod a „Megjelenítés a nyilvános katalógusban” kapcsolót – ez kártyánkénti kapcsoló, amelyet a kártya szerkesztőképernyőjén bármikor újra kikapcsolhatsz.</p>
-        <p>Ha egy kártyát <em>nyilvánosan</em> megosztasz, a többi bejelentkezett felhasználó ezt látja:</p>
+        <h2><span class="no">3.</span>Mit látnak mások</h2>
         <ul>
-          <li>a kártya fotóját és az általad megadott adatait (játékos, sportág, év, márka, sorozat, kártyaszám, értékelés és az, hogy értékelt-e, ritkaság, becsült érték, sorozatszám, valamint a kártyán tárolt leírás vagy címkék)</li>
-          <li><strong>a profilodon szereplő megjelenített nevet</strong>, a kártya tulajdonosaként. Ha a fiókodhoz nincs megjelenített név tárolva, helyette egy <strong>névtelen gyűjtőazonosító</strong> jelenik meg, például „Collector #A1B2” – ez a fiókazonosítódból képzett egyirányú kód, amelyből a fiókod nem fejthető vissza.</li>
+          <li><strong>Ranglista:</strong> a felhasználóneved, a pontjaid és a helyezésed.</li>
+          <li><strong>Nyilvános gyűjtemény</strong> (alapértelmezett): a felhasználóneved és a gyűjteményed Kártyái. A Beállításokban bármikor priváttá teheted; ekkor a gyűjteményed tartalma senkinek nem látszik, és egy Kártyádnál a felhasználóneved helyett „Private collector” jelenik meg.</li>
+          <li><strong>Kártyakérelem:</strong> akinek a Kártyáját kéred, látja a felhasználónevedet; a kapcsolattartási elérhetőséged csak az elfogadás után látszik a másik félnek.</li>
+          <li><strong>Aukció:</strong> csak az álneved és a licitösszeg; a nyertes adatait nem tesszük közzé.</li>
         </ul>
-        <p><strong>Nem</strong> látják az e-mail-címedet, a fiókazonosítódat, a kártya hozzáadásakor rögzített helyadatot, sem a gyűjteményed bármely más kártyáját.</p>
-        <p><strong>A profilodból egyedül a megjelenített neved látható a többi felhasználó számára, és az is csak azokon a kártyákon, amelyeket közzétettél.</strong> Teljesen a te kezedben van: bármikor módosíthatod a Beállítások → Profil szerkesztése menüpontban – becenév vagy álnév is tökéletesen megfelel –, és a változás azonnal érvényes mindenhol, ahol a közzétett kártyáid megjelennek. Ha egyáltalán nem szeretnéd, hogy azonosítani lehessen, kapcsold ki a „Megjelenítés a nyilvános katalógusban” kapcsolót; egy privát kártya senkinek nem mutatja a nevedet. Azokat a fiókokat, amelyekhez nincs megjelenített név tárolva, a névtelen gyűjtőazonosító alatt mutatjuk. A profilodból semmi mást nem jelenítünk meg soha, és a megjelenített neved sehol nem látszik, amíg minden kártyád privát.</p>
-        <p><strong>Automatikus ellenőrzés.</strong> Amikor bekapcsolod a kapcsolót, a kártya fotóját automatikusan ellenőrizzük szexuális, erőszakos, gyűlöletkeltő vagy más módon kifogásolható képi tartalomra, mielőtt megjelenhetne a katalógusban. Az ellenőrzésen fennakadt fotót nem tesszük közzé; maga a kártya mentve marad a privát gyűjteményedben.</p>
-        <p><strong>Bejelentés és letiltás.</strong> Más felhasználók bejelenthetik a nyilvánosan megosztott kártyádat, és letilthatnak téged mint gyűjtőt; te ugyanezt teheted velük. Ha elég sok különböző felhasználó jelenti be ugyanazt a kártyát, azt automatikusan eltávolítjuk a nyilvános katalógusból, amíg átnézzük. A letiltás kölcsönös – a letiltott gyűjtő kártyái eltűnnek a Felfedezés hírfolyamodból, a tieid pedig az övéből. Az általad végzett letiltásokat a Beállítások → Letiltott fiókok és bejelentések menüpontban vonhatod vissza.</p>
-        <p>A kapcsoló kikapcsolása azonnal eltávolítja a kártyát a nyilvános katalógusból.</p>
+        <p>Más felhasználó soha nem látja az e-mail-címedet, a nevedet, a helyadatot vagy a beolvasási naplódat. Felhasználónév alapján nem lehet rád keresni.</p>
+        <p>A CardPrime erre jogosult munkatársai az adminfelületen látják egy-egy Kártya előzményét – a beolvasó felhasználónevét, a beolvasás idejét, eredményét és hozzávetőleges helyét –, de csak a hamisítás és visszaélés felderítéséhez, a panaszok kivizsgálásához és a moderáláshoz.</p>
       </section>
 
       <section id="legal-basis">
         <h2><span class="no">4.</span>Az adatkezelés jogalapja</h2>
-        <p><strong>Szerződés teljesítése</strong> – a fiók létrehozása, a hitelesítés és a gyűjtemény kezelése szükséges az általad igénybe vett szolgáltatás nyújtásához.</p>
-        <p><strong>Hozzájárulás</strong> – egy kártya közzététele a nyilvános katalógusban csak akkor történik meg, ha bekapcsolod az adott kártya láthatósági kapcsolóját. Ezt bármikor visszavonhatod a kapcsoló kikapcsolásával, anélkül hogy bármi másra hatással lenne. A weboldalunkon a sütiket használó Google Analyticset, a Google-jeleket és a Meta Pixelt szintén csak a hozzájárulásoddal használjuk, amelyet bármikor visszavonhatsz a „Süti-beállítások” linken keresztül (lásd a 2. pontot). A választásodat tároló süti a sütiablak működéséhez feltétlenül szükséges.</p>
-        <p><strong>Jogos érdek</strong> – a hozzávetőleges helyadat rögzítése kártya hozzáadásakor és az erre épülő csalás- és geo-sebesség-ellenőrzés; a nyilvános katalógusba beküldött fotók automatikus ellenőrzése; valamint a bejelentések és letiltások kezelése. Ezek a kártyakatalógus integritását és a többi felhasználó biztonságát védik, és az ehhez szükséges minimumra korlátozódnak. A weboldalunkon a Google Tag Manager betöltése és a 2. pontban leírt, süti nélküli Google Analytics-jelzések a weboldal kiszolgálásához és a látogatások számának becsléséhez fűződő érdekünket szolgálják. Emellett az uniós digitális szolgáltatásokról szóló rendelet (DSA) alapján jogszabály kötelez minket arra, hogy a jogellenes tartalmakra bejelentési és intézkedési mechanizmust működtessünk.</p>
+        <p><strong>Szerződés teljesítése</strong> (GDPR 6. cikk (1) b)) – a fiók, a bejelentkezés, a beolvasás és a gyűjtemény, a pontok és a ranglista, a kártyakérelmek, a rendelések teljesítése és kiszállítása, az aukciós jelentkezés és az aukció elszámolása, a nyeremény átadása.</p>
+        <p><strong>Jogi kötelezettség</strong> (6. cikk (1) c)) – a számlák és a számviteli bizonylatok megőrzése (a számvitelről szóló 2000. évi C. törvény 169. §), az áfa- és OSS-bevallás, a fogyasztói panaszok kezelése, valamint a jogellenes tartalmakra vonatkozó bejelentési mechanizmus (az uniós digitális szolgáltatásokról szóló rendelet, DSA).</p>
+        <p><strong>Jogos érdek</strong> (6. cikk (1) f)) – a hamisítás és visszaélés felderítése (beolvasási napló, hozzávetőleges hely, a kártya előzménye), a moderálás (bejelentések, letiltások, felhasználónév-szűrő, szabályszegések száma), a biztonsági naplók, a heti kérdőívek összesített elemzése, valamint az előzmények álnevesített megőrzése fióktörlés után (lásd a 7. pontot). Ezek a Kártyák hitelességét, a pontverseny tisztaságát és a többi felhasználó biztonságát védik, és az ehhez szükséges minimumra korlátozódnak. A weboldalon a Google Tag Manager betöltése és a süti nélküli Google Analytics-jelzések a weboldal kiszolgálásához és a látogatások számának becsléséhez fűződő érdekünket szolgálják.</p>
+        <p><strong>Hozzájárulás</strong> (6. cikk (1) a)) – a helymeghatározás és a push-értesítések (a telefonod engedélykérésén keresztül; bármikor visszavonhatod a telefon beállításaiban), valamint a weboldalon a sütiket használó Google Analytics, a Google-jelek és a Meta Pixel (a „Süti-beállítások” linken visszavonható). A választásodat tároló süti a sütiablak működéséhez feltétlenül szükséges.</p>
       </section>
 
       <section id="sharing">
-        <h2><span class="no">5.</span>Kivel osztjuk meg az adatokat</h2>
-        <p>Az adataidat kizárólag infrastruktúra-szolgáltatónk, az <strong>Amazon Web Services (AWS)</strong> kezeli, a következő szolgáltatásokban: Cognito (hitelesítés), DynamoDB (adatbázis), S3 (kártyaképek), Lambda/API Gateway (alkalmazáslogika), Rekognition (automatikus képellenőrzés, csak a nyilvános katalógusba beküldött fotóknál) és SES (rendszer-e-mailek). Az AWS <strong>adatfeldolgozóként</strong> jár el, és ezeket az adatokat csak a mi utasításunkra kezeli, az AWS szolgáltatási feltételeinek részét képező, a GDPR 28. cikkének követelményeit teljesítő AWS adatfeldolgozási kiegészítés (Data Processing Addendum) alapján.</p>
-        <p>A weboldalunkat a <strong>Cloudflare</strong> szolgálja ki, amely az oldalak kézbesítéséhez kezeli az egyes látogatások technikai adatait (például az IP-címet). A <strong>Google</strong> megkapja a 2. pontban leírt weboldaladatokat, és többet, ha elfogadod a Statisztikát vagy a Marketinget; a <strong>Meta</strong> és a <strong>jsDelivr</strong> csak akkor kap adatot, ha elfogadod a Marketinget. Mindez az appra nem vonatkozik.</p>
-        <p>Az adataidat nem adjuk el és nem adjuk bérbe, és a hozzájárulásoddal végzett weboldalmérésen kívül nem osztjuk meg hirdetőkkel, adatbrókerekkel vagy bármely más harmadik féllel.</p>
+        <h2><span class="no">5.</span>Kik kapják meg az adatokat</h2>
+        <p>Az adataidat nem adjuk el és nem adjuk bérbe. Csak az alábbiak kapják meg, csak a feladatukhoz szükséges mértékben.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Címzett</th><th>Szerep</th><th>Milyen adat</th></tr></thead>
+            <tbody>
+              <tr><td>Amazon Web Services EMEA SARL</td><td>Adatfeldolgozó: tárhely, adatbázis, bejelentkezés (Cognito), rendszer-e-mail</td><td>Az app és a webáruház összes adata, az EU-ban (Stockholm)</td></tr>
+              <tr><td>Stripe Payments Europe, Ltd.</td><td>Fizetési szolgáltató (a fizetés tekintetében önálló adatkezelő is)</td><td>Név, e-mail, összeg, kártyaadatok (ezeket csak a Stripe látja), aukciónál az elmentett fizetési mód</td></tr>
+              <tr><td>KBOSS.hu Kft. (Számlázz.hu)</td><td>Adatfeldolgozó: számlázás; a számlaadatokat jogszabály alapján továbbítja a NAV-nak</td><td>Név, számlázási cím, e-mail, a vásárlás adatai</td></tr>
+              <tr><td>Könyvelőnk</td><td>Adatfeldolgozó: könyvelés</td><td>Számlák és bizonylatok</td></tr>
+              <tr><td>FoxPost Zrt.</td><td>Kiszállítás</td><td>Név, telefonszám, e-mail, a választott automata vagy a szállítási cím</td></tr>
+              <tr><td>GLS General Logistics Systems Hungary Kft. (MyGLS-fiókunkon és GLS-partnerünkön keresztül)</td><td>Kiszállítás belföldre és az EU-ba</td><td>Név, telefonszám, e-mail, szállítási cím vagy CsomagPont</td></tr>
+              <tr><td>King of Hoops üzlet (1051 Budapest, Apáczai Csere János u. 17.)</td><td>Személyes átvétel helye</td><td>A neved és a rendelésszámod, hogy átadhassák a csomagot</td></tr>
+              <tr><td>Resend (Plus Five Five, Inc.)</td><td>Adatfeldolgozó: e-mail-küldés (megerősítő kód, rendelés-visszaigazolás, értesítések)</td><td>E-mail-cím, az üzenet tartalma</td></tr>
+              <tr><td>Expo (650 Industries, Inc.)</td><td>Adatfeldolgozó: push-értesítések továbbítása az Apple-hoz</td><td>Push-token, az értesítés szövege</td></tr>
+              <tr><td>Apple Inc., Google</td><td>Önálló adatkezelők: Apple-/Google-bejelentkezés, az Apple push-szolgáltatása (APNs), App Store</td><td>A bejelentkezéshez és értesítéshez szükséges adatok, saját szabályzatuk szerint</td></tr>
+              <tr><td>Cloudflare, Inc.</td><td>A weboldal kiszolgálása</td><td>A látogatás technikai adatai (pl. IP-cím)</td></tr>
+              <tr><td>Google, Meta, jsDelivr</td><td>Csak a weboldalon, a sütiknél leírtak szerint</td><td>Lásd a 2. pontot</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A kártyaellenőrző technológia szállítója a beolvasásból semmilyen személyes adatot nem kap. Hatóságnak vagy bíróságnak csak jogszabályi kötelezettség alapján adunk ki adatot.</p>
       </section>
 
       <section id="transfers">
         <h2><span class="no">6.</span>Nemzetközi adattovábbítás</h2>
-        <p>Minden adatot az Európai Unión belül tárolunk és kezelünk, az AWS <strong>eu-north-1 (Stockholm, Svédország)</strong> régiójában. Az egyetlen kivétel a 3. pontban leírt automatikus képellenőrzés: mivel az AWS ezt a szolgáltatást Stockholmban nem kínálja, a nyilvános katalógusba beküldött fotókat az AWS <strong>eu-central-1 (Frankfurt, Németország)</strong> régiójában ellenőrizzük. Mindkét régió az EU-n belül van – a személyes adataidat nem továbbítjuk az EU-n/EGT-n kívülre. Az ellenőrzés egyszeri, tárolás nélküli művelet: a képet ez a szolgáltatás nem őrzi meg.</p>
-        <p><strong>Weboldalmérés.</strong> A Google és a Meta a weboldalunkról kapott adatokat továbbíthatja az Egyesült Államokba (Google LLC, Meta Platforms, Inc.). Mindkettő rendelkezik az EU–USA adatvédelmi keretrendszer (Data Privacy Framework) szerinti tanúsítással, az Európai Bizottság megfelelőségi határozata alapján. Az app adatait ez nem érinti.</p>
+        <p>Az app és a webáruház adatait az Európai Unión belül, az AWS <strong>eu-north-1 (Stockholm, Svédország)</strong> régiójában tároljuk és kezeljük.</p>
+        <p>Néhány szolgáltatónk az Egyesült Államokban is kezelhet adatot: a <strong>Stripe</strong>, a <strong>Resend</strong>, az <strong>Expo</strong>, valamint a weboldalon a <strong>Google</strong> és a <strong>Meta</strong>. Az ilyen továbbítás az EU–USA adatvédelmi keretrendszer (Data Privacy Framework) szerinti tanúsítás, az Európai Bizottság megfelelőségi határozata, illetve – ahol ez nem áll fenn – az Európai Bizottság általános szerződési feltételei (SCC) alapján történik.</p>
       </section>
 
       <section id="retention">
         <h2><span class="no">7.</span>Meddig őrizzük az adataidat</h2>
-        <p>Az adataidat addig őrizzük, amíg a fiókod aktív. Ezen túl nem tartjuk meg őket „minden eshetőségre” – a korábbi felhasználókról nincs külön archívum.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Adat</th><th>Megőrzés</th></tr></thead>
             <tbody>
-              <tr><td>Fiók, profil, kártyák, kártyaképek</td><td>Amíg nem törlöd a fiókodat</td></tr>
-              <tr><td>Bejelentkezési időbélyegek</td><td>Amíg nem törlöd a fiókodat</td></tr>
-              <tr><td>Kártya hozzáadásakor rögzített hozzávetőleges helyadat</td><td>Az adott kártyarekorddal együtt tároljuk, és vele együtt töröljük</td></tr>
-              <tr><td>Tartalombejelentések és letiltási rekordok</td><td>Amíg nem törlöd a fiókodat, vagy amíg fel nem oldod a gyűjtő letiltását</td></tr>
+              <tr><td>Fiók, profil, gyűjtemény, pontok, kedvelések, heti válaszok, bejelentkezési napló, push-token</td><td>Amíg nem törlöd a fiókodat</td></tr>
+              <tr><td>Rendelések, számlák, a nyertes aukció adatai</td><td>8 év (számviteli kötelezettség)</td></tr>
+              <tr><td>Licitek (összeg, időpont)</td><td>8 évig, a fiók törlése után név nélkül, az aukciós álnévhez kötve</td></tr>
+              <tr><td>Aukciós jelentkezés (cím, telefonszám, elmentett fizetési mód)</td><td>Az aukció lezárultáig. Ha a nyertes terhelése sikertelen, az első három licitáló adatait az ÁSZF 9.8. pontja szerinti kézi értékesítés lezárásáig őrizzük.</td></tr>
+              <tr><td>Kártyakérelem kapcsolattartási elérhetősége</td><td>A kérelem lezárásakor töröljük</td></tr>
+              <tr><td>Kártyakérelem rekordja</td><td>A lezárást követő 30 nap</td></tr>
+              <tr><td>Beolvasási napló és a Kártyák hozzárendelési előzménye</td><td>A Kártya előzményének részeként, amíg a Kártya a Platformon nyilvántartott; fióktörlés után álnevesítve (lásd lent)</td></tr>
+              <tr><td>Bejelentések és letiltások</td><td>Amíg nem törlöd a fiókodat, vagy amíg fel nem oldod a letiltást</td></tr>
+              <tr><td>Szervernaplók</td><td>30 nap</td></tr>
+              <tr><td>Nyereményjáték-nyertesek adatai</td><td>A nyeremény átadásáig, illetve ameddig jogszabály előírja</td></tr>
               <tr><td>Weboldal-sütik</td><td>A 2. pont sütitáblázata szerint</td></tr>
               <tr><td>A weboldal Google Analytics-adatai</td><td>Legfeljebb 14 hónap</td></tr>
               <tr><td>Google-jelek adatai</td><td>Legfeljebb 26 hónap, vagy kevesebb, ha a Google Analytics megőrzési ideje rövidebb</td></tr>
@@ -211,8 +263,15 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
             </tbody>
           </table>
         </div>
-        <p>Ha a törlést kéred, a fiókodat és minden kapcsolódó adatot <strong>automatikusan törlünk</strong> – nem kézi, késleltetett folyamatban. Ez magában foglalja a feltöltött kártyaképeket (azok minden tárolt változatát, nem csak a legutóbbit), az általad beküldött bejelentéseket, a kártyáidról beküldött bejelentéseket és a letiltási rekordokat mindkét irányban.</p>
-        <p><strong>Biztonsági mentések.</strong> Az adatbázisunkban be van kapcsolva az időponthoz kötött helyreállítás, amely folyamatosan egy gördülő <strong>35 napos</strong> időablakot őriz meg, hogy egy leállás, egy hibás telepítés vagy véletlen adatvesztés után helyre tudjuk állítani a rendszert. Ez a teljes adatbázisra kiterjedő biztonsági háló, nem felhasználónkénti archívum: egyes rekordok nem távolíthatók el belőle, ezért a törlést követő legfeljebb 35 napig az adataid még létezhetnek ebben a helyreállítási ablakban. Az alkalmazás nem fér hozzá, soha nem használjuk egyes fiókok kiszolgálására vagy visszaállítására, és automatikusan kifut. Ez az egyetlen hely, ahol a törlés nem azonnali, és inkább kimondjuk, mint hogy mást állítsunk.</p>
+        <p><strong>Mi történik a fiókod törlésekor.</strong> A törlés az appban automatikus, nem kézi, késleltetett folyamat:</p>
+        <ul>
+          <li><strong>töröljük</strong> a profilodat, a bejelentkezési adataidat (Cognito), a bejelentkezési naplót, az értesítéseidet, a bejelentéseidet és a letiltásokat mindkét irányban, az aukciós jelentkezéseidet, a kedveléseidet, a heti válaszaidat, a kártyakérelmeidet és a felhasználónevedet; Apple-bejelentkezésnél visszavonjuk az Apple-hozzáférést, és töröljük a Stripe-nál elmentett fizetési módodat;</li>
+          <li>a <strong>pontjaid</strong> véglegesen megszűnnek (ÁSZF 14. fejezet);</li>
+          <li>a gyűjteményed Kártyái <strong>foglaltak maradnak</strong>: törölt fiók Kártyáját más nem veheti gyűjteményébe;</li>
+          <li>a Kártyák előzményében és a beolvasási naplóban a fiókodat egy <strong>álnevesített azonosító</strong> váltja fel, amelyből a személyed nem állapítható meg; a lezárt aukciókon az álneved marad;</li>
+          <li>a <strong>rendelések és számlák</strong> adatait a számviteli kötelezettség miatt 8 évig megőrizzük.</li>
+        </ul>
+        <p><strong>Biztonsági mentések.</strong> Az adatbázisunkban be van kapcsolva az időponthoz kötött helyreállítás, amely folyamatosan egy gördülő <strong>35 napos</strong> időablakot őriz meg, hogy egy leállás, egy hibás telepítés vagy véletlen adatvesztés után helyre tudjuk állítani a rendszert. Ez a teljes adatbázisra kiterjedő biztonsági háló, nem felhasználónkénti archívum: egyes rekordok nem távolíthatók el belőle, ezért a törlést követő legfeljebb 35 napig az adataid még létezhetnek ebben a helyreállítási ablakban. Az alkalmazás nem fér hozzá, soha nem használjuk egyes fiókok kiszolgálására vagy visszaállítására, és automatikusan kifut.</p>
       </section>
 
       <section id="rights">
@@ -220,59 +279,60 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         <p>A GDPR alapján jogod van:</p>
         <ul>
           <li><strong>hozzáférni</strong> a rólad tárolt adatokhoz;</li>
-          <li>a pontatlan adatok <strong>helyesbítéséhez</strong> (a nevedet a Beállításokban szerkesztheted);</li>
-          <li>a fiókod és minden kapcsolódó adat <strong>törléséhez</strong>;</li>
-          <li>bizonyos esetekben az adatkezelés <strong>korlátozásához</strong> (például amíg egy vitatott helyesbítést ellenőrzünk);</li>
-          <li><strong>tiltakozni</strong> a jogos érdekünkön alapuló adatkezelés ellen – ez a geo-sebesség alapú csalásellenőrzés, a nyilvános katalógusba beküldött fotóid automatikus ellenőrzése, valamint a bejelentések és letiltások kezelése;</li>
-          <li>a hozzájárulásod bármikori <strong>visszavonásához</strong>, ha az adatkezelés hozzájáruláson alapul. Az appban egyedül a kártyák közzététele alapul ezen: a kártya láthatósági kapcsolójának kikapcsolása visszavonja, azonnal és anélkül, hogy bármi másra hatással lenne. A weboldalon az analitikai vagy marketingsütikhez adott hozzájárulást minden oldal alján a „Süti-beállítások” linken keresztül vonhatod vissza. A visszavonás nem érinti a korábban végzett adatkezelés jogszerűségét;</li>
-          <li>az <strong>adathordozhatósághoz</strong> – hogy a nekünk megadott személyes adataidat tagolt, széles körben használt, géppel olvasható formátumban megkapd, és továbbítsd egy másik adatkezelőnek;</li>
-          <li><strong>panaszt tenni</strong> a nemzeti adatvédelmi hatóságnál – magyar cégként minket a <strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong> felügyel, naih.hu; panaszt tehetsz a saját EU-/EGT-beli lakóhelyed szerinti felügyeleti hatóságnál is.</li>
+          <li>a pontatlan adatok <strong>helyesbítéséhez</strong> (a nevedet és a felhasználónevedet az appban módosíthatod);</li>
+          <li>az adataid <strong>törléséhez</strong> – a jogszabály alapján kötelezően megőrzendő adatok (számlák) kivételével;</li>
+          <li>bizonyos esetekben az adatkezelés <strong>korlátozásához</strong>;</li>
+          <li><strong>tiltakozni</strong> a jogos érdekünkön alapuló adatkezelés ellen (4. pont);</li>
+          <li>a hozzájárulásod bármikori <strong>visszavonásához</strong>: a helymeghatározást és az értesítéseket a telefonod beállításaiban, a weboldal sütijeit minden oldal alján a „Süti-beállítások” linken. A visszavonás nem érinti a korábbi adatkezelés jogszerűségét;</li>
+          <li>az <strong>adathordozhatósághoz</strong> – hogy a nekünk megadott adataidat géppel olvasható formátumban megkapd;</li>
+          <li><strong>panaszt tenni</strong> a felügyeleti hatóságnál: <strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong>, 1055 Budapest, Falk Miksa utca 9–11., naih.hu; vagy a saját EU-/EGT-beli lakóhelyed szerinti hatóságnál. Bírósághoz is fordulhatsz.</li>
         </ul>
         <div class="callout">
-          <p><strong>A fiókod törlése:</strong> nyisd meg az appban a Beállítások → Fiók törlése menüpontot. Ez azonnal és automatikusan eltávolítja rendszereinkből a profilodat, a gyűjteményedet, a feltöltött kártyaképeket, a kártyahozzáadási előzményeket és a bejelentkezési naplókat, és törli a Cognito-bejelentkezési adataidat. A művelet nem vonható vissza.</p>
+          <p><strong>A fiókod törlése:</strong> az appban a Beállítások → Fiók törlése menüpontban. A 7. pontban leírtak azonnal és automatikusan megtörténnek. A művelet nem vonható vissza.</p>
         </div>
-        <p>Minden más kérelemmel – ideértve a hozzáférést, a helyesbítést, a korlátozást, a tiltakozást vagy az adathordozhatósági exportot –, illetve ha nem férsz hozzá az apphoz, írj az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címre.</p>
+        <p>Minden más kérelemmel, illetve ha nem férsz hozzá az apphoz, írj az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címre. Kérelmedre legkésőbb egy hónapon belül válaszolunk.</p>
       </section>
 
       <section id="automated">
         <h2><span class="no">9.</span>Automatizált adatkezelés</h2>
-        <p>Három automatikus ellenőrzést futtatunk. Egyik sem hoz rólad vagy a fiókodról joghatással járó vagy hasonlóan jelentős automatizált döntést, és egyik sem vezet automatikus fiókfelfüggesztéshez – mindent, ami ehhez vezethetne, ember néz át.</p>
+        <p>Profilalkotást nem végzünk, és mesterséges intelligenciát nem használunk a személyes adataidon. Az alábbi automatikus lépések a szolgáltatás működéséhez tartoznak:</p>
         <ul>
-          <li><strong>Geo-sebesség-ellenőrzés.</strong> Amikor hozzáadsz egy kártyát, a helyet és az időpontot összevetjük a kártya előzményeivel. Ha a mintázat fizikailag valószerűtlennek tűnik, a rekordot megjelölhetjük. Ez csak belső jelölést eredményez.</li>
-          <li><strong>Képellenőrzés.</strong> Amikor egy kártyát közzéteszel a nyilvános katalógusban, a fotóját automatikusan ellenőrizzük kifogásolható képi tartalomra (lásd a 3. pontot). Az ellenőrzésen fennakadt fotót nem tesszük közzé; a kártya a privát gyűjteményedben marad, a fotót szerkesztheted vagy lecserélheted, és újra megpróbálhatod.</li>
-          <li><strong>Bejelentési küszöb.</strong> Ha több különböző felhasználó jelenti be ugyanazt a nyilvánosan megosztott kártyát, azt a kártyát az emberi átnézésig automatikusan elrejtjük a nyilvános katalógusból. Ez csak azt az egy kártyát érinti – a fiókodat és a gyűjteményed többi részét nem.</li>
+          <li><strong>Kártyaellenőrzés.</strong> Beolvasáskor a rendszer ellenőrzi, hogy a Kártya QR-kódja valódi-e.</li>
+          <li><strong>Az első beolvasó viszi.</strong> A még senkihez nem rendelt Kártyát az első sikeres beolvasó veheti gyűjteményébe (ÁSZF 3. fejezet).</li>
+          <li><strong>Aukció.</strong> A legmagasabb érvényes licit nyer, és a rendszer a zárás után automatikusan terheli a nyertes elmentett fizetési módját (ÁSZF 9. fejezet). A Stripe a fizetéseknél saját csalásmegelőző ellenőrzést futtat.</li>
+          <li><strong>Visszaélés-jelzés.</strong> Ha egy Kártya beolvasásai fizikailag valószerűtlen helyet és időt mutatnak, a rendszer belső jelzést tesz. Ez önmagában semmilyen intézkedést nem von maga után.</li>
+          <li><strong>Bejelentési küszöb és felhasználónév-szűrő.</strong> Ha több különböző felhasználó jelenti be ugyanazt a tartalmat, azt az emberi átnézésig elrejtjük; a sértő felhasználónevet a rendszer nem engedi beállítani.</li>
         </ul>
-        <p>Ezen eredmények bármelyikét vitathatod, ha írsz az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címre.</p>
+        <p>Fiókot felfüggeszteni vagy törölni csak ember dönthet. Bármelyik eredményt vitathatod az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címen.</p>
       </section>
 
       <section id="children">
         <h2><span class="no">10.</span>Gyermekek adatai</h2>
         <p>A CardPrime <strong>16 éves és idősebb</strong> gyűjtőknek szól – Magyarországon ez az az életkor is, amelytől valaki maga járulhat hozzá ahhoz, hogy egy online szolgáltatás kezelje a személyes adatait.</p>
-        <p><strong>Hogyan alkalmazzuk a követelményt.</strong> A legalább 16 éves életkor a <a href="../terms/">Felhasználási feltételeink</a> (2. pont, „Ki használhatja a CardPrime-ot”) feltétele, amelyet az app használata előtt elfogadsz. Ezeknek a feltételeknek az elfogadásával és a CardPrime további használatával kijelented, hogy megfelelsz a feltételnek. Szándékosan <strong>nem</strong> kérjük a születési dátumodat, és <strong>nem</strong> ellenőrizzük az életkort személyazonosító okmányok alapján. A GDPR „az elérhető technológia figyelembevételével” észszerű erőfeszítéseket vár el, és egy sportkártyákat nyilvántartó appnál – amelyben nincs chat, nincs reklám vagy profilalkotás az appban, és nincs gyermekeknek szóló tartalom – az okmányok bekérése minden felhasználóról sokkal több személyes adatot gyűjtene, mint amennyit valaha meg tudna védeni. Itt ez a kijelentés az arányos intézkedés, és pontosan annak nevezzük, ami: <strong>nyilatkozat, nem ellenőrzés.</strong></p>
-        <p><strong>Mit jelent ez őszintén.</strong> Mivel nem ellenőrzünk, nem zárhatjuk ki, hogy a követelmény ellenére 16 év alatti személy használja a CardPrime-ot. Nem is állítunk mást. Amit teszünk:</p>
+        <p><strong>Hogyan alkalmazzuk a követelményt.</strong> A legalább 16 éves életkor az <a href="../terms/#f2">ÁSZF</a> (2.10. pont) feltétele, amelyet a regisztrációkor elfogadsz. Ezzel és a CardPrime további használatával kijelented, hogy megfelelsz a feltételnek. Szándékosan <strong>nem</strong> kérjük a születési dátumodat, és <strong>nem</strong> ellenőrizzük az életkort személyazonosító okmányok alapján: az okmányok bekérése minden felhasználóról sokkal több személyes adatot gyűjtene, mint amennyit valaha meg tudna védeni. Itt ez a kijelentés az arányos intézkedés, és pontosan annak nevezzük, ami: <strong>nyilatkozat, nem ellenőrzés.</strong></p>
+        <p>Mivel nem ellenőrzünk, nem zárhatjuk ki, hogy a követelmény ellenére 16 év alatti személy használja a CardPrime-ot. Amit teszünk:</p>
         <ul>
           <li>soha nem gyűjtünk tudatosan adatot 16 év alatti személytől;</li>
-          <li>ha tudomásunkra jut, hogy egy fiók 16 év alatti személyé, a fiókot és minden adatát a 8. pontban leírt automatikus törléssel töröljük – nem kérjük, hogy előbb igazolja az életkorát;</li>
-          <li>bárki – így a szülő vagy a gondviselő is – jelezheti nekünk az ilyen fiókot az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címen;</li>
-          <li>a szülő vagy a gondviselő a gondjaira bízott gyermek nevében gyakorolhatja a 8. pontban felsorolt bármely jogot (hozzáférés, törlés, tiltakozás, adathordozhatóság).</li>
+          <li>ha tudomásunkra jut, hogy egy fiók 16 év alatti személyé, a fiókot a 7. pontban leírt módon töröljük;</li>
+          <li>bárki – így a szülő vagy a gondviselő is – jelezheti nekünk az ilyen fiókot az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címen, és a gyermek nevében gyakorolhatja a 8. pontban felsorolt jogokat.</li>
         </ul>
-        <p>Ha 16 és 18 év között vagy, kérjük, gondoskodj róla, hogy a szülőd vagy gondviselőd tudjon arról, hogy használod az appot.</p>
+        <p>Ha 16 és 18 év között vagy, kérjük, gondoskodj róla, hogy a szülőd vagy gondviselőd tudjon arról, hogy használod az appot, különösen, ha vásárolsz vagy aukción licitálsz.</p>
       </section>
 
       <section id="security">
         <h2><span class="no">11.</span>Hogyan védjük az adataidat</h2>
         <ul>
-          <li>Az app és a szervereink közötti teljes kommunikáció <strong>HTTPS/TLS</strong> kapcsolaton zajlik. Titkosítatlan csatorna nincs.</li>
-          <li>A kártyaképeket <strong>privát</strong> tárolóban (bucketben) tároljuk, minden nyilvános hozzáférés letiltásával, tárolás közben titkosítva (AES-256). Az app soha nem kap állandó képlinket – minden kép ideiglenes, aláírt URL-en keresztül érkezik, amely egy órán belül lejár.</li>
-          <li>A jelszavadat a CardPrime soha nem látja és nem tárolja. A hitelesítést az AWS Cognito végzi, amely csak sózott hasht tárol.</li>
-          <li>Minden szerveroldali komponens a <strong>legkisebb jogosultság</strong> elve szerint fut, pontosan azokra az adatokra korlátozva, amelyekre szüksége van. A kártyaszolgáltatásunknak például nincs jogosultsága a kártyaadatbázis tömeges olvasására – csak azt tudja lekérdezni, amit egy adott kérés láthat.</li>
+          <li>Az app, a weboldal és a szervereink közötti teljes kommunikáció <strong>HTTPS/TLS</strong> kapcsolaton zajlik.</li>
+          <li>Az adatbázis és a tárolók tárolás közben titkosítottak; a jelszavadat mi soha nem látjuk, a kártyaadataidat csak a Stripe kezeli.</li>
+          <li>A kártyakérelmek véglegesítéséhez Face ID vagy a készülékkód szükséges.</li>
+          <li>Minden szerveroldali komponens a <strong>legkisebb jogosultság</strong> elve szerint fut, és az adminfelülethez csak az erre jogosult munkatársaink férnek hozzá.</li>
         </ul>
         <p>Egyetlen rendszer sem tökéletesen biztonságos, és nem is állítunk mást. Ha olyan adatvédelmi incidens történik, amely valószínűleg kockázattal jár a jogaidra és szabadságaidra nézve, 72 órán belül bejelentjük a NAIH-nak, és a GDPR 33–34. cikke szerint tájékoztatunk téged.</p>
       </section>
 
       <section id="changes">
         <h2><span class="no">12.</span>A tájékoztató változásai</h2>
-        <p>Ha érdemben megváltoztatjuk, milyen adatokat gyűjtünk vagy hogyan használjuk őket, frissítjük ezt a tájékoztatót, és az appban értesítünk.</p>
+        <p>Ha érdemben megváltoztatjuk, milyen adatokat gyűjtünk vagy hogyan használjuk őket, frissítjük ezt a tájékoztatót, és az appban vagy e-mailben értesítünk. A korábbi változatokat kérésre megküldjük.</p>
       </section>
 
       <section id="contact">
@@ -287,7 +347,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       </section>
 
       <nav class="related" aria-label="Kapcsolódó oldalok">
-        <a href="../terms/"><b>Felhasználási feltételek</b><span>A fiók használatának szabályai, a tiltott tevékenységek és a felelősség kérdései</span></a>
+        <a href="../terms/"><b>Felhasználási feltételek</b><span>Az Általános Szerződési Feltételek: fiók, beolvasás, vásárlás, aukció, pontok és nyereményjáték</span></a>
         <a href="../support/"><b>Ügyfélszolgálat</b><span>Gyakori kérdések, és hogyan érsz el minket bármi másban</span></a>
         <a href="../refund-policy/"><b>Visszatérítés és szállítás</b><span>Szállítási módok és díjak, 14 napos elállás, visszatérítés és visszaküldés</span></a>
       </nav>

@@ -16,7 +16,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
 <title>Privacy Policy — CardPrime</title>
-<meta name="description" content="What data CardPrime collects, why we collect it, and how to delete it.">
+<meta name="description" content="What data the CardPrime app, shop and auctions process, why, who receives it, how long we keep it, and how to delete it.">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
@@ -76,7 +76,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <span class="stripe" aria-hidden="true"></span>
       <span class="sc-label">Legal</span>
       <h1 class="sc-display sc-display--lg">Privacy <span class="accent">Policy</span></h1>
-      <p class="updated">Last updated: November 13, 2026</p>
+      <p class="updated">Last updated: November 26, 2026</p>
     </div>
   </header>
 
@@ -84,15 +84,15 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <nav class="toc" aria-label="On this page">
       <ol>
         <li><a href="#who-we-are">1. Who we are</a></li>
-        <li><a href="#data">2. What data we collect</a></li>
-        <li><a href="#public">3. Cards you share publicly</a></li>
+        <li><a href="#data">2. What data we process</a></li>
+        <li><a href="#public">3. What others can see</a></li>
         <li><a href="#legal-basis">4. Legal basis</a></li>
-        <li><a href="#sharing">5. Who we share data with</a></li>
+        <li><a href="#sharing">5. Who receives the data</a></li>
         <li><a href="#transfers">6. International transfers</a></li>
         <li><a href="#retention">7. How long we keep data</a></li>
         <li><a href="#rights">8. Your rights</a></li>
         <li><a href="#automated">9. Automated processing</a></li>
-        <li><a href="#children">10. Children's privacy</a></li>
+        <li><a href="#children">10. Children's data</a></li>
         <li><a href="#security">11. How we protect data</a></li>
         <li><a href="#changes">12. Changes</a></li>
         <li><a href="#contact">13. Contact</a></li>
@@ -102,35 +102,66 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <article class="legal">
       <section id="who-we-are">
         <h2><span class="no">1.</span>Who we are</h2>
-        <p>CardPrime is operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we", "us"), the data controller responsible for your personal data under the EU General Data Protection Regulation (GDPR).</p>
+        <p>The CardPrime mobile app and the cardprime.io website (shop, auctions, event sales) are operated by <strong>CardPrime Korlátolt Felelősségű Társaság</strong> ("CardPrime", "we"), the controller responsible for your personal data under the EU General Data Protection Regulation (GDPR).</p>
         <ul>
-          <li>Registered office: <strong>2085 Pilisvörösvár, Semmelweis köz 1.</strong></li>
+          <li>Registered office: <strong>2085 Pilisvörösvár, Semmelweis köz 1., Hungary</strong></li>
           <li>Company registration number: <strong>13-09-248460</strong></li>
           <li>Tax number: <strong>33096810-2-13</strong></li>
-          <li>Registering court: <strong>Pest Vármegyei Törvényszék Cégbírósága</strong></li>
+          <li>Registry court: <strong>Pest Vármegyei Törvényszék Cégbírósága</strong></li>
           <li>Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></li>
         </ul>
-        <p>We have not appointed a Data Protection Officer, as our processing does not meet the Article 37 thresholds (no large-scale or systematic monitoring, no large-scale special-category processing). Privacy questions and rights requests can be sent to the contact above.</p>
+        <p>We have not appointed a Data Protection Officer, because our processing does not meet the thresholds of Article 37 (no large-scale or regular monitoring, and no large-scale processing of special categories of data). Send privacy questions and requests to exercise your rights to the address above.</p>
+        <p>Terms used here (Card, Digital Collection, Points, etc.) are defined in the <a href="../terms/">Terms and Conditions</a>.</p>
       </section>
 
       <section id="data">
-        <h2><span class="no">2.</span>What data we collect</h2>
+        <h2><span class="no">2.</span>What data we process</h2>
+        <p><strong>Account.</strong></p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Data</th><th>When</th><th>Purpose</th></tr></thead>
             <tbody>
-              <tr><td>Email address</td><td>Account registration (Cognito)</td><td>Login, account identification</td></tr>
-              <tr><td>Display name</td><td>Account registration (required; a nickname is fine)</td><td>Personalizing your profile, and identifying you as the owner of any card you publish to the public catalog (see Section 3)</td></tr>
-              <tr><td>Password</td><td>Account registration</td><td>Authentication (stored only as a salted hash by AWS Cognito — CardPrime never sees or stores your plaintext password)</td></tr>
-              <tr><td>Card records you add</td><td>Every time you add a card (photo + manual details)</td><td>Building your collection</td></tr>
-              <tr><td>Approximate location (coarse, rounded to ~1.1 km)</td><td>Only at the moment you save a card you've added</td><td>Fraud detection — flagging implausible location patterns (e.g. the same card added in two distant cities minutes apart)</td></tr>
-              <tr><td>Login timestamps</td><td>Every sign-in</td><td>Security monitoring</td></tr>
-              <tr><td>Content reports you submit</td><td>Only when you report a card in the public catalog</td><td>Reviewing reported content, meeting our content-moderation obligations</td></tr>
-              <tr><td>Accounts you block</td><td>Only when you block a collector</td><td>Hiding that collector's cards from you, and yours from them</td></tr>
+              <tr><td>Email address</td><td>Registration (with email, or with a Google or Apple account; Apple may provide a private relay address)</td><td>Sign-in, identifying your account, service messages</td></tr>
+              <tr><td>Username</td><td>Registration, or your first social sign-in</td><td>Shown on the leaderboard and in your public collection (see section 3)</td></tr>
+              <tr><td>Name</td><td>Only if you provide it (optional)</td><td>Your profile</td></tr>
+              <tr><td>Password</td><td>Registration with email</td><td>Authentication (stored by AWS Cognito only as a salted hash — we never see it)</td></tr>
+              <tr><td>Google or Apple account identifier</td><td>Social sign-in</td><td>Linking your account to the external sign-in; for Apple, revoking access when you delete your account</td></tr>
+              <tr><td>Sign-in log (time, platform), day of last activity</td><td>When you sign in or use the app</td><td>Security, detecting abuse</td></tr>
+              <tr><td>Push notification token</td><td>Only if you allow notifications</td><td>Sending notifications (auctions, card requests, orders)</td></tr>
             </tbody>
           </table>
         </div>
-        <p><strong>In the app</strong>, we do <strong>not</strong> collect precise/continuous location, contacts, photos outside the card-entry flow, or any advertising identifiers. The app contains no analytics, advertising or crash-reporting SDKs (no Firebase, Sentry, Amplitude, Mixpanel, or similar).</p>
+
+        <p><strong>Card scanning and collection.</strong></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Data</th><th>When</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>Scan log: the recognised card code, time, result (successful, failed, already owned, etc.)</td><td>Every completed scan attempt, including failed ones (cancelled scans are not recorded)</td><td>Authenticating and assigning the card, the card's history, detecting counterfeits and abuse</td></tr>
+              <tr><td>Approximate location (rounded to two decimals, about 1 km)</td><td>When you scan, <strong>only if you allowed</strong> location access</td><td>Detecting counterfeits and abuse (for example, the same card scanned in two distant places within a physically implausible time)</td></tr>
+              <tr><td>Digital Collection: the Cards assigned to you, when they were added and removed</td><td>When a Card is added, removed or transferred</td><td>Keeping your collection, the card's history</td></tr>
+              <tr><td>Points, user level, leaderboard position, points history</td><td>When you do something that earns points</td><td>Points and leaderboard, prize game (Terms chapters 14 and 16)</td></tr>
+              <tr><td>Likes and weekly quest answers (duel, Top 3, survey)</td><td>If you complete them</td><td>Awarding points and, in aggregate, learning which card designs collectors like</td></tr>
+              <tr><td>Collection visibility (public or private)</td><td>When you set it</td><td>Deciding who can see your collection</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>We do not store or send the camera image: your device reads the card code. Search runs on your device, and we never receive your search terms.</p>
+
+        <p><strong>Card requests and transfers (Terms chapter 15).</strong> We store the request (who asks for which Card, what they offer in return, its status and timestamps) and the contact details you enter, which the other party sees only after the request is accepted. Face ID or your device passcode is checked by your phone: we only learn whether the approval succeeded, and the number of failed attempts. We never receive biometric data.</p>
+
+        <p><strong>Moderation.</strong> Reports you make and reports about you, your blocks, username-filter matches, the number of rule violations and any account suspension.</p>
+
+        <p><strong>Shop purchases (in the app or on the website, also without an account).</strong> Name, email, phone number, billing address, delivery address or the chosen parcel locker/parcel point, or for in-store pickup only the billing address; country, items ordered, amounts and order status, and Stripe payment identifiers. Your card details are handled by Stripe; we do not see or store them.</p>
+
+        <p><strong>Auctions (Terms chapter 9).</strong> When you register for an auction: name, phone number, email, delivery address, shipping method and a payment method saved with Stripe (we never see the card number, only Stripe's identifier). The amount and time of your bids. Other participants do not see who you are: the bid list shows a random alias per auction.</p>
+
+        <p><strong>Prize game.</strong> We arrange prize delivery with each winner individually, and only ask for what is needed to hand over the prize.</p>
+
+        <p><strong>Event sales.</strong> If you buy at our counter at an event, we process the name and address you give for the invoice, your email (if you ask for an e-invoice) and the purchase details.</p>
+
+        <p><strong>In the app we do not</strong> collect precise or continuous location, contacts, photos from your photo library, or any advertising identifier. The app contains no analytics, advertising or crash-reporting SDK (no Firebase, Sentry, Amplitude, Mixpanel or similar), and the app's backend does not store your IP address.</p>
+
         <p id="cookies"><strong>On our website (cardprime.io): cookies and measurement.</strong></p>
         <p>Our website &mdash; not the app &mdash; uses Google and Meta tools to measure traffic and our advertising. <strong>No cookie is set before you choose</strong>, and analytics and marketing cookies are set only with your consent.</p>
         <ul>
@@ -155,139 +186,169 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
             </tbody>
           </table>
         </div>
-        <p><strong>What's required vs. optional:</strong> email, password and a display name are required to create an account — without them we cannot provide the service. The display name does not have to be your real name; a nickname or pseudonym is fine, and you can change it at any time in Settings → Edit Profile (see Section 3, which explains where it is shown). Approximate location is only requested at the moment you save a card; declining the permission prompt does not block adding the card, but the geo-velocity fraud check will have less information to work with for that entry.</p>
+        <p><strong>What is required and what is optional:</strong> an account needs an email address and a username (plus a password if you register with email); orders and auction registration need the data listed above — without them we cannot provide the service or fulfil the order. Your name, location access and push notifications are optional: if you decline location access, scanning works the same, the abuse check just has less information.</p>
       </section>
 
       <section id="public">
-        <h2><span class="no">3.</span>Cards you choose to share publicly</h2>
-        <p><strong>Every card you add is private by default.</strong> It is visible only in your own account unless you deliberately turn on "Show in public catalog" for that specific card — a per-card switch you can turn off again at any time from the card's edit screen.</p>
-        <p>When a card <em>is</em> shared publicly, this is what other signed-in users can see:</p>
+        <h2><span class="no">3.</span>What others can see</h2>
         <ul>
-          <li>the card's photo and the details you entered for it (player, sport, year, brand, series, card number, grade and whether it is graded, rarity, estimated value, serial number, and any description or tags stored on the card)</li>
-          <li><strong>the display name on your profile</strong>, shown as the card's owner. If no display name is stored for your account, an <strong>anonymous collector ID</strong> such as "Collector #A1B2" is shown instead — a one-way code derived from your account identifier that cannot be reversed back into your account.</li>
+          <li><strong>Leaderboard:</strong> your username, points and rank.</li>
+          <li><strong>Public collection</strong> (the default): your username and the Cards in your collection. You can make it private in Settings at any time; then nobody sees what is in your collection, and on any of your Cards "Private collector" is shown instead of your username.</li>
+          <li><strong>Card requests:</strong> the owner of the Card you request sees your username; your contact details become visible to them only after acceptance.</li>
+          <li><strong>Auctions:</strong> only your alias and bid amount; we never publish the winner's details.</li>
         </ul>
-        <p>They do <strong>not</strong> see your email address, your account ID, the location captured when you added the card, or any other card in your collection.</p>
-        <p><strong>Your display name is the only part of your profile that other users see, and only on cards you have chosen to publish.</strong> It is entirely under your control: you can change it at any time in Settings → Edit Profile — a nickname or pseudonym is perfectly acceptable — and the change applies immediately everywhere your published cards appear. If you would rather not be identified at all, turn the "Show in public catalog" switch off; a private card never shows your name to anyone. Accounts that have no display name stored are shown under the anonymous collector ID instead. Nothing else about your profile is ever displayed, and your display name is not shown anywhere while all of your cards are private.</p>
-        <p><strong>Automated screening.</strong> When you turn the switch on, the card's photo is automatically checked for sexual, violent, hateful, or otherwise objectionable imagery before it can appear in the catalog. A photo that fails this check is not published; the card itself stays saved in your private collection.</p>
-        <p><strong>Reporting and blocking.</strong> Other users can report a publicly shared card and can block you as a collector; you can do the same to them. If enough distinct users report the same card, it is automatically removed from the public catalog while we review it. Blocking is symmetric — a blocked collector's cards disappear from your Explore feed, and yours disappear from theirs. Blocks you've made can be undone in Settings → Blocked Accounts &amp; Reports.</p>
-        <p>Turning the switch off removes the card from the public catalog immediately.</p>
+        <p>Other users never see your email address, name, location or scan log. Nobody can search for you by username.</p>
+        <p>Authorised CardPrime staff can see a Card's history in the admin interface — the scanner's username, the time, result and approximate location of each scan — but only to detect counterfeits and abuse, investigate complaints and moderate.</p>
       </section>
 
       <section id="legal-basis">
-        <h2><span class="no">4.</span>Legal basis for processing</h2>
-        <p><strong>Performance of a contract</strong> — account creation, authentication, and collection management are necessary to provide the service you request.</p>
-        <p><strong>Consent</strong> — publishing a card to the public catalog happens only when you turn on that card's visibility switch. You can withdraw this at any time by turning the switch off, with no effect on anything else. On our website, Google Analytics with cookies, Google signals and the Meta Pixel are also used only with your consent, which you can withdraw at any time through the "Cookie settings" link (see Section 2). The cookie that stores your choice is strictly necessary for the cookie window to work.</p>
-        <p><strong>Legitimate interest</strong> — approximate location capture when you add a card and the resulting fraud/geo-velocity checks; automated screening of photos submitted to the public catalog; and processing of reports and blocks. These protect the integrity of the card catalog and the safety of other users, and are limited to the minimum needed for that purpose. On our website, loading Google Tag Manager and the cookieless Google Analytics signals described in Section 2 serve our interest in delivering the website and estimating the number of visits. We are also legally required to operate a notice-and-action mechanism for illegal content under the EU Digital Services Act.</p>
+        <h2><span class="no">4.</span>Legal basis</h2>
+        <p><strong>Performance of a contract</strong> (GDPR Art. 6(1)(b)) — your account, sign-in, scanning and collection, points and leaderboard, card requests, fulfilling and shipping orders, auction registration and settlement, delivering prizes.</p>
+        <p><strong>Legal obligation</strong> (Art. 6(1)(c)) — keeping invoices and accounting records (Hungarian Act C of 2000 on Accounting, section 169), VAT and OSS returns, handling consumer complaints, and the notice mechanism for illegal content under the EU Digital Services Act.</p>
+        <p><strong>Legitimate interests</strong> (Art. 6(1)(f)) — detecting counterfeits and abuse (scan log, approximate location, card history), moderation (reports, blocks, username filter, violation count), security logs, aggregate analysis of the weekly surveys, and keeping pseudonymised history after account deletion (see section 7). These protect the authenticity of Cards, the fairness of the points competition and other users' safety, and are limited to what is needed. On the website, loading Google Tag Manager and the cookieless Google Analytics pings serve our interest in serving the site and estimating visits.</p>
+        <p><strong>Consent</strong> (Art. 6(1)(a)) — location access and push notifications (via your phone's permission prompt; withdraw any time in your phone's settings), and on the website the cookie-based Google Analytics, Google signals and Meta Pixel (withdraw via the "Cookie settings" link). The cookie that stores your choice is strictly necessary for the cookie banner to work.</p>
       </section>
 
       <section id="sharing">
-        <h2><span class="no">5.</span>Who we share data with</h2>
-        <p>Your data is processed only by our infrastructure provider, <strong>Amazon Web Services (AWS)</strong>, in the following services: Cognito (authentication), DynamoDB (database), S3 (card images), Lambda/API Gateway (application logic), Rekognition (automated image screening, only for photos you submit to the public catalog), and SES (system email). AWS acts as our <strong>data processor</strong> and processes this data only on our instructions, under the AWS Data Processing Addendum that forms part of the AWS Service Terms and meets the requirements of Article 28 GDPR.</p>
-        <p>Our website is hosted by <strong>Cloudflare</strong>, which processes the technical data of each visit (such as IP address) to deliver the pages. <strong>Google</strong> receives the website data described in Section 2, more of it if you accept Statistics or Marketing; <strong>Meta</strong> and <strong>jsDelivr</strong> receive data only if you accept Marketing. None of this applies to the app.</p>
-        <p>We do not sell or rent your data, and apart from the website measurement you consent to, we do not share it with advertisers, data brokers, or any other third party.</p>
+        <h2><span class="no">5.</span>Who receives the data</h2>
+        <p>We do not sell or rent your data. Only the following receive it, and only as far as their task requires.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Recipient</th><th>Role</th><th>Data</th></tr></thead>
+            <tbody>
+              <tr><td>Amazon Web Services EMEA SARL</td><td>Processor: hosting, database, sign-in (Cognito), system email</td><td>All app and shop data, in the EU (Stockholm)</td></tr>
+              <tr><td>Stripe Payments Europe, Ltd.</td><td>Payment provider (also an independent controller for the payment)</td><td>Name, email, amount, card details (seen only by Stripe), the saved payment method for auctions</td></tr>
+              <tr><td>KBOSS.hu Kft. (Számlázz.hu)</td><td>Processor: invoicing; forwards invoice data to the Hungarian Tax Authority (NAV) as required by law</td><td>Name, billing address, email, purchase details</td></tr>
+              <tr><td>Our accountant</td><td>Processor: bookkeeping</td><td>Invoices and accounting records</td></tr>
+              <tr><td>FoxPost Zrt.</td><td>Delivery</td><td>Name, phone, email, the chosen locker or delivery address</td></tr>
+              <tr><td>GLS General Logistics Systems Hungary Kft. (via our MyGLS account and GLS partner)</td><td>Delivery in Hungary and to the EU</td><td>Name, phone, email, delivery address or parcel point</td></tr>
+              <tr><td>King of Hoops store (1051 Budapest, Apáczai Csere János u. 17.)</td><td>In-store pickup point</td><td>Your name and order number, so they can hand over the parcel</td></tr>
+              <tr><td>Resend (Plus Five Five, Inc.)</td><td>Processor: email delivery (confirmation codes, order confirmations, notifications)</td><td>Email address, message content</td></tr>
+              <tr><td>Expo (650 Industries, Inc.)</td><td>Processor: relaying push notifications to Apple</td><td>Push token, notification text</td></tr>
+              <tr><td>Apple Inc., Google</td><td>Independent controllers: Apple/Google sign-in, Apple Push Notification service, App Store</td><td>Data needed for sign-in and notifications, under their own policies</td></tr>
+              <tr><td>Cloudflare, Inc.</td><td>Serving the website</td><td>Technical visit data (e.g. IP address)</td></tr>
+              <tr><td>Google, Meta, jsDelivr</td><td>Website only, as described under cookies</td><td>See section 2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The provider of the card-verification technology receives no personal data from scans. We disclose data to authorities or courts only where the law requires it.</p>
       </section>
 
       <section id="transfers">
-        <h2><span class="no">6.</span>International data transfers</h2>
-        <p>All data is stored and processed within the European Union, in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region. The single exception is the automated image screening described in Section 3: because AWS does not offer that service in Stockholm, photos you submit to the public catalog are screened in AWS's <strong>eu-central-1 (Frankfurt, Germany)</strong> region. Both regions are inside the EU — we do not transfer your personal data outside the EU/EEA. The screening call is a one-off check with no storage: the image is not retained by that service.</p>
-        <p><strong>Website measurement.</strong> Google and Meta may transfer the data they receive from our website to the United States (Google LLC, Meta Platforms, Inc.). Both are certified under the EU–US Data Privacy Framework, on the basis of the European Commission's adequacy decision. App data is not affected.</p>
+        <h2><span class="no">6.</span>International transfers</h2>
+        <p>App and shop data is stored and processed inside the European Union, in AWS's <strong>eu-north-1 (Stockholm, Sweden)</strong> region.</p>
+        <p>Some providers may also process data in the United States: <strong>Stripe</strong>, <strong>Resend</strong>, <strong>Expo</strong>, and on the website <strong>Google</strong> and <strong>Meta</strong>. Such transfers rely on certification under the EU–U.S. Data Privacy Framework and the European Commission's adequacy decision, or, where that does not apply, on the European Commission's Standard Contractual Clauses (SCCs).</p>
       </section>
 
       <section id="retention">
-        <h2><span class="no">7.</span>How long we keep your data</h2>
-        <p>We retain your data for as long as your account remains active. We do not keep it "just in case" beyond that — there is no separate archive of former users.</p>
+        <h2><span class="no">7.</span>How long we keep data</h2>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Data</th><th>Retention</th></tr></thead>
             <tbody>
-              <tr><td>Account, profile, cards, card images</td><td>Until you delete your account</td></tr>
-              <tr><td>Login timestamps</td><td>Until you delete your account</td></tr>
-              <tr><td>Approximate location captured on card add</td><td>Stored with that card record; deleted with it</td></tr>
-              <tr><td>Content reports and block records</td><td>Until you delete your account, or until you unblock the collector</td></tr>
-              <tr><td>Website cookies</td><td>As listed in the cookie table in Section 2</td></tr>
-              <tr><td>Google Analytics data from the website</td><td>At most 14 months</td></tr>
+              <tr><td>Account, profile, collection, points, likes, weekly answers, sign-in log, push token</td><td>Until you delete your account</td></tr>
+              <tr><td>Orders, invoices, won-auction data</td><td>8 years (accounting obligation)</td></tr>
+              <tr><td>Bids (amount, time)</td><td>8 years; after account deletion without your name, linked only to the auction alias</td></tr>
+              <tr><td>Auction registration (address, phone, saved payment method)</td><td>Until the auction closes. If charging the winner fails, the top three bidders' data is kept until the manual sale under Terms section 9.8 is closed.</td></tr>
+              <tr><td>Contact details in a card request</td><td>Deleted when the request closes</td></tr>
+              <tr><td>Card request record</td><td>30 days after it closes</td></tr>
+              <tr><td>Scan log and card ownership history</td><td>As part of the Card's history, for as long as the Card is registered on the Platform; pseudonymised after account deletion (see below)</td></tr>
+              <tr><td>Reports and blocks</td><td>Until you delete your account or lift the block</td></tr>
+              <tr><td>Server logs</td><td>30 days</td></tr>
+              <tr><td>Prize game winners' data</td><td>Until the prize is handed over, or as long as the law requires</td></tr>
+              <tr><td>Website cookies</td><td>As in the cookie table in section 2</td></tr>
+              <tr><td>Website Google Analytics data</td><td>Up to 14 months</td></tr>
               <tr><td>Google signals data</td><td>Up to 26 months, or less if the Google Analytics retention is shorter</td></tr>
               <tr><td>Meta Pixel data</td><td>Under Meta's own retention rules</td></tr>
             </tbody>
           </table>
         </div>
-        <p>If you request deletion, your account and all associated data are <strong>erased automatically</strong> — not through a manual, delayed process. This includes uploaded card images (every stored version of them, not only the latest), reports you have submitted, reports submitted about your cards, and block records in both directions.</p>
-        <p><strong>Backups.</strong> Our database has point-in-time recovery enabled, which continuously retains a rolling <strong>35-day</strong> window so we can recover from an outage, a faulty deployment, or accidental data loss. This is a whole-database safety net, not a per-user archive: individual records cannot be removed from it, so for up to 35 days after deletion your data may still exist inside that recovery window. It is not accessible to the application, is never used to serve or restore an individual account, and rolls off automatically. This is the one place where erasure is not instantaneous, and we mention it rather than claim otherwise.</p>
+        <p><strong>What happens when you delete your account.</strong> Deletion in the app is automatic, not a manual or delayed process:</p>
+        <ul>
+          <li>we <strong>delete</strong> your profile, sign-in data (Cognito), sign-in log, notifications, reports and blocks in both directions, auction registrations, likes, weekly answers, card requests and your username; for Apple sign-in we revoke Apple access, and we delete the payment method saved with Stripe;</li>
+          <li>your <strong>points</strong> are lost for good (Terms chapter 14);</li>
+          <li>the Cards in your collection <strong>remain taken</strong>: nobody else can add a deleted account's Card to their collection;</li>
+          <li>in card histories and the scan log your account is replaced by a <strong>pseudonymous identifier</strong> that does not identify you; closed auctions keep your alias;</li>
+          <li><strong>orders and invoices</strong> are kept for 8 years because of the accounting obligation.</li>
+        </ul>
+        <p><strong>Backups.</strong> Our database has point-in-time recovery enabled, which continuously keeps a rolling <strong>35-day</strong> window so we can restore the system after an outage, a faulty deployment or accidental data loss. It is a whole-database safety net, not a per-user archive: individual records cannot be removed from it, so for up to 35 days after deletion your data may still exist in this recovery window. The app cannot access it, we never use it to serve or restore individual accounts, and it expires automatically.</p>
       </section>
 
       <section id="rights">
         <h2><span class="no">8.</span>Your rights</h2>
-        <p>Under GDPR, you have the right to:</p>
+        <p>Under the GDPR you have the right to:</p>
         <ul>
-          <li><strong>Access</strong> the data we hold about you</li>
-          <li><strong>Rectify</strong> inaccurate data (edit your name in Settings)</li>
-          <li><strong>Erase</strong> your account and all associated data</li>
-          <li><strong>Restrict</strong> processing of your data in certain circumstances (e.g. while a disputed correction is being verified)</li>
-          <li><strong>Object</strong> to processing based on our legitimate interest — the geo-velocity fraud check, the automated screening of photos you submit to the public catalog, and the handling of reports and blocks</li>
-          <li><strong>Withdraw consent</strong> at any time, where processing is based on consent. In the app, publishing a card is the only thing we do on that basis: turning the card's visibility switch off withdraws it, immediately and with no effect on anything else. On the website, you withdraw consent to analytics or marketing cookies through the "Cookie settings" link at the bottom of every page. Withdrawal does not affect the lawfulness of processing carried out beforehand</li>
-          <li><strong>Data portability</strong> — receive the personal data you've provided us, in a structured, commonly-used, machine-readable format, and transmit it to another controller</li>
-          <li><strong>Lodge a complaint</strong> with your national data protection authority — as a Hungarian company, we are supervised by the <strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong>, naih.hu; you may also complain to the supervisory authority of your own EU/EEA country of residence</li>
+          <li><strong>access</strong> the data we hold about you;</li>
+          <li><strong>rectify</strong> inaccurate data (you can change your name and username in the app);</li>
+          <li><strong>erasure</strong> — except data we must keep by law (invoices);</li>
+          <li><strong>restrict</strong> processing in certain cases;</li>
+          <li><strong>object</strong> to processing based on our legitimate interests (section 4);</li>
+          <li><strong>withdraw consent</strong> at any time: location and notifications in your phone's settings, website cookies via the "Cookie settings" link at the bottom of every page. Withdrawal does not affect the lawfulness of earlier processing;</li>
+          <li><strong>data portability</strong> — receiving the data you gave us in a machine-readable format;</li>
+          <li><strong>lodge a complaint</strong> with the supervisory authority: <strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong>, 1055 Budapest, Falk Miksa utca 9–11., Hungary, naih.hu; or with the authority of your own EU/EEA country of residence. You may also go to court.</li>
         </ul>
         <div class="callout">
-          <p><strong>To delete your account:</strong> open Settings → Delete Account in the app. This immediately and automatically removes your profile, your collection, uploaded card images, card add history, and login logs from our systems, and deletes your Cognito login credentials. This action is irreversible.</p>
+          <p><strong>Deleting your account:</strong> in the app under Settings → Delete account. Everything described in section 7 happens immediately and automatically. It cannot be undone.</p>
         </div>
-        <p>For any other request — including access, rectification, restriction, objection, or a data portability export — or if you cannot access the app, email <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
+        <p>For any other request, or if you cannot access the app, email <a href="mailto:info@cardprime.io">info@cardprime.io</a>. We reply within one month at the latest.</p>
       </section>
 
       <section id="automated">
         <h2><span class="no">9.</span>Automated processing</h2>
-        <p>We run three automated checks. None of them produces a legal or similarly significant automated decision about you or your account, and none of them results in an automated account suspension — a human reviews anything that could lead to that.</p>
+        <p>We do not profile you and do not use artificial intelligence on your personal data. The following automatic steps are part of how the service works:</p>
         <ul>
-          <li><strong>Geo-velocity check.</strong> When you add a card, we compare the location and timing against the card's history. This may flag the record if the pattern looks physically implausible. It only produces an internal flag.</li>
-          <li><strong>Image screening.</strong> When you publish a card to the public catalog, its photo is automatically screened for objectionable imagery (see Section 3). A photo that fails is not published; the card stays in your private collection, and you can edit or replace the photo and try again.</li>
-          <li><strong>Report threshold.</strong> If several distinct users report the same publicly shared card, that card is automatically hidden from the public catalog pending human review. Only that one card is affected — your account and the rest of your collection are not.</li>
+          <li><strong>Card verification.</strong> When you scan, the system checks that the Card's QR code is genuine.</li>
+          <li><strong>First scanner wins.</strong> A Card not yet assigned to anyone goes to the first person who scans it successfully (Terms chapter 3).</li>
+          <li><strong>Auctions.</strong> The highest valid bid wins, and after closing the system automatically charges the winner's saved payment method (Terms chapter 9). Stripe runs its own fraud checks on payments.</li>
+          <li><strong>Abuse flag.</strong> If a Card's scans show a physically implausible place and time, the system sets an internal flag. That alone triggers no action.</li>
+          <li><strong>Report threshold and username filter.</strong> If several different users report the same content, it is hidden until a human reviews it; the system does not accept offensive usernames.</li>
         </ul>
-        <p>You can contest any of these outcomes by emailing <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
+        <p>Only a person can decide to suspend or delete an account. You can contest any outcome at <a href="mailto:info@cardprime.io">info@cardprime.io</a>.</p>
       </section>
 
       <section id="children">
-        <h2><span class="no">10.</span>Children's privacy</h2>
-        <p>CardPrime is intended for collectors aged <strong>16 and older</strong> — which is also the age at which a person can consent to their own personal data being processed by an online service in Hungary.</p>
-        <p><strong>How the requirement is applied.</strong> Being at least 16 is a condition of our <a href="../terms/">Terms of Service</a> (Section 2, "Who may use CardPrime"), which you accept before the app can be used. Accepting those terms, and continuing to use CardPrime afterwards, is your representation that you meet the condition. We deliberately do <strong>not</strong> ask for a date of birth and do <strong>not</strong> verify age against identity documents. GDPR asks for efforts that are reasonable "taking into consideration available technology", and for an app that catalogues sports cards — with no chat, no advertising or profiling in the app, and no content aimed at children — requiring identity documents would collect far more personal data about every user than it could ever protect. That representation is the proportionate measure here, and we describe it as exactly what it is: <strong>a declaration, not a verification.</strong></p>
-        <p><strong>What this means honestly.</strong> Because we do not verify, we cannot rule out that someone under 16 uses CardPrime despite the requirement. We do not claim otherwise. What we do:</p>
+        <h2><span class="no">10.</span>Children's data</h2>
+        <p>CardPrime is for collectors aged <strong>16 and over</strong> — in Hungary this is also the age from which a person can consent on their own to an online service processing their personal data.</p>
+        <p><strong>How we apply the requirement.</strong> Being at least 16 is a condition of the <a href="../terms/#f2">Terms</a> (section 2.10), which you accept when you register. By doing so and by continuing to use CardPrime you declare that you meet it. We deliberately do <strong>not</strong> ask for your date of birth and do <strong>not</strong> verify age with identity documents: collecting documents from every user would gather far more personal data than it could ever protect. Here the declaration is the proportionate measure, and we call it exactly what it is: <strong>a declaration, not verification.</strong></p>
+        <p>Because we do not verify, we cannot rule out that someone under 16 uses CardPrime despite the requirement. What we do:</p>
         <ul>
           <li>we never knowingly collect data from anyone under 16;</li>
-          <li>if we become aware that an account belongs to someone under 16, we delete that account and all of its data using the same automatic erasure described in Section 8 — we do not ask the person to prove their age first;</li>
-          <li>anyone can tell us about such an account, including a parent or guardian, by emailing <a href="mailto:info@cardprime.io">info@cardprime.io</a>;</li>
-          <li>a parent or guardian may exercise any of the rights in Section 8 (access, erasure, objection, portability) on behalf of a child in their care.</li>
+          <li>if we learn that an account belongs to someone under 16, we delete it as described in section 7;</li>
+          <li>anyone — including a parent or guardian — can report such an account to <a href="mailto:info@cardprime.io">info@cardprime.io</a> and exercise the rights in section 8 on the child's behalf.</li>
         </ul>
-        <p>If you are between 16 and 18, please make sure a parent or guardian is aware you are using the app.</p>
+        <p>If you are between 16 and 18, please make sure your parent or guardian knows you use the app, especially if you buy something or bid in an auction.</p>
       </section>
 
       <section id="security">
         <h2><span class="no">11.</span>How we protect your data</h2>
         <ul>
-          <li>All communication between the app and our servers uses <strong>HTTPS/TLS</strong>. There is no unencrypted channel.</li>
-          <li>Card images are stored in a <strong>private</strong> storage bucket with all public access blocked, encrypted at rest (AES-256). The app never receives a permanent image link — each image is served through a temporary, signed URL that expires within the hour.</li>
-          <li>Your password is never seen or stored by CardPrime. Authentication is handled by AWS Cognito, which stores only a salted hash.</li>
-          <li>Every server-side component runs with <strong>least-privilege</strong> permissions, scoped to exactly the data it needs. Our card service, for example, has no permission to read the card database in bulk — it can only look up what a specific request is entitled to see.</li>
+          <li>All communication between the app, the website and our servers uses <strong>HTTPS/TLS</strong>.</li>
+          <li>The database and storage are encrypted at rest; we never see your password, and only Stripe handles your card details.</li>
+          <li>Completing a card request requires Face ID or your device passcode.</li>
+          <li>Every server-side component runs on the principle of <strong>least privilege</strong>, and only authorised staff can access the admin interface.</li>
         </ul>
-        <p>No system is perfectly secure, and we do not claim otherwise. If a breach occurs that is likely to result in a risk to your rights and freedoms, we will notify the NAIH within 72 hours and inform you as required by Articles 33–34 GDPR.</p>
+        <p>No system is perfectly secure, and we do not claim otherwise. If a personal data breach is likely to result in a risk to your rights and freedoms, we report it to the NAIH within 72 hours and inform you as required by GDPR Articles 33–34.</p>
       </section>
 
       <section id="changes">
         <h2><span class="no">12.</span>Changes to this policy</h2>
-        <p>If we materially change what data we collect or how we use it, we will update this policy and notify you in the app.</p>
+        <p>If we materially change what data we collect or how we use it, we will update this policy and notify you in the app or by email. Earlier versions are available on request.</p>
+        <p>This policy is published in Hungarian and English; if they differ, the Hungarian version prevails.</p>
       </section>
 
       <section id="contact">
         <h2><span class="no">13.</span>Contact</h2>
         <div class="callout">
           <p><strong>CardPrime Korlátolt Felelősségű Társaság</strong><br>
-          Registered office: <strong>2085 Pilisvörösvár, Semmelweis köz 1.</strong><br>
-          Company registration number: <strong>13-09-248460</strong> · Tax number: <strong>33096810-2-13</strong><br>
+          Registered office: <strong>2085 Pilisvörösvár, Semmelweis köz 1., Hungary</strong><br>
+          Company reg. no.: <strong>13-09-248460</strong> · Tax no.: <strong>33096810-2-13</strong><br>
           Email: <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
         </div>
         <p>Supervisory authority: Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH), naih.hu</p>
       </section>
 
       <nav class="related" aria-label="Related pages">
-        <a href="../terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a>
+        <a href="../terms/"><b>Terms of Service</b><span>The Terms and Conditions: account, scanning, purchases, auctions, points and the prize game</span></a>
         <a href="../support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a>
         <a href="../refund-policy/"><b>Refund &amp; Shipping</b><span>Shipping options and fees, the 14-day right to withdraw, and how refunds and returns work</span></a>
       </nav>
