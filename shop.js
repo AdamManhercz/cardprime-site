@@ -24,6 +24,37 @@ window.CardPrimeShop = (function () {
 
   var CART_KEY = 'cardprime:cart:v1';
 
+  // A webshop főkapcsolója (2026-11-26). Amíg false: a termékoldal gombjai „Hamarosan”
+  // feliratúak és inaktívak, a pénztár zárva, és SEMMILYEN rendelés nem indul innen. A teljes
+  // folyamat (kosár → createOrder → Stripe → webhook → Számlázz.hu számla) kódja kész,
+  // nyitáskor csak ezt kell true-ra állítani (és a ?v= számokat emelni).
+  // A ?preview a címben (pl. /shop/?preview) helyben megmutatja a nyitott felületet és a
+  // pénztár lépéseit — a fizetés gombja ilyenkor is zárva marad, rendelés nem jön létre.
+  var SHOP_OPEN = false;
+  var PREVIEW = /[?&]preview\b/.test(window.location.search);
+
+  // Ahová szállítunk: Magyarország + a 16 GLS-es EU-ország (backend/tax.py COUNTRIES,
+  // owner 2026-11-16). Ami nincs itt, azt a createOrder 400-zal elutasítja.
+  var COUNTRIES = [
+    { code: 'HU', hu: 'Magyarország', en: 'Hungary', dial: '+36' },
+    { code: 'AT', hu: 'Ausztria', en: 'Austria', dial: '+43' },
+    { code: 'BE', hu: 'Belgium', en: 'Belgium', dial: '+32' },
+    { code: 'HR', hu: 'Horvátország', en: 'Croatia', dial: '+385' },
+    { code: 'CZ', hu: 'Csehország', en: 'Czechia', dial: '+420' },
+    { code: 'DK', hu: 'Dánia', en: 'Denmark', dial: '+45' },
+    { code: 'FI', hu: 'Finnország', en: 'Finland', dial: '+358' },
+    { code: 'FR', hu: 'Franciaország', en: 'France', dial: '+33' },
+    { code: 'DE', hu: 'Németország', en: 'Germany', dial: '+49' },
+    { code: 'IT', hu: 'Olaszország', en: 'Italy', dial: '+39' },
+    { code: 'LU', hu: 'Luxemburg', en: 'Luxembourg', dial: '+352' },
+    { code: 'NL', hu: 'Hollandia', en: 'Netherlands', dial: '+31' },
+    { code: 'PL', hu: 'Lengyelország', en: 'Poland', dial: '+48' },
+    { code: 'RO', hu: 'Románia', en: 'Romania', dial: '+40' },
+    { code: 'SK', hu: 'Szlovákia', en: 'Slovakia', dial: '+421' },
+    { code: 'SI', hu: 'Szlovénia', en: 'Slovenia', dial: '+386' },
+    { code: 'SE', hu: 'Svédország', en: 'Sweden', dial: '+46' }
+  ];
+
   // --- Money ------------------------------------------------------------------
   // priceCents is in fillér: HUF is a two-decimal currency at Stripe, so 6 399 Ft is
   // 639900. Dividing by 100 here is what turns it back into forint.
@@ -88,6 +119,12 @@ window.CardPrimeShop = (function () {
 
   function getOrderStatus(orderId) {
     return call('getOrderStatus', { orderId: orderId });
+  }
+
+  // Megjelenítéshez: csomag- és szállítási díjak a célország szerint (packs_handler.py
+  // _get_pricing). A null díj = az a mód oda nem elérhető. A createOrder mindent újraszámol.
+  function getPricing(country) {
+    return call('getPricing', { country: country });
   }
 
   // --- Cart -------------------------------------------------------------------
@@ -183,12 +220,28 @@ window.CardPrimeShop = (function () {
     return byId;
   }
 
-  // The cart count shown to the buyer is the icon beside the site menu, rendered by
-  // nav.js on every page. writeCart's `cardprime:cart-changed` event is what keeps it
-  // current, so nothing here has to know the icon exists.
+  // A kosár darabszáma az új fejlécben: a kosár-ikonban lévő [data-cart-count]. A régi
+  // dizájnú oldalakon ezt a nav.js csinálja (.cart-link .cart-count). Más fülön történt
+  // változást a storage esemény hoz.
+  function renderCartBadges() {
+    var count = cartCount();
+    var badges = document.querySelectorAll('[data-cart-count]');
+    for (var i = 0; i < badges.length; i++) {
+      badges[i].textContent = count > 99 ? '99+' : String(count);
+      badges[i].hidden = count === 0;
+    }
+  }
+  document.addEventListener('cardprime:cart-changed', renderCartBadges);
+  window.addEventListener('storage', function (ev) { if (ev.key === CART_KEY) renderCartBadges(); });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderCartBadges);
+  else renderCartBadges();
 
   return {
     API: API,
+    SHOP_OPEN: SHOP_OPEN,
+    PREVIEW: PREVIEW,
+    COUNTRIES: COUNTRIES,
+    getPricing: getPricing,
     MAX_ORDER_LINES: MAX_ORDER_LINES,
     MAX_LINE_QUANTITY: MAX_LINE_QUANTITY,
     MAX_ORDER_PACKS: MAX_ORDER_PACKS,

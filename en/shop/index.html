@@ -16,15 +16,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
 <title>Shop — CardPrime</title>
-<meta name="description" content="Sealed packs of CardPrime&#39;s own printed sports cards. Coming soon.">
+<meta name="description" content="FTC-Telekom Waterpolo, First Edition: CardPrime&#39;s own printed sports cards in sealed packs and boxes.">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
 <link rel="stylesheet" href="/fonts/fonts.css?v=1">
 <link rel="stylesheet" href="/scrollcraft.css?v=1">
 <link rel="stylesheet" href="/site.css?v=4">
+<link rel="stylesheet" href="/store.css?v=1">
 </head>
-<body class="doc-page soon-page">
+<body class="doc-page">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNXQPSS3" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -40,6 +41,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <a class="btn" href="../app/">Get the app</a>
     <a class="icon-btn" href="../checkout/" aria-label="Cart">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="cart-count" data-cart-count hidden></span>
     </a>
     <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="burger" aria-hidden="true"></span></button>
   </div>
@@ -71,30 +73,55 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </nav>
 
 <main>
-  <section class="soon">
-    <div class="soon__in">
-      <div class="soon__text">
+  <section class="store" aria-labelledby="store-title">
+    <div class="store__in">
+      <div class="store__head">
         <span class="stripe" aria-hidden="true"></span>
         <span class="sc-label">Shop</span>
-        <h1 class="sc-display sc-display--lg">Sealed card packs.<br><span class="accent">Coming soon.</span></h1>
-        <p class="sc-lede">Sealed packs of CardPrime's own printed sports cards, shipped from Hungary. Every pack's contents are randomized.</p>
-        <span class="badge">Coming soon</span>
-        <p class="sc-body">The shop is not open yet. Questions in the meantime: <a href="mailto:info@cardprime.io" class="accent">info@cardprime.io</a>.</p>
-        <div class="soon__actions">
-          <a class="btn" href="../">Back to home</a>
-          <a class="btn btn--ghost" href="../refund-policy/">Refund &amp; Shipping</a>
-        </div>
+        <h1 id="store-title" class="sc-display sc-display--lg">The first edition is here.</h1>
       </div>
-      <div class="soon__art" aria-hidden="true">
-        <div class="pack pack--back"><div class="pack__body"></div></div>
-        <div class="pack">
-          <div class="pack__body">
-            <img src="/assets/CardPrime-AppIcon-rounded-512.png" alt="">
-            <span class="stripe"></span>
-            <span class="pack__name">Sealed pack</span>
-            <span class="pack__sub">CardPrime print</span>
+
+      <div class="grid3">
+        <article class="product" data-pack="single-pack" aria-labelledby="p-single-pack">
+          <div class="stage"><img src="/assets/shop/pack_front.webp" width="1200" height="1200" alt="CardPrime card pack"></div>
+          <h2 id="p-single-pack" class="product__name">Pack</h2>
+          <p class="product__meta">1 sealed pack · 5 cards</p>
+          <div class="price"><b data-price>7 490 Ft</b></div>
+          <p class="product__stock" data-stock hidden></p>
+          <div class="buyrow">
+            <div class="qty" data-qty><button type="button" data-step="-1" aria-label="Pack: one fewer" disabled>−</button><output aria-live="polite">1</output><button type="button" data-step="1" aria-label="Pack: one more" disabled>+</button></div>
+            <button type="button" class="btn buy" data-add disabled>Coming soon</button>
           </div>
-        </div>
+        </article>
+        <article class="product" data-pack="box-of-4" aria-labelledby="p-box-of-4">
+          <div class="stage stage--box"><img src="/assets/shop/box_front.webp" width="1200" height="1200" alt="CardPrime box"></div>
+          <h2 id="p-box-of-4" class="product__name">Box</h2>
+          <p class="product__meta">4 sealed packs · 20 cards · 1 guaranteed signed</p>
+          <div class="price"><b data-price>26 990 Ft</b><small data-per-pack>6 748 Ft per pack · <span class="save">10% saving</span></small></div>
+          <p class="product__stock" data-stock hidden></p>
+          <div class="buyrow">
+            <div class="qty" data-qty><button type="button" data-step="-1" aria-label="Box: one fewer" disabled>−</button><output aria-live="polite">1</output><button type="button" data-step="1" aria-label="Box: one more" disabled>+</button></div>
+            <button type="button" class="btn buy" data-add disabled>Coming soon</button>
+          </div>
+        </article>
+        <article class="product product--featured" data-pack="double-box" aria-labelledby="p-double-box">
+          <span class="product__tag">Double deal</span>
+          <div class="stage stage--double"><img src="/assets/shop/box_double_fb.webp" width="1200" height="1200" alt="Two CardPrime boxes: the front of one, the back of the other behind it"></div>
+          <h2 id="p-double-box" class="product__name">Double box</h2>
+          <p class="product__meta">8 sealed packs · 40 cards · 2 guaranteed signed</p>
+          <div class="price"><b data-price>2 × 23 990 Ft</b><small data-per-pack>5 998 Ft per pack · <span class="save">20% saving</span></small></div>
+          <p class="product__stock" data-stock hidden></p>
+          <div class="buyrow">
+            <div class="qty" data-qty><button type="button" data-step="-1" aria-label="Double box: one fewer" disabled>−</button><output aria-live="polite">1</output><button type="button" data-step="1" aria-label="Double box: one more" disabled>+</button></div>
+            <button type="button" class="btn buy" data-add disabled>Coming soon</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="facts">
+        <div><b>Delivery</b><p>Dispatched within 2 business days of payment, delivered in a further 2–5 business days. You see the delivery fee at checkout, before you pay.</p></div>
+        <div><b>Payment</b><p>You pay on Stripe&#39;s secure page; we never see your card details. We email you the invoice.</p></div>
+        <div><b>Withdrawal</b><p>You can withdraw within 14 days of delivery without giving a reason. Details: <a href="../refund-policy/">Refund &amp; Shipping</a>.</p></div>
       </div>
     </div>
   </section>
@@ -108,5 +135,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </footer>
 
 <script src="/menu.js?v=2"></script>
+<script src="/shop.js?v=4"></script>
+<script src="/store.js?v=1"></script>
 </body>
 </html>
