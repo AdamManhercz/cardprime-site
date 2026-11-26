@@ -18,8 +18,15 @@
   function maxY() { return document.scrollingElement.scrollHeight - innerHeight; }
 
   // Egyetlen rAF-hurok, amire az effektek feliratkoznak.
+  // Előbb a lépéses görgetés tweenje lép (advance), csak utána számolnak a feladatok: így a
+  // függöny és a többi pozíció ugyanazt a scrollY-t látja, amit a böngésző kirajzol. Fordított
+  // sorrendben minden képkocka egy kockával lemaradt, és a kimenő felület ±30 px-t rezgett.
   var tasks = [];
-  function loop() { for (var i = 0; i < tasks.length; i++) tasks[i](); requestAnimationFrame(loop); }
+  function loop(now) {
+    advance(now);
+    for (var i = 0; i < tasks.length; i++) tasks[i]();
+    requestAnimationFrame(loop);
+  }
 
   var peakAct = document.getElementById('parallels');
   var peak = document.getElementById('peak');
@@ -282,10 +289,13 @@
     ];
     var outLast = OUT.map(function () { return ''; });
     OUT.forEach(function (o) { o[0].style.transformOrigin = '50% 35%'; });
+    var outBottom = [];
     tasks.push(function () {
-      var vh = innerHeight;
-      for (var i = 0; i < OUT.length; i++) {
-        var bottom = OUT[i][1].getBoundingClientRect().bottom, k = vh - bottom, css = '', op = '';
+      var vh = innerHeight, i;
+      // előbb minden olvasás, utána minden írás: különben minden elem új layoutot kényszerítene
+      for (i = 0; i < OUT.length; i++) outBottom[i] = OUT[i][1].getBoundingClientRect().bottom;
+      for (i = 0; i < OUT.length; i++) {
+        var bottom = outBottom[i], k = vh - bottom, css = '', op = '';
         if (k > 0 && bottom > 0) {
           var t = clamp(k / vh), e = ease(t);
           // k: a görgetés kioltása, így a felület helyben marad, amíg a következő letakarja
@@ -298,25 +308,27 @@
   }
 
   // ---------- fx-stepped: egy mozdulat = egy megálló (dhirty / fullPage.js szabály) ----------
-  var tweening = false, idx = nearest(scrollY), tw = 0;
+  var tweening = false, idx = nearest(scrollY), tw = null;
   function eSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
   // fx-sync: azonnal indul (nincs lassú felfutás), nyugodtan érkezik
   function eOut(t) { return 1 - Math.pow(1 - t, 3); }
   function goTo(i) {
     i = Math.max(0, Math.min(ys.length - 1, i));
     measure();
-    var from = scrollY, to = ys[i], t0 = performance.now(), dur = sync ? 1100 : 1300, curve = sync ? eOut : eSine;
-    var my = ++tw; // egy új lépés a futó tweent átveszi
+    var from = scrollY, to = ys[i];
     idx = i;
-    if (Math.abs(to - from) < 2) { tweening = false; return; }
+    // egy új lépés a futó tweent átveszi
+    if (Math.abs(to - from) < 2) { tw = null; tweening = false; return; }
+    tw = { from: from, to: to, t0: performance.now(), dur: sync ? 1100 : 1300, curve: sync ? eOut : eSine };
     tweening = true;
-    (function step(now) {
-      if (my !== tw) return;
-      var t = clamp((now - t0) / dur);
-      scrollTo({ top: from + (to - from) * curve(t), behavior: 'instant' });
-      if (t < 1) requestAnimationFrame(step);
-      else tweening = false;
-    })(t0);
+  }
+  // a hurok elején fut (loop), a feladatok előtt
+  function advance(now) {
+    if (!tw) return;
+    // a rAF időbélyege a képkocka eleje, ez lehet kicsivel a goTo hívása előtti
+    var t = clamp((now - tw.t0) / tw.dur);
+    scrollTo({ top: tw.from + (tw.to - tw.from) * tw.curve(t), behavior: 'instant' });
+    if (t >= 1) { tw = null; tweening = false; }
   }
   var stepped = has('fx-stepped') && !reduce;
   if (stepped) {
@@ -422,5 +434,5 @@
     });
   }
 
-  if (tasks.length) requestAnimationFrame(loop);
+  if (tasks.length || stepped) requestAnimationFrame(loop);
 })();
