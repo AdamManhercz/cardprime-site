@@ -333,7 +333,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
      amekkorák a maradék magasságba férnek; a tükröződés és a homály telefonon nincs (iOS-en csíkot rajzolt).
      A Base, a Front & Back és az álló insertek egyforma szélesek: --card-w. */
   @media (max-width: 760px) {
-    :root { --card-w: clamp(100px, (var(--vh, 100svh) - 317px) / 1.573, 240px); }
+    :root { --card-w: clamp(100px, (var(--vh, 100svh) - 270px) / 1.573, 270px); }
     .hero .sc-copy { top: 84px; }
     .hero__eyebrow { letter-spacing: .08em; }
     .hero .sc-lede { margin-top: var(--sc-4); }
@@ -348,12 +348,17 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .p-side { top: calc(var(--lede, 370px) + 80px); right: auto; left: calc(50% + var(--mw) * .08); }
     .p-side .slab { --w: clamp(70px, (var(--vh, 100svh) - var(--lede, 370px) - 80px - 16px) / 1.675, 170px); filter: brightness(.82); }
     .peak { --pw: var(--card-w); }
+    /* nagyobb közös lapméret (max 270px): a Front & Back címe egy sorban, a Base szövegdoboza a leghosszabb szöveghez szabva */
+    .fb h2 br { display: none; }
+    .fb h2 .accent { margin-left: .22em; }
+    .peak__copy { height: 162px; }
+    .fb .sc-body { font-size: var(--sc-t-sm); }
     .fb__fig .slab { --w: var(--card-w); }
     .foot { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
   }
   /* alacsony telefonon (pl. SE) a lépések két oszlopban, hogy a rész kiférjen */
   @media (max-width: 760px) and (max-height: 640px) {
-    :root { --card-w: clamp(100px, (var(--vh, 100svh) - 346px) / 1.573, 240px); }
+    :root { --card-w: clamp(100px, (var(--vh, 100svh) - 290px) / 1.573, 270px); }
     .app .sc-wrap { gap: var(--sc-4); }
     .app .sc-stack > * + * { margin-top: var(--sc-2); }
     .app__steps li { grid-template-columns: 5.5rem 1fr; gap: var(--sc-3); align-items: baseline; padding: var(--sc-2) 0; }
