@@ -88,7 +88,9 @@ body { background: var(--sc-canvas); color: var(--sc-ink); }
 .lang-switch--menu { display: none; }
 @media (max-width: 560px) {
   .lang-switch--bar { display: none; }
-  .lang-switch--menu { display: inline-flex; justify-self: start; margin-top: var(--sc-7); }
+  /* a menü tetején, jobbra, a szürke CARDPRIME felirattal egy magasságban (padding-top 88px, 12px-es felirat) */
+  .lang-switch--menu { display: inline-flex; position: absolute; top: 77px; right: clamp(16px, 6vw, 96px); margin: 0; }
+  .lang-switch--menu a { padding-block: 7px; }
 }
 body.menu-open { overflow: hidden; }
 body.menu-open .dock { opacity: 0; pointer-events: none; }

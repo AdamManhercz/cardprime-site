@@ -24,7 +24,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/fonts/fonts.css?v=1">
 <link rel="stylesheet" href="/scrollcraft.css?v=1">
-<link rel="stylesheet" href="/site.css?v=3">
+<link rel="stylesheet" href="/site.css?v=4">
 <style>
   /* tokenek, sáv, menü, lábléc: site.css. Itt csak a főoldal saját anyaga. */
   :root {
@@ -283,6 +283,23 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .dock ol { gap: 6px; }
     .dock button { width: 26px; height: 26px; }
     .foot { padding-bottom: 88px; }
+  }
+
+  /* telefon (2026-11-26): semmi ne lógjon a képernyő alján lévő dock alá; a lapok és a
+     szakaszok a fejléc (84px) és a dock (~76px) közötti sávba férjenek */
+  @media (max-width: 760px) {
+    .peak { padding-bottom: 76px; --pw: clamp(130px, min(84vw, (100svh - 274px - 76px) * .6), 340px); }
+    .peak .lab-giant { top: max(266px, calc(99px + 50% - var(--pw) * .787 - .5em)); }
+    .fb__stage { align-content: start; padding: 84px 0 76px; }
+    .fb .sc-wrap { gap: 20px; }
+    .fb__copy { gap: var(--sc-2); }
+    .fb__fig .slab { --w: clamp(100px, (100svh - 400px) / 1.58, 240px); }
+    .app { align-content: center; padding-block: 84px 76px; }
+    .app .sc-wrap { gap: var(--sc-4); }
+    .app .sc-stack > * + * { margin-top: var(--sc-2); }
+    .app__steps li { grid-template-columns: 5.5rem 1fr; gap: var(--sc-3); align-items: baseline; padding: var(--sc-2) 0; }
+    .app__steps .sc-body { font-size: var(--sc-t-sm); }
+    .app .sc-lede { font-size: var(--sc-t-md); }
   }
 
   /* telefonon egyszerre egy insert: a lapok egymás fölött, középen; az effects.js (fx-ispin)
