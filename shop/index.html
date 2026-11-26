@@ -16,15 +16,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
 <title>Webshop — CardPrime</title>
-<meta name="description" content="A CardPrime saját nyomtatású sportkártyái lezárt csomagokban. Hamarosan.">
+<meta name="description" content="FTC-Telekom Waterpolo, First Edition: a CardPrime saját nyomtatású sportkártyái lezárt csomagokban és dobozokban.">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
 <link rel="stylesheet" href="/fonts/fonts.css?v=1">
 <link rel="stylesheet" href="/scrollcraft.css?v=1">
 <link rel="stylesheet" href="/site.css?v=4">
+<link rel="stylesheet" href="/store.css?v=1">
 </head>
-<body class="doc-page soon-page">
+<body class="doc-page">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNXQPSS3" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -40,6 +41,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <a class="btn" href="../app/">Az app</a>
     <a class="icon-btn" href="../checkout/" aria-label="Kosár">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="cart-count" data-cart-count hidden></span>
     </a>
     <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Menü megnyitása"><span class="burger" aria-hidden="true"></span></button>
   </div>
@@ -71,30 +73,55 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </nav>
 
 <main>
-  <section class="soon">
-    <div class="soon__in">
-      <div class="soon__text">
+  <section class="store" aria-labelledby="store-title">
+    <div class="store__in">
+      <div class="store__head">
         <span class="stripe" aria-hidden="true"></span>
         <span class="sc-label">Webshop</span>
-        <h1 class="sc-display sc-display--lg">Lezárt kártyacsomagok.<br><span class="accent">Hamarosan.</span></h1>
-        <p class="sc-lede">A CardPrime saját nyomtatású sportkártyái lezárt csomagokban, Magyarországról szállítva. Minden csomag tartalma véletlenszerű.</p>
-        <span class="badge">Hamarosan</span>
-        <p class="sc-body">A webshop még nem nyitott ki. Ha addig is kérdésed van: <a href="mailto:info@cardprime.io" class="accent">info@cardprime.io</a>.</p>
-        <div class="soon__actions">
-          <a class="btn" href="../">Vissza a főoldalra</a>
-          <a class="btn btn--ghost" href="../refund-policy/">Visszatérítés és szállítás</a>
-        </div>
+        <h1 id="store-title" class="sc-display sc-display--lg">Megérkezett az első kiadás.</h1>
       </div>
-      <div class="soon__art" aria-hidden="true">
-        <div class="pack pack--back"><div class="pack__body"></div></div>
-        <div class="pack">
-          <div class="pack__body">
-            <img src="/assets/CardPrime-AppIcon-rounded-512.png" alt="">
-            <span class="stripe"></span>
-            <span class="pack__name">Lezárt csomag</span>
-            <span class="pack__sub">CardPrime nyomat</span>
+
+      <div class="grid3">
+        <article class="product" data-pack="single-pack" aria-labelledby="p-single-pack">
+          <div class="stage"><img src="/assets/shop/pack_front.webp" width="1200" height="1200" alt="CardPrime kártyacsomag"></div>
+          <h2 id="p-single-pack" class="product__name">Csomag</h2>
+          <p class="product__meta">1 lezárt csomag · 5 kártya</p>
+          <div class="price"><b data-price>7 490 Ft</b></div>
+          <p class="product__stock" data-stock hidden></p>
+          <div class="buyrow">
+            <div class="qty" data-qty><button type="button" data-step="-1" aria-label="Csomag: eggyel kevesebb" disabled>−</button><output aria-live="polite">1</output><button type="button" data-step="1" aria-label="Csomag: eggyel több" disabled>+</button></div>
+            <button type="button" class="btn buy" data-add disabled>Hamarosan</button>
           </div>
-        </div>
+        </article>
+        <article class="product" data-pack="box-of-4" aria-labelledby="p-box-of-4">
+          <div class="stage stage--box"><img src="/assets/shop/box_front.webp" width="1200" height="1200" alt="CardPrime doboz"></div>
+          <h2 id="p-box-of-4" class="product__name">Doboz</h2>
+          <p class="product__meta">4 lezárt csomag · 20 kártya · 1 garantált aláírt</p>
+          <div class="price"><b data-price>26 990 Ft</b><small data-per-pack>6 748 Ft csomagonként · <span class="save">10% megtakarítás</span></small></div>
+          <p class="product__stock" data-stock hidden></p>
+          <div class="buyrow">
+            <div class="qty" data-qty><button type="button" data-step="-1" aria-label="Doboz: eggyel kevesebb" disabled>−</button><output aria-live="polite">1</output><button type="button" data-step="1" aria-label="Doboz: eggyel több" disabled>+</button></div>
+            <button type="button" class="btn buy" data-add disabled>Hamarosan</button>
+          </div>
+        </article>
+        <article class="product product--featured" data-pack="double-box" aria-labelledby="p-double-box">
+          <span class="product__tag">Dupla ajánlat</span>
+          <div class="stage stage--double"><img src="/assets/shop/box_double_fb.webp" width="1200" height="1200" alt="Két CardPrime doboz: elöl az előlap, mögötte a hátlap"></div>
+          <h2 id="p-double-box" class="product__name">Dupla doboz</h2>
+          <p class="product__meta">8 lezárt csomag · 40 kártya · 2 garantált aláírt</p>
+          <div class="price"><b data-price>2 × 23 990 Ft</b><small data-per-pack>5 998 Ft csomagonként · <span class="save">20% megtakarítás</span></small></div>
+          <p class="product__stock" data-stock hidden></p>
+          <div class="buyrow">
+            <div class="qty" data-qty><button type="button" data-step="-1" aria-label="Dupla doboz: eggyel kevesebb" disabled>−</button><output aria-live="polite">1</output><button type="button" data-step="1" aria-label="Dupla doboz: eggyel több" disabled>+</button></div>
+            <button type="button" class="btn buy" data-add disabled>Hamarosan</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="facts">
+        <div><b>Szállítás</b><p>Feladás a fizetéstől számított 2 munkanapon belül, kézbesítés további 2–5 munkanap. A szállítási díjat a pénztárban látod, fizetés előtt.</p></div>
+        <div><b>Fizetés</b><p>A Stripe biztonságos oldalán fizetsz, a kártyaadataidat mi nem látjuk. A számlát e-mailben küldjük.</p></div>
+        <div><b>Elállás</b><p>Kézbesítéstől számított 14 napon belül indoklás nélkül elállhatsz. Részletek: <a href="../refund-policy/">Visszatérítés és szállítás</a>.</p></div>
       </div>
     </div>
   </section>
@@ -108,5 +135,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </footer>
 
 <script src="/menu.js?v=2"></script>
+<script src="/shop.js?v=4"></script>
+<script src="/store.js?v=1"></script>
 </body>
 </html>
