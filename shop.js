@@ -67,7 +67,8 @@ window.CardPrimeShop = (function () {
         var data = {};
         try { data = text ? JSON.parse(text) : {}; } catch (e) { data = {}; }
         if (!res.ok) {
-          var err = new Error(data.error || ('The request failed (' + res.status + ').'));
+          var failed = document.documentElement.lang === 'hu' ? 'A kérés nem sikerült (' : 'The request failed (';
+          var err = new Error(data.error || (failed + res.status + ').'));
           err.status = res.status;
           err.payload = data;
           throw err;

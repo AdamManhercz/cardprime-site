@@ -105,10 +105,13 @@
       el.className = 'lab-giant';
       el.setAttribute('aria-hidden', 'true');
       el.setAttribute('data-tone', w.toLowerCase());
-      el.textContent = w;
+      el.textContent = shown(w);
       parent.insertBefore(el, before);
       return el;
     };
+    // data-tone a szín miatt mindig az angol szó; a kiírt szó a magyar oldalon magyar
+    var HU_WORD = { Numbered: 'Számozott', Autograph: 'Aláírt', Back: 'Hátlap' };
+    var shown = function (w) { return document.documentElement.lang === 'hu' && HU_WORD[w] || w; };
     var giants = ['Base', 'Silver', 'Numbered', 'Autograph'].map(function (w) {
       return giantEl(w, peak, peak.querySelector('.peak__copy'));
     });
@@ -391,13 +394,14 @@
   if (has('fx-prail')) {
     var prail = document.createElement('nav');
     prail.className = 'lab-prail';
-    prail.setAttribute('aria-label', 'Parallels');
+    var huRail = document.documentElement.lang === 'hu';
+    prail.setAttribute('aria-label', huRail ? 'Parallelek' : 'Parallels');
     var PSTOP = [2, 3, 4, 5]; // a STOPS-beli Base..Autograph megállók
     var pBtns = ['Base', 'Silver', 'Numbered', 'Autograph'].map(function (w, i) {
       var b = document.createElement('button');
       b.type = 'button';
       b.innerHTML = '<span></span><i aria-hidden="true"></i>';
-      b.firstChild.textContent = w;
+      b.firstChild.textContent = huRail ? ({ Numbered: 'Számozott', Autograph: 'Aláírt' }[w] || w) : w;
       b.addEventListener('click', function () {
         if (stepped) goTo(PSTOP[i]);
         else { measure(); scrollTo({ top: ys[PSTOP[i]], behavior: reduce ? 'auto' : 'smooth' }); }

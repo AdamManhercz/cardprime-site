@@ -1,8 +1,12 @@
 <!doctype html>
-<html lang="en" class="fx-intro fx-blur fx-glass fx-giant fx-atmos fx-shadow fx-sway fx-glow fx-stepped fx-prail fx-tidy fx-sync fx-curtain fx-unify fx-turn fx-ispin fx-center fx-nostripe">
+<html lang="hu" class="fx-intro fx-blur fx-glass fx-giant fx-atmos fx-shadow fx-sway fx-glow fx-stepped fx-prail fx-tidy fx-sync fx-curtain fx-unify fx-turn fx-ispin fx-center fx-nostripe">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="alternate" hreflang="hu" href="https://cardprime.io/">
+<link rel="alternate" hreflang="en" href="https://cardprime.io/en/">
+<link rel="alternate" hreflang="x-default" href="https://cardprime.io/en/">
+<script src="/lang.js?v=1"></script>
 <!-- Google Tag Manager. A Consent Mode V2 alapállapotát (minden "denied") és a sütiablakot a GTM-konténer állítja be, ide ne kerüljön consent default. -->
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -11,16 +15,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
-<title>CardPrime · Collector-grade cards</title>
-<meta name="description" content="Collector-grade sports cards in every parallel, and an app to scan, verify and collect every card you own.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=2">
-<link rel="apple-touch-icon" href="assets/appicon.png?v=3">
-<link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="fonts/fonts.css?v=1">
-<link rel="stylesheet" href="scrollcraft.css?v=1">
-<link rel="stylesheet" href="site.css?v=2">
+<title>CardPrime · Gyűjtői minőségű kártyák</title>
+<meta name="description" content="Gyűjtői minőségű sportkártyák minden parallelben, és egy app, amellyel beolvashatod, ellenőrizheted és gyűjteménybe rendezheted minden saját kártyádat.">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
+<link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css?v=1">
+<link rel="stylesheet" href="/scrollcraft.css?v=1">
+<link rel="stylesheet" href="/site.css?v=3">
 <style>
   /* tokenek, sáv, menü, lábléc: site.css. Itt csak a főoldal saját anyaga. */
   :root {
@@ -309,7 +313,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     .rail > * { scroll-snap-align: center; }
   }
 </style>
-<link rel="stylesheet" href="effects.css?v=3">
+<link rel="stylesheet" href="/effects.css?v=3">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -321,55 +325,57 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
 
 <header class="bar">
-  <a class="brand" href="#top" aria-label="CardPrime home">
-    <img src="assets/CardPrime-AppIcon-rounded-512.png" width="34" height="34" alt="">
-    <img src="assets/CardPrime-wordmark-transparent.png" width="1163" height="174" alt="CardPrime">
+  <a class="brand" href="#top" aria-label="CardPrime főoldal">
+    <img src="/assets/CardPrime-AppIcon-rounded-512.png" width="34" height="34" alt="">
+    <img src="/assets/CardPrime-wordmark-transparent.png" width="1163" height="174" alt="CardPrime">
   </a>
   <div class="bar__right">
-    <a class="btn" href="app/">Get the app</a>
-    <a class="icon-btn" href="checkout/" aria-label="Cart">
+    <div class="lang-switch lang-switch--bar" role="group" aria-label="Nyelv"><a href="/" hreflang="hu" lang="hu" data-lang="hu" aria-current="true">HU</a><a href="/en/" hreflang="en" lang="en" data-lang="en">EN</a></div>
+    <a class="btn" href="app/">Az app</a>
+    <a class="icon-btn" href="checkout/" aria-label="Kosár">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     </a>
-    <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="burger" aria-hidden="true"></span></button>
+    <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Menü megnyitása"><span class="burger" aria-hidden="true"></span></button>
   </div>
 </header>
 
 <!-- menü: a régi oldal minden menüpontja, a csempék leírásaival -->
-<nav class="menu" id="site-menu" aria-label="Site">
+<nav class="menu" id="site-menu" aria-label="Menü">
   <div class="menu__grid">
     <div class="menu__group">
       <span class="menu__head">CardPrime</span>
       <div class="menu__big">
-        <a href="./" aria-current="page">Home</a>
-        <a href="shop/">Shop</a>
-        <a href="points/">Points</a>
-        <a href="app/">Get the app</a>
+        <a href="./" aria-current="page">Főoldal</a>
+        <a href="shop/">Webshop</a>
+        <a href="points/">Pontok</a>
+        <a href="app/">Az app</a>
       </div>
     </div>
     <div class="menu__group">
-      <span class="menu__head">Legal &amp; help</span>
+      <span class="menu__head">Jogi információk és segítség</span>
       <ul class="menu__list">
-        <li><a href="privacy/"><b>Privacy Policy</b><span>What data we collect, why we collect it, and how to delete it — including your right to erase your account at any time</span></a></li>
-        <li><a href="terms/"><b>Terms of Service</b><span>Account rules, prohibited activities, and liability terms that apply when you use CardPrime</span></a></li>
-        <li><a href="refund-policy/"><b>Refund &amp; Shipping</b><span>Shipping options and fees, the 14-day right to withdraw, and how refunds and returns work</span></a></li>
-        <li><a href="support/"><b>Support</b><span>Answers to common questions, plus how to reach us for anything else</span></a></li>
+        <li><a href="privacy/"><b>Adatkezelési tájékoztató</b><span>Milyen adatokat gyűjtünk, miért, és hogyan törölheted őket – beleértve a jogodat, hogy bármikor töröld a fiókodat</span></a></li>
+        <li><a href="terms/"><b>Felhasználási feltételek</b><span>A fiókra vonatkozó szabályok, a tiltott tevékenységek és a felelősségi feltételek a CardPrime használatához</span></a></li>
+        <li><a href="refund-policy/"><b>Visszatérítés és szállítás</b><span>Szállítási módok és díjak, a 14 napos elállási jog, valamint a visszatérítés és a visszaküldés menete</span></a></li>
+        <li><a href="support/"><b>Ügyfélszolgálat</b><span>Válaszok a gyakori kérdésekre, és hogyan érsz el minket minden más ügyben</span></a></li>
       </ul>
     </div>
   </div>
+  <div class="lang-switch lang-switch--menu" role="group" aria-label="Nyelv"><a href="/" hreflang="hu" lang="hu" data-lang="hu" aria-current="true">HU</a><a href="/en/" hreflang="en" lang="en" data-lang="en">EN</a></div>
   <p class="menu__foot">&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></p>
 </nav>
 
 <!-- a gyűjtőlista: a grammatika navigációja. Pipál, ahogy a látogató "begyűjti" a bejegyzéseket. -->
-<nav class="dock" aria-label="Set checklist">
-  <span class="dock__title"><span class="dock__word">Set checklist </span><output id="count">0</output>/7</span>
+<nav class="dock" aria-label="Sorozat-ellenőrzőlista">
+  <span class="dock__title"><span class="dock__word">Ellenőrzőlista </span><output id="count">0</output>/7</span>
   <ol>
     <li><button type="button" data-go="1" aria-pressed="false"><span>1 · Base</span></button></li>
     <li><button type="button" data-go="2" aria-pressed="false"><span>2 · Silver</span></button></li>
-    <li><button type="button" data-go="3" aria-pressed="false"><span>3 · Numbered</span></button></li>
-    <li><button type="button" data-go="4" aria-pressed="false"><span>4 · Autograph</span></button></li>
-    <li><button type="button" data-go="5" aria-pressed="false"><span>5 · Inserts</span></button></li>
-    <li><button type="button" data-go="6" aria-pressed="false"><span>6 · Front &amp; back</span></button></li>
-    <li><button type="button" data-go="7" aria-pressed="false"><span>7 · Your collection</span></button></li>
+    <li><button type="button" data-go="3" aria-pressed="false"><span>3 · Számozott</span></button></li>
+    <li><button type="button" data-go="4" aria-pressed="false"><span>4 · Aláírt</span></button></li>
+    <li><button type="button" data-go="5" aria-pressed="false"><span>5 · Insertek</span></button></li>
+    <li><button type="button" data-go="6" aria-pressed="false"><span>6 · Előlap és hátlap</span></button></li>
+    <li><button type="button" data-go="7" aria-pressed="false"><span>7 · A gyűjteményed</span></button></li>
   </ol>
 </nav>
 
@@ -384,24 +390,24 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         <div class="p-mist" data-depth="-0.5"></div>
         <div class="hero__floor"></div>
         <div class="p-back" data-depth="0.3">
-          <div class="slab slab--art reflect"><div class="slab__label"><b>Future Wave</b></div><div class="slab__card"><img class="art" src="assets/cards/nagy-future-wave.jpg?v=20261113" width="600" height="838" alt=""></div></div>
+          <div class="slab slab--art reflect"><div class="slab__label"><b>Future Wave</b></div><div class="slab__card"><img class="art" src="/assets/cards/nagy-future-wave.jpg?v=20261113" width="600" height="838" alt=""></div></div>
         </div>
         <div class="p-side" data-depth="-0.9">
-          <div class="slab slab--art reflect"><div class="slab__label"><b>Aqua Force</b></div><div class="slab__card"><img class="art" src="assets/cards/vigvari-aqua-force.jpg?v=20261113" width="600" height="838" alt=""></div></div>
+          <div class="slab slab--art reflect"><div class="slab__label"><b>Aqua Force</b></div><div class="slab__card"><img class="art" src="/assets/cards/vigvari-aqua-force.jpg?v=20261113" width="600" height="838" alt=""></div></div>
         </div>
         <div class="p-main" data-depth="-0.4">
-          <div class="slab slab--art reflect"><div class="slab__label"><b>CardPrime</b><span>Golden Champions</span></div><div class="slab__card"><img class="art" src="assets/cards/manhercz-golden-champions.jpg?v=20261113" width="745" height="1040" alt="" fetchpriority="high"></div></div>
+          <div class="slab slab--art reflect"><div class="slab__label"><b>CardPrime</b><span>Golden Champions</span></div><div class="slab__card"><img class="art" src="/assets/cards/manhercz-golden-champions.jpg?v=20261113" width="745" height="1040" alt="" fetchpriority="high"></div></div>
         </div>
         <div class="p-fore" data-depth="-1.6">
-          <div class="slab slab--art"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><img class="art" src="assets/cards/mandic-game-changers.jpg?v=20261113" width="480" height="670" alt=""></div></div>
+          <div class="slab slab--art"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><img class="art" src="/assets/cards/mandic-game-changers.jpg?v=20261113" width="480" height="670" alt=""></div></div>
         </div>
       </div>
       <div class="sc-scrim sc-scrim--lead" aria-hidden="true"></div>
       <!-- a szöveg végig áll, amíg a hero látszik: a függöny takarja le, nem fade -->
       <div class="sc-copy sc-copy--lead">
-        <span class="sc-label hero__eyebrow">Sports card printing &amp; collection management</span>
-        <h1 class="sc-display sc-display--xl">Collector-grade.<br><span class="accent">In hand.</span></h1>
-        <p class="sc-lede">CardPrime prints its own range of sports cards, sold in sealed packs in our <a href="shop/">shop</a>.</p>
+        <span class="sc-label hero__eyebrow">Sportkártya-nyomtatás és gyűjteménykezelés</span>
+        <h1 class="sc-display sc-display--xl">Gyűjtői minőség.<br><span class="accent">Kézbe véve.</span></h1>
+        <p class="sc-lede">A CardPrime saját sportkártya-sorozatokat nyomtat, amelyeket lezárt csomagokban árulunk a <a href="shop/">webshopunkban</a>.</p>
       </div>
      </div>
     </div>
@@ -412,8 +418,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   <section class="sc-section quiet" data-sc-act="flow" data-sc-drift="#070708">
     <div class="sc-wrap">
       <span class="stripe" aria-hidden="true" data-sc-cue="0.19"></span>
-      <h2 class="sc-display sc-display--lg" data-sc-cue="0.21">One player.<br><span class="accent">Many parallels.</span></h2>
-      <p class="sc-body" data-sc-cue="0.24">Same card, four finishes. Watch the light.</p>
+      <h2 class="sc-display sc-display--lg" data-sc-cue="0.21">Egy játékos.<br><span class="accent">Sok parallel.</span></h2>
+      <p class="sc-body" data-sc-cue="0.24">Ugyanaz a kártya, négyféle kidolgozás. Figyeld a fényt.</p>
     </div>
   </section>
 
@@ -426,29 +432,29 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <div class="peak__floor" aria-hidden="true"></div>
 
       <div class="peak__copy">
-        <span class="sc-label">The parallels</span>
-        <div class="entry"><span class="entry__no">No. 1 · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">Every card starts here. One player, one design, and room for many versions.</p></div>
-        <div class="entry"><span class="entry__no">No. 2 · Silver</span><h2 class="sc-display sc-display--lg">Silver.</h2><p class="sc-body">The same player, illustrated another way. A new finish, a new look.</p></div>
-        <div class="entry"><span class="entry__no">No. 3 · Numbered</span><h2 class="sc-display sc-display--lg">Numbered.</h2><p class="sc-body">Limit the print run and number every copy. The fewer there are, the more each one is worth.</p></div>
-        <div class="entry"><span class="entry__no">No. 4 · Autograph</span><h2 class="sc-display sc-display--lg">Autograph.</h2><p class="sc-body">Add a signature and the same card becomes one of a kind.</p></div>
+        <span class="sc-label">A parallelek</span>
+        <div class="entry"><span class="entry__no">1. · Base</span><h2 class="sc-display sc-display--lg">Base.</h2><p class="sc-body">Minden kártya innen indul. Egy játékos, egy design, és hely sok változatnak.</p></div>
+        <div class="entry"><span class="entry__no">2. · Silver</span><h2 class="sc-display sc-display--lg">Silver.</h2><p class="sc-body">Ugyanaz a játékos, másképp megrajzolva. Új kidolgozás, új megjelenés.</p></div>
+        <div class="entry"><span class="entry__no">3. · Számozott</span><h2 class="sc-display sc-display--lg">Számozott.</h2><p class="sc-body">Korlátozott példányszám, minden példány sorszámmal. Minél kevesebb van belőle, annál többet ér egy-egy darab.</p></div>
+        <div class="entry"><span class="entry__no">4. · Aláírt</span><h2 class="sc-display sc-display--lg">Aláírt.</h2><p class="sc-body">Egy aláírás, és ugyanaz a kártya egyedivé válik.</p></div>
       </div>
 
       <div class="peak__card">
         <div class="peak__anim">
           <div class="layers reflect">
-            <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><img class="art" src="assets/cards/manhercz-base.jpg?v=20261113" width="745" height="1040" alt="Manhercz Krisztián, Base card" loading="lazy"></div></div>
-            <div class="slab slab--art" data-k="1"><div class="slab__label"><b>CardPrime</b><span>Silver</span></div><div class="slab__card"><img class="art" src="assets/cards/manhercz-silver.jpg?v=20261113" width="745" height="1040" alt="Manhercz Krisztián, Silver card" loading="lazy"></div></div>
-            <div class="slab f-gold" data-k="2"><div class="slab__label"><b>CardPrime</b><span>Numbered</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><span class="face__num">01/50</span><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
-            <div class="slab f-auto" data-k="3"><div class="slab__label"><b>CardPrime</b><span>Autograph</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><svg class="face__sig" viewBox="0 0 196 64" aria-hidden="true"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Player name<small>Club · Season</small></div></div></div></div>
+            <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><img class="art" src="/assets/cards/manhercz-base.jpg?v=20261113" width="745" height="1040" alt="Manhercz Krisztián, Base kártya" loading="lazy"></div></div>
+            <div class="slab slab--art" data-k="1"><div class="slab__label"><b>CardPrime</b><span>Silver</span></div><div class="slab__card"><img class="art" src="/assets/cards/manhercz-silver.jpg?v=20261113" width="745" height="1040" alt="Manhercz Krisztián, Silver kártya" loading="lazy"></div></div>
+            <div class="slab f-gold" data-k="2"><div class="slab__label"><b>CardPrime</b><span>Számozott</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="/assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><span class="face__num">01/50</span><div class="face__plate">Játékos neve<small>Klub · Szezon</small></div></div></div></div>
+            <div class="slab f-auto" data-k="3"><div class="slab__label"><b>CardPrime</b><span>Aláírt</span></div><div class="slab__card"><div class="face"><img class="face__mark" src="/assets/CardPrime-AppIcon-rounded-512.png" width="512" height="512" alt=""><svg class="face__sig" viewBox="0 0 196 64" aria-hidden="true"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Játékos neve<small>Klub · Szezon</small></div></div></div></div>
             <div class="band-clip" aria-hidden="true"><div class="band"></div></div>
           </div>
         </div>
         <!-- mozgás nélkül: a négy parallel egymás mellett, statikusan -->
         <div class="peak__static" aria-hidden="true">
-          <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><img class="art" src="assets/cards/manhercz-base.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
-          <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Silver</span></div><div class="slab__card"><img class="art" src="assets/cards/manhercz-silver.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
-          <div class="slab f-gold"><div class="slab__label"><b>CardPrime</b><span>Numbered</span></div><div class="slab__card"><div class="face"><span class="face__num">01/50</span><div class="face__plate">Player</div></div></div></div>
-          <div class="slab f-auto"><div class="slab__label"><b>CardPrime</b><span>Autograph</span></div><div class="slab__card"><div class="face"><svg class="face__sig" viewBox="0 0 196 64"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Player</div></div></div></div>
+          <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Base</span></div><div class="slab__card"><img class="art" src="/assets/cards/manhercz-base.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
+          <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Silver</span></div><div class="slab__card"><img class="art" src="/assets/cards/manhercz-silver.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
+          <div class="slab f-gold"><div class="slab__label"><b>CardPrime</b><span>Számozott</span></div><div class="slab__card"><div class="face"><span class="face__num">01/50</span><div class="face__plate">Játékos</div></div></div></div>
+          <div class="slab f-auto"><div class="slab__label"><b>CardPrime</b><span>Aláírt</span></div><div class="slab__card"><div class="face"><svg class="face__sig" viewBox="0 0 196 64"><path pathLength="1" d="M6 44 C 18 8, 30 6, 30 30 S 22 58, 40 40 S 62 6, 66 26 S 60 54, 78 38 S 96 18, 100 34 S 104 50, 116 36 S 138 20, 146 34 S 160 46, 176 26 M 120 52 C 140 48, 168 46, 190 40"/></svg><div class="face__plate">Játékos</div></div></div></div>
         </div>
       </div>
     </div>
@@ -460,16 +466,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <div class="rail" id="rail">
         <div class="rail__lead sc-stack">
           <span class="stripe" aria-hidden="true"></span>
-          <h2 class="sc-display sc-display--md">Beyond<br><span class="accent">the base set.</span></h2>
-          <p class="sc-body">Inserts tell the story of your players and your team.</p>
+          <h2 class="sc-display sc-display--md">Több, mint<br><span class="accent">az alapsorozat.</span></h2>
+          <p class="sc-body">Az insertek a játékosaid és a csapatod történetét mesélik el.</p>
         </div>
         <article class="item" data-check="5">
           <div class="pair">
-            <div class="slab slab--art"><div class="slab__label"><b>Immortals</b></div><div class="slab__card"><img class="art" src="assets/cards/argyropoulos-immortals.jpg?v=20261113" width="745" height="1040" alt="Stylianos Argyropoulos, Immortals illustrated insert" loading="lazy"></div></div>
-            <div class="slab slab--land slab--art"><div class="slab__label"><b>Masterminds</b></div><div class="slab__card"><img class="art" src="assets/cards/jansik-masterminds.jpg?v=20261113" width="1040" height="745" alt="Masterminds insert: Jansik Szilárd with the coach" loading="lazy"></div></div>
-            <div class="slab slab--art"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><img class="art" src="assets/cards/vamos-game-changers.jpg?v=20261113" width="745" height="1040" alt="Vámos Márton, Game Changers insert" loading="lazy"></div></div>
+            <div class="slab slab--art"><div class="slab__label"><b>Immortals</b></div><div class="slab__card"><img class="art" src="/assets/cards/argyropoulos-immortals.jpg?v=20261113" width="745" height="1040" alt="Stylianos Argyropoulos, Immortals illusztrált insert" loading="lazy"></div></div>
+            <div class="slab slab--land slab--art"><div class="slab__label"><b>Masterminds</b></div><div class="slab__card"><img class="art" src="/assets/cards/jansik-masterminds.jpg?v=20261113" width="1040" height="745" alt="Masterminds insert: Jansik Szilárd az edzővel" loading="lazy"></div></div>
+            <div class="slab slab--art"><div class="slab__label"><b>Game Changers</b></div><div class="slab__card"><img class="art" src="/assets/cards/vamos-game-changers.jpg?v=20261113" width="745" height="1040" alt="Vámos Márton, Game Changers insert" loading="lazy"></div></div>
           </div>
-          <div class="item__meta"><div><span class="entry__no">No. 5 · Inserts</span><h3 class="sc-display sc-display--md">Inserts.</h3></div><p class="sc-body">Show them from another side: as illustrated heroes, on the tactics board, in their biggest moments.</p></div>
+          <div class="item__meta"><div><span class="entry__no">5. · Insertek</span><h3 class="sc-display sc-display--md">Insertek.</h3></div><p class="sc-body">Egy másik oldalukról mutatják meg őket: illusztrált hősként, a taktikai táblán, a legnagyobb pillanataikban.</p></div>
         </article>
       </div>
     </div>
@@ -480,16 +486,16 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
    <div data-sc-stage class="fb__stage">
     <div class="sc-wrap">
       <div class="fb__copy" data-sc-in data-sc-stagger="90">
-        <span class="entry__no">No. 7 · Front &amp; back</span>
-        <h2 class="sc-display sc-display--lg">Front.<br><span class="accent">Back.</span></h2>
-        <p class="sc-body">Turn it over: stats, bio and club identity, laid out as carefully as the front.</p>
+        <span class="entry__no">7. · Előlap és hátlap</span>
+        <h2 class="sc-display sc-display--lg">Előlap.<br><span class="accent">Hátlap.</span></h2>
+        <p class="sc-body">Fordítsd meg: statisztikák, életrajz és klubarculat, ugyanolyan gondosan megtervezve, mint az előlap.</p>
       </div>
       <figure class="fb__fig">
-        <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Front</span></div><div class="slab__card"><img class="art" src="assets/cards/vigvari-base.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
+        <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Előlap</span></div><div class="slab__card"><img class="art" src="/assets/cards/vigvari-base.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
         <div class="fb__back" data-sc-reveal="left" data-sc-reveal-at="0.22 0.8">
-          <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Back</span></div><div class="slab__card"><img class="art" src="assets/cards/vigvari-base-back.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
+          <div class="slab slab--art"><div class="slab__label"><b>CardPrime</b><span>Hátlap</span></div><div class="slab__card"><img class="art" src="/assets/cards/vigvari-base-back.jpg?v=20261113" width="745" height="1040" alt="" loading="lazy"></div></div>
         </div>
-        <figcaption class="sr-only">Vigvári Vendel's Base card, front and back: season stats, bio and club crest.</figcaption>
+        <figcaption class="sr-only">Vigvári Vendel Base kártyája elölről és hátulról: szezonstatisztikák, életrajz és klubcímer.</figcaption>
       </figure>
     </div>
    </div>
@@ -499,14 +505,14 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   <section class="sc-section app" id="app" data-sc-act="flow" data-sc-drift="#0B0B0F" data-check="7">
     <div class="sc-wrap">
       <div class="sc-stack" data-sc-in data-sc-stagger="90">
-        <span class="entry__no">No. 8 · Your collection</span>
-        <h2 class="sc-display sc-display--lg">Your collection,<br><span class="accent">verified.</span></h2>
-        <p class="sc-lede">Scan the CardPrime cards you own to build your collection, earn points and climb the leaderboard.</p>
+        <span class="entry__no">8. · A gyűjteményed</span>
+        <h2 class="sc-display sc-display--lg">A gyűjteményed,<br><span class="accent">hitelesítve.</span></h2>
+        <p class="sc-lede">Olvasd be a saját CardPrime kártyáidat: építsd a gyűjteményedet, gyűjts pontokat, és lépj előre a ranglistán.</p>
       </div>
       <ol class="app__steps" data-sc-in data-sc-stagger="110">
-        <li><b>Scan</b><p class="sc-body">Point your camera at the card and the app confirms it is genuine.</p></li>
-        <li><b>Collect</b><p class="sc-body">Add the copy to your collection. Each printed card belongs to one collector at a time.</p></li>
-        <li><b>Compete</b><p class="sc-body">Earn points, complete quests and climb the leaderboard.</p></li>
+        <li><b>Beolvasás</b><p class="sc-body">Irányítsd a kamerát a kártyára, és az app megerősíti, hogy eredeti.</p></li>
+        <li><b>Gyűjtés</b><p class="sc-body">Add hozzá a példányt a gyűjteményedhez. Minden nyomtatott kártya egyszerre egy gyűjtőé lehet.</p></li>
+        <li><b>Verseny</b><p class="sc-body">Gyűjts pontokat, teljesíts questeket, és lépj előre a ranglistán.</p></li>
       </ol>
     </div>
   </section>
@@ -516,14 +522,14 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div data-sc-stage class="close">
       <div class="close__inner">
         <div class="close__ticks" aria-hidden="true" data-sc-cue="0.02"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <h2 class="sc-display sc-display--xl" data-sc-cue="0.04">Set complete.</h2>
-        <p class="sc-lede" data-sc-cue="0.08">Start yours in the app.</p>
-        <a class="btn" href="app/" data-sc-cue="0.06">Get the app</a>
+        <h2 class="sc-display sc-display--xl" data-sc-cue="0.04">Kész a sorozat.</h2>
+        <p class="sc-lede" data-sc-cue="0.08">Kezdd el a sajátodat az appban.</p>
+        <a class="btn" href="app/" data-sc-cue="0.06">Az app</a>
       </div>
       <footer class="foot">
         <span>&copy; 2026 CardPrime Korlátolt Felelősségű Társaság &middot; <a href="mailto:info@cardprime.io">info@cardprime.io</a></span>
-        <nav aria-label="Footer">
-          <a href="shop/">Shop</a><a href="points/">Points</a><a href="refund-policy/">Refund &amp; Shipping</a><a href="privacy/">Privacy Policy</a><a href="terms/">Terms of Service</a><a href="support/">Support</a><a href="#cookie-settings">Cookie settings</a>
+        <nav aria-label="Lábléc">
+          <a href="shop/">Webshop</a><a href="points/">Pontok</a><a href="refund-policy/">Visszatérítés és szállítás</a><a href="privacy/">Adatkezelési tájékoztató</a><a href="terms/">Felhasználási feltételek</a><a href="support/">Ügyfélszolgálat</a><a href="#cookie-settings">Süti-beállítások</a>
         </nav>
       </footer>
     </div>
@@ -531,9 +537,9 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
 </main>
 
-<script src="scrollcraft.js?v=1"></script>
+<script src="/scrollcraft.js?v=1"></script>
 <script>ScrollCraft.mount(document.body);</script>
-<script src="menu.js?v=1"></script>
+<script src="/menu.js?v=2"></script>
 <script>
 /* Szignatúra-mozdulat + gyűjtőlista. Oldal-JS, az engine-hez nem nyúl. */
 (function () {
@@ -737,6 +743,6 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   });
 })();
 </script>
-<script src="effects.js?v=7"></script>
+<script src="/effects.js?v=8"></script>
 </body>
 </html>

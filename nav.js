@@ -48,7 +48,11 @@
       badge.hidden = !n;
       badge.textContent = n > 99 ? '99+' : String(n);
     }
-    link.setAttribute('aria-label', !n ? 'Cart, empty' : n === 1 ? 'Cart, 1 item' : 'Cart, ' + n + ' items');
+    if (document.documentElement.lang === 'hu') {
+      link.setAttribute('aria-label', !n ? 'Kosár, üres' : 'Kosár, ' + n + ' tétel');
+    } else {
+      link.setAttribute('aria-label', !n ? 'Cart, empty' : n === 1 ? 'Cart, 1 item' : 'Cart, ' + n + ' items');
+    }
   }
 
   render();

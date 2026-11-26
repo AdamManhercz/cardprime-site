@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="alternate" hreflang="hu" href="https://cardprime.io/checkout/cancel/">
+<link rel="alternate" hreflang="en" href="https://cardprime.io/en/checkout/cancel/">
+<link rel="alternate" hreflang="x-default" href="https://cardprime.io/en/checkout/cancel/">
+<script src="/lang.js?v=1"></script>
 <!-- Google Tag Manager. A Consent Mode V2 alapállapotát (minden "denied") és a sütiablakot a GTM-konténer állítja be, ide ne kerüljön consent default. -->
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -11,13 +15,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MNXQPSS3"></script>
 <!-- End Google Tag Manager -->
-<title>Payment cancelled — CardPrime</title>
-<link rel="stylesheet" href="../../fonts/fonts.css?v=1">
-<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg?v=2">
-<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png?v=2">
-<link rel="apple-touch-icon" href="../../assets/appicon.png?v=3">
-<link rel="stylesheet" href="../../style.css?v=7">
-<link rel="stylesheet" href="../../shop.css?v=4">
+<title>Fizetés megszakítva — CardPrime</title>
+<link rel="stylesheet" href="/fonts/fonts.css?v=1">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="/assets/appicon.png?v=3">
+<link rel="stylesheet" href="/style.css?v=8">
+<link rel="stylesheet" href="/shop.css?v=4">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -25,63 +29,64 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <!-- End Google Tag Manager (noscript) -->
 <div class="wrap">
   <nav class="site-nav">
+    <div class="lang-switch lang-switch--nav" role="group" aria-label="Nyelv"><a href="/checkout/cancel/" hreflang="hu" lang="hu" data-lang="hu" aria-current="true">HU</a><a href="/en/checkout/cancel/" hreflang="en" lang="en" data-lang="en">EN</a></div>
     <details>
-      <summary>Menu</summary>
+      <summary>Menü</summary>
       <div class="menu">
-        <a href="../../">Home</a>
+        <a href="../../">Főoldal</a>
         <div class="sep"></div>
-        <a href="../../shop/">Shop</a>
-        <a href="../../points/">Points</a>
+        <a href="../../shop/">Webshop</a>
+        <a href="../../points/">Pontok</a>
         <div class="sep"></div>
-        <a href="../../privacy/">Privacy Policy</a>
-        <a href="../../terms/">Terms of Service</a>
-        <a href="../../refund-policy/">Refund &amp; Shipping</a>
-        <a href="../../support/">Support</a>
+        <a href="../../privacy/">Adatkezelési tájékoztató</a>
+        <a href="../../terms/">Felhasználási feltételek</a>
+        <a href="../../refund-policy/">Visszatérítés és szállítás</a>
+        <a href="../../support/">Ügyfélszolgálat</a>
       </div>
     </details>
-    <a class="cart-link" href="../../checkout/" aria-label="Cart">
+    <a class="cart-link" href="../../checkout/" aria-label="Kosár">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       <span class="cart-count" hidden></span>
     </a>
   </nav>
   <a class="home-link" href="../../">
     <header class="site-header">
-      <img class="mark" src="../../assets/appicon.png?v=3" alt="CardPrime">
-      <img class="wordmark" src="../../assets/wordmark.png?v=2" alt="CardPrime">
+      <img class="mark" src="/assets/appicon.png?v=3" alt="CardPrime">
+      <img class="wordmark" src="/assets/wordmark.png?v=2" alt="CardPrime">
     </header>
   </a>
 
-  <h1>Payment cancelled</h1>
-  <p class="subtitle">Nothing was charged. Your cart is exactly as you left it.</p>
+  <h1>A fizetés megszakadt</h1>
+  <p class="subtitle">Semmit nem terheltünk. A kosarad pontosan úgy maradt, ahogy hagytad.</p>
 
   <!-- The cart is deliberately untouched on this page. Cancelling is a decision to come
        back, and a buyer who returns to an empty basket has to rebuild an order they had
        already assembled — the same rule as the app's CheckoutScreen. -->
   <div class="notice info" id="cart-note" hidden></div>
 
-  <a class="primary" id="back" href="../../checkout/" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">Back to your cart</a>
+  <a class="primary" id="back" href="../../checkout/" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">Vissza a kosárhoz</a>
 
-  <h2>Why a payment can stop here</h2>
-  <p>You may simply have closed Stripe's payment page, or your bank may have declined the card. Neither takes any money, and neither reserves anything &mdash; the packs go back on the shelf shortly afterwards, so if you still want them it is worth finishing soon.</p>
+  <h2>Miért állhat meg itt egy fizetés?</h2>
+  <p>Lehet, hogy egyszerűen bezártad a Stripe fizetési oldalát, vagy a bankod elutasította a kártyát. Egyik esetben sem vonunk le pénzt, és nem is foglalunk le semmit &mdash; a csomagok rövidesen visszakerülnek a polcra, ezért ha még kellenek, érdemes hamar befejezni a vásárlást.</p>
 
-  <h2>If you think this is a mistake</h2>
-  <p>Write to <a href="mailto:info@cardprime.io">info@cardprime.io</a> and we will look into it. Our full terms are in the <a href="../../refund-policy/">Refund &amp; Shipping Policy</a>.</p>
+  <h2>Ha szerinted ez hiba</h2>
+  <p>Írj az <a href="mailto:info@cardprime.io">info@cardprime.io</a> címre, és utánanézünk. A teljes feltételeket a <a href="../../refund-policy/">Visszatérítési és szállítási szabályzat</a> tartalmazza.</p>
 
   <div class="nav-links">
-    <a href="../../shop/">Shop</a>
-    <a href="../../refund-policy/">Refund &amp; Shipping</a>
-    <a href="../../terms/">Terms of Service</a>
-    <a href="../../privacy/">Privacy Policy</a>
-    <a href="../../support/">Support</a>
-    <a href="#cookie-settings">Cookie settings</a>
+    <a href="../../shop/">Webshop</a>
+    <a href="../../refund-policy/">Visszatérítés és szállítás</a>
+    <a href="../../terms/">Felhasználási feltételek</a>
+    <a href="../../privacy/">Adatkezelési tájékoztató</a>
+    <a href="../../support/">Ügyfélszolgálat</a>
+    <a href="#cookie-settings">Süti-beállítások</a>
   </div>
 
   <footer>
     &copy; 2026 CardPrime Korlátolt Felelősségű Társaság
   </footer>
 </div>
-<script src="../../nav.js?v=2"></script>
-<script src="../../shop.js?v=2"></script>
+<script src="/nav.js?v=3"></script>
+<script src="/shop.js?v=3"></script>
 <script>
 (function () {
   'use strict';
@@ -92,13 +97,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   var count = Shop.cartCount();
   if (count) {
     note.textContent = count === 1
-      ? 'Your cart still holds 1 item.'
-      : 'Your cart still holds ' + count + ' items.';
+      ? 'A kosaradban még 1 tétel van.'
+      : 'A kosaradban még ' + count + ' tétel van.';
     note.hidden = false;
   } else {
     // The cart can genuinely be empty here — another tab may have completed a different
     // order and cleared it. Sending the buyer to an empty checkout page would be a dead end.
-    back.textContent = 'Back to the shop';
+    back.textContent = 'Vissza a webshopba';
     back.href = '../../shop/';
   }
 })();
