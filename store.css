@@ -222,6 +222,10 @@
            scroll-snap-type: x mandatory; scroll-padding-inline: 2px; padding-bottom: 6px; scrollbar-width: none; }
   .grid3::-webkit-scrollbar { display: none; }
   .grid3 > * { scroll-snap-align: start; }
+  /* telefonon a sorrend: doboz, dupla doboz, csomag (a user kérése, 2026-11-27); asztalin marad a HTML sorrendje */
+  .grid3 > [data-pack="box-of-4"] { order: 1; }
+  .grid3 > [data-pack="double-box"] { order: 2; }
+  .grid3 > [data-pack="single-pack"] { order: 3; }
   /* mobilon nem kell egyforma magasság: a vásárlósor közvetlenül az ár alatt, üres rés nélkül */
   .grid3 { align-items: start; }
   .grid3 .buyrow { margin-top: 2px; }
