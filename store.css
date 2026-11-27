@@ -34,10 +34,20 @@
 .grid3 .stage--box img { transform: translateY(3.43%) scale(1.349); }
 .grid3 .stage--double img { transform: translateY(1.1%) scale(1.466); }
 
-/* kiemelt: dupla doboz */
-.product--featured { border-color: rgba(233,196,106,.32);
-                     background: radial-gradient(70% 90% at 0% 0%, rgba(233,196,106,.07), transparent 60%),
+/* garantált aláírt kártya: aranyszínű kiemelés a leírósorban, a doboznál és a dupla doboznál
+   (egy sorban marad a többivel; ha nem fér ki, egészben kerül a következő sorba – ezért nincs előtte „·”,
+   ami a sor végén árván maradna; az arany jelvény maga választja el) */
+.product__signed { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; vertical-align: middle; white-space: nowrap;
+                   color: var(--gold); font-weight: 700; }
+.product__signed b { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+                     background: var(--gold); color: #0b0b0c; font: 700 13px/1 var(--sc-font-display); }
+
+/* kiemelt: dupla doboz – vastagabb aranykeret és arany fényudvar */
+.product--featured { border: 2px solid rgba(233,196,106,.85); padding: calc(clamp(16px, 2.4vw, 28px) - 1px); /* a vastagabb keret ne szűkítse a tartalmat */
+                     box-shadow: 0 0 0 1px rgba(233,196,106,.18), 0 0 36px rgba(233,196,106,.22), inset 0 0 28px rgba(233,196,106,.06);
+                     background: radial-gradient(70% 90% at 0% 0%, rgba(233,196,106,.12), transparent 60%),
                                  linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01)); }
+.product--featured .product__tag { background: var(--gold); border-color: var(--gold); color: #0b0b0c; font-weight: 700; }
 .product--featured .stage::before { background: radial-gradient(closest-side, rgba(233,196,106,.20), rgba(124,58,237,.18) 55%, transparent 100%); }
 
 .price { display: grid; gap: 4px; }
